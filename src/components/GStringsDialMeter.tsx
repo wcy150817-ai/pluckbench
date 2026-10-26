@@ -6,6 +6,7 @@ import {
   getFreqAtCents,
 } from '../data/instruments';
 import { EnvelopePhase } from '../audio/pitchDetector';
+import { ThemePalette, SupportedLang, UI_TRANSLATIONS } from '../i18n/localeTheme';
 
 interface DialMeterProps {
   targetNote: NoteInfo;
@@ -24,6 +25,10 @@ interface DialMeterProps {
   activeTimbreLabel?: string;
   isManualLocked: boolean;
   isSoundItMode: boolean;
+  holdProgress: number; // 0 to 100% progress toward confirmation chime
+  isCurrentStringTuned: boolean;
+  theme: ThemePalette;
+  lang: SupportedLang;
 }
 
 export const GStringsDialMeter: React.FC<DialMeterProps> = ({
@@ -32,23 +37,25 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
   centsOffset,
   hasSignal,
   rmsDb,
-  envelopePhase,
-  isSustainLocked,
   deepNoiseSuppression,
   dampingMode,
   notationStyle,
   showPitchTrail,
   matchedStringLabel,
-  activeTimbreLabel,
   isManualLocked,
   isSoundItMode,
+  holdProgress,
+  isCurrentStringTuned,
+  theme,
+  lang,
 }) => {
+  const t = UI_TRANSLATIONS[lang];
   const needleGroupRef = useRef<SVGGElement | null>(null);
   const trailCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Physics state for smooth needle animation (tuned for anti-jitter stability!)
-  const currentAngleRef = useRef<number>(0);
-  const velocityRef = useRef<number>(0);
+  // Overdamped 2-stage fluid filter state (ZERO overshoot, ZERO left-right oscillation!)
+  const stage1AngleRef = useRef<number>(0);
+  const displayAngleRef = useRef<number>(0);
   const targetCentsRef = useRef<number>(0);
   const hasSignalRef = useRef<boolean>(false);
   const pitchHistoryRef = useRef<{ cents: number; active: boolean }[]>([]);
@@ -56,20 +63,19 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
   useEffect(() => {
     targetCentsRef.current =
       hasSignal || isSoundItMode
-        ? Math.max(-52, Math.min(52, isSoundItMode ? 0 : centsOffset))
+        ? Math.max(-50, Math.min(50, isSoundItMode ? 0 : centsOffset))
         : 0;
     hasSignalRef.current = hasSignal || isSoundItMode;
   }, [centsOffset, hasSignal, isSoundItMode]);
 
-  // 60/120fps Heavy-Damped Spring Physics Loop for the Needle + Pitch Stability Scope
+  // 60fps Overdamped Fluid Filter (No spring bounce, strict angular speed limit!)
   useEffect(() => {
     let rafId: number;
 
-    // Higher damping & lower stiffness so the needle glides smoothly like a fluid-filled analog VU meter
-    const physicsParams = {
-      fast: { stiffness: 0.16, damping: 0.76 },
-      balanced: { stiffness: 0.09, damping: 0.82 },
-      smooth: { stiffness: 0.045, damping: 0.87 },
+    const fluidParams = {
+      fast: { alpha1: 0.11, alpha2: 0.14, maxStepDeg: 0.85, deadbandDeg: 0.25 },
+      balanced: { alpha1: 0.065, alpha2: 0.085, maxStepDeg: 0.48, deadbandDeg: 0.42 },
+      smooth: { alpha1: 0.038, alpha2: 0.052, maxStepDeg: 0.28, deadbandDeg: 0.60 },
     }[dampingMode];
 
     const animate = () => {
@@ -77,23 +83,33 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
       const desiredCents = active ? targetCentsRef.current : 0;
       const desiredAngle = (desiredCents / 50) * 55;
 
-      const force =
-        (desiredAngle - currentAngleRef.current) * physicsParams.stiffness;
-      velocityRef.current =
-        (velocityRef.current + force) * physicsParams.damping;
-      currentAngleRef.current += velocityRef.current;
+      // Stage 1 exponential low-pass
+      const diff1 = desiredAngle - stage1AngleRef.current;
+      if (Math.abs(diff1) > fluidParams.deadbandDeg || !active) {
+        stage1AngleRef.current += diff1 * (active ? fluidParams.alpha1 : 0.045);
+      }
 
+      // Stage 2 velocity-clamped fluid damper (guarantees zero left-right wobble)
+      const diff2 = stage1AngleRef.current - displayAngleRef.current;
+      const step = Math.max(
+        -fluidParams.maxStepDeg,
+        Math.min(fluidParams.maxStepDeg, diff2 * fluidParams.alpha2)
+      );
+      displayAngleRef.current += step;
+
+      // Snap gently within ±1.2° if already inside the ±5¢ green zone
       if (needleGroupRef.current) {
         needleGroupRef.current.setAttribute(
           'transform',
-          `rotate(${currentAngleRef.current.toFixed(2)} 250 245)`
+          `rotate(${displayAngleRef.current.toFixed(2)} 250 245)`
         );
       }
 
       if (showPitchTrail && trailCanvasRef.current) {
         const hist = pitchHistoryRef.current;
+        const smoothedCents = (displayAngleRef.current / 55) * 50;
         hist.push({
-          cents: desiredCents,
+          cents: smoothedCents,
           active,
         });
         if (hist.length > 140) hist.shift();
@@ -105,7 +121,7 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
           const h = canvas.height;
           ctx.clearRect(0, 0, w, h);
 
-          ctx.strokeStyle = 'rgba(16, 185, 129, 0.22)';
+          ctx.strokeStyle = `${theme.accentHex}44`;
           ctx.lineWidth = 1;
           ctx.setLineDash([4, 4]);
           ctx.beginPath();
@@ -114,7 +130,7 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
           ctx.stroke();
           ctx.setLineDash([]);
 
-          ctx.lineWidth = 2;
+          ctx.lineWidth = 2.2;
           ctx.beginPath();
           let started = false;
           for (let i = 0; i < hist.length; i++) {
@@ -132,7 +148,7 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
               ctx.lineTo(x, y);
             }
           }
-          ctx.strokeStyle = 'rgba(52, 211, 153, 0.82)';
+          ctx.strokeStyle = theme.accentHex;
           ctx.stroke();
         }
       }
@@ -142,38 +158,26 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
 
     rafId = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(rafId);
-  }, [dampingMode, showPitchTrail]);
+  }, [dampingMode, showPitchTrail, theme.accentHex]);
 
   const absCents = Math.abs(centsOffset);
-  const isInTune = (hasSignal && absCents <= 3.5) || isSoundItMode;
-  const isClose = hasSignal && absCents > 3.5 && absCents <= 12.0;
-  const isFlat = hasSignal && centsOffset < -3.5;
-  const isSharp = hasSignal && centsOffset > 3.5;
+  // ±5 cents forgiving tolerance zone for real instruments
+  const isInSmallFluctuationZone = (hasSignal && absCents <= 5.5) || isSoundItMode;
+  const isClose = hasSignal && absCents > 5.5 && absCents <= 14.0;
+  const isFlat = hasSignal && centsOffset < -5.5;
+  const isSharp = hasSignal && centsOffset > 5.5;
 
   const accentColor = isSoundItMode
-    ? '#38BDF8'
+    ? theme.secondaryHex
     : !hasSignal
     ? '#64748B'
-    : isInTune
-    ? '#10B981'
+    : isInSmallFluctuationZone
+    ? theme.accentHex
     : isClose
-    ? '#F59E0B'
-    : '#F43F5E';
+    ? theme.warnHex
+    : theme.dangerHex;
 
   const noteDisplay = formatNoteDisplay(targetNote, notationStyle);
-
-  // Envelope Phase Human-Readable Label
-  const phaseLabel = isSoundItMode
-    ? `原声建模发音中 (${activeTimbreLabel || '物理合成'})`
-    : !hasSignal
-    ? '等待拨弦或拉弓...'
-    : envelopePhase === 'attack'
-    ? '起振瞬态过滤中 (抑制拨弦偏高)...'
-    : envelopePhase === 'decay'
-    ? '余音衰减 · 已保持稳态音高'
-    : isSustainLocked
-    ? '延音稳态已锁定 (Sustain Lock)'
-    : '正在追踪基频延音...';
 
   // Generate Outer Cents Ticks (-50 to +50)
   const centTicks: React.ReactNode[] = [];
@@ -186,7 +190,7 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
     const angleRad = ((angleDeg - 90) * Math.PI) / 180;
     const isMajor = c % 10 === 0;
     const isMedium = c % 5 === 0 && !isMajor;
-    const isInGreenZone = Math.abs(c) <= 3;
+    const isInGreenZone = Math.abs(c) <= 5;
 
     if (!isMajor && !isMedium && Math.abs(c) > 10 && c % 2 !== 0) continue;
 
@@ -200,11 +204,15 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
     const y2 = centerY + r2 * Math.sin(angleRad);
 
     const strokeColor = isInGreenZone
-      ? '#10B981'
+      ? theme.accentHex
       : isMajor
-      ? '#E2E8F0'
+      ? theme.isLight
+        ? '#1E293B'
+        : '#E2E8F0'
       : isMedium
       ? '#94A3B8'
+      : theme.isLight
+      ? '#CBD5E1'
       : '#475569';
 
     centTicks.push(
@@ -232,7 +240,13 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
           y={ly}
           textAnchor="middle"
           dominantBaseline="central"
-          fill={c === 0 ? '#10B981' : '#94A3B8'}
+          fill={
+            c === 0
+              ? theme.accentHex
+              : theme.isLight
+              ? '#475569'
+              : '#94A3B8'
+          }
           fontSize={c === 0 ? '12' : '10.5'}
           fontWeight={c === 0 ? '700' : '600'}
           fontFamily="JetBrains Mono, monospace"
@@ -264,7 +278,15 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
         y1={y1}
         x2={x2}
         y2={y2}
-        stroke={c === 0 ? '#38BDF8' : isLabelTick ? '#64748B' : '#334155'}
+        stroke={
+          c === 0
+            ? theme.secondaryHex
+            : isLabelTick
+            ? '#64748B'
+            : theme.isLight
+            ? '#CBD5E1'
+            : '#334155'
+        }
         strokeWidth={isLabelTick ? 1.5 : 1}
       />
     );
@@ -284,7 +306,7 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
           y={ly}
           textAnchor="middle"
           dominantBaseline="central"
-          fill={c === 0 ? '#38BDF8' : '#64748B'}
+          fill={c === 0 ? theme.secondaryHex : '#64748B'}
           fontSize="9.5"
           fontWeight={c === 0 ? '700' : '500'}
           fontFamily="JetBrains Mono, monospace"
@@ -298,76 +320,109 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
   const vuPercent = Math.max(0, Math.min(100, ((rmsDb + 65) / 55) * 100));
 
   return (
-    <div className="relative w-full rounded-2xl bg-gradient-to-b from-[#111722] via-[#0c1018] to-[#090d14] border border-slate-800/90 shadow-[0_16px_40px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.06)] overflow-hidden select-none">
-      {/* Subtle top ambient glow based on tuning status */}
+    <div
+      className="relative w-full rounded-2xl border shadow-[0_16px_40px_rgba(0,0,0,0.45)] overflow-hidden select-none transition-colors duration-300"
+      style={{
+        background: `linear-gradient(180deg, ${theme.dialGradientStart} 0%, ${theme.dialGradientEnd} 100%)`,
+        borderColor: theme.borderPrimary,
+      }}
+    >
+      {/* Ambient Top Glow */}
       <div
         className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-44 rounded-full blur-3xl transition-all duration-300"
         style={{
           backgroundColor: accentColor,
-          opacity: hasSignal || isSoundItMode ? 0.16 : 0.04,
+          opacity: hasSignal || isSoundItMode ? 0.18 : 0.05,
         }}
       />
 
       {/* Top Hardware-Style LED Tuning Guidance Strip */}
-      <div className="relative z-10 flex items-center justify-between px-4 pt-3 pb-1.5 border-b border-slate-800/60 bg-slate-950/40">
+      <div
+        className="relative z-10 flex items-center justify-between px-3 sm:px-4 pt-3 pb-2 border-b"
+        style={{
+          borderColor: theme.borderPrimary,
+          backgroundColor: theme.isLight
+            ? 'rgba(241,245,249,0.75)'
+            : 'rgba(2,6,23,0.45)',
+        }}
+      >
         {/* Flat Indicator */}
         <div
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
+          className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-medium transition-all ${
             isFlat
-              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-[0_0_12px_rgba(245,158,11,0.25)]'
+              ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
               : 'text-slate-500 border border-transparent'
           }`}
         >
           <span className="text-sm font-bold">♭</span>
-          <span>偏低 · 需拧紧 ▶</span>
+          <span>{t.flatTighten}</span>
         </div>
 
-        {/* Center Lock & Acoustic Envelope Status */}
-        <div className="flex flex-col items-center">
+        {/* Center Lock & Hold-to-Confirm Progress Bar */}
+        <div className="flex flex-col items-center min-w-[160px] sm:min-w-[220px]">
           <div
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wide transition-all ${
-              isSoundItMode
-                ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-[0_0_15px_rgba(56,189,248,0.3)]'
-                : isInTune
-                ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/50 shadow-[0_0_18px_rgba(16,185,129,0.4)]'
-                : 'bg-slate-900/80 text-slate-300 border border-slate-800'
-            }`}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wide border transition-all"
+            style={{
+              backgroundColor:
+                isCurrentStringTuned || holdProgress >= 100
+                  ? `${theme.accentHex}28`
+                  : isInSmallFluctuationZone
+                  ? `${theme.accentHex}18`
+                  : theme.isLight
+                  ? '#e2e8f0'
+                  : 'rgba(15,23,42,0.85)',
+              borderColor:
+                isCurrentStringTuned || isInSmallFluctuationZone
+                  ? theme.accentHex
+                  : theme.borderPrimary,
+              color:
+                isCurrentStringTuned || isInSmallFluctuationZone
+                  ? theme.accentHex
+                  : theme.textPrimary,
+            }}
           >
             <span
-              className={`w-2 h-2 rounded-full ${
-                isSoundItMode
-                  ? 'bg-sky-400 animate-pulse'
-                  : isInTune
-                  ? 'bg-emerald-400 shadow-[0_0_8px_#10b981]'
+              className="w-2 h-2 rounded-full"
+              style={{
+                backgroundColor: isInSmallFluctuationZone
+                  ? theme.accentHex
                   : hasSignal
-                  ? 'bg-amber-400'
-                  : 'bg-slate-600'
-              }`}
+                  ? theme.warnHex
+                  : '#64748B',
+              }}
             />
             <span>
-              {isSoundItMode
-                ? '原声基准音播放中'
-                : isInTune
-                ? '音准已锁定 IN TUNE'
+              {isCurrentStringTuned || holdProgress >= 100
+                ? t.inTuneLocked
+                : isInSmallFluctuationZone && hasSignal
+                ? `${t.holdingForLock} (${Math.round(holdProgress)}%)`
                 : hasSignal
                 ? `${centsOffset > 0 ? '+' : ''}${centsOffset.toFixed(1)} ¢`
-                : '等待拨弦或发音...'}
+                : t.waitingForString}
             </span>
           </div>
-          <span className="text-[10px] text-slate-400 mt-0.5 font-mono">
-            {phaseLabel}
-          </span>
+
+          {/* Hold-in-Small-Fluctuation-Zone Progress Bar (0% -> 100%) */}
+          <div className="w-40 sm:w-52 h-1.5 mt-1.5 rounded-full bg-slate-800/80 overflow-hidden border border-slate-700/50">
+            <div
+              className="h-full transition-all duration-100 rounded-full"
+              style={{
+                width: `${isCurrentStringTuned ? 100 : holdProgress}%`,
+                backgroundColor: theme.accentHex,
+              }}
+            />
+          </div>
         </div>
 
         {/* Sharp Indicator */}
         <div
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
+          className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-medium transition-all ${
             isSharp
-              ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-[0_0_12px_rgba(244,63,94,0.25)]'
+              ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
               : 'text-slate-500 border border-transparent'
           }`}
         >
-          <span>◀ 偏高 · 需放松</span>
+          <span>{t.sharpLoosen}</span>
           <span className="text-sm font-bold">♯</span>
         </div>
       </div>
@@ -376,53 +431,46 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
       <div className="relative px-2 pt-1 pb-1">
         <svg
           viewBox="0 0 500 265"
-          className="w-full h-auto max-h-[245px] mx-auto overflow-visible"
+          className="w-full h-auto max-h-[240px] mx-auto overflow-visible"
         >
           <defs>
             <linearGradient id="needleGrad" x1="0" y1="1" x2="0" y2="0">
               <stop offset="0%" stopColor="#475569" />
-              <stop offset="50%" stopColor={accentColor} />
-              <stop offset="100%" stopColor="#FFFFFF" />
+              <stop offset="55%" stopColor={accentColor} />
+              <stop offset="100%" stopColor={theme.isLight ? '#0f172a' : '#FFFFFF'} />
             </linearGradient>
             <filter id="needleGlow" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="3.5" result="blur" />
+              <feGaussianBlur stdDeviation="3" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
-            <radialGradient id="dialFaceGrad" cx="50%" cy="90%" r="85%">
-              <stop offset="0%" stopColor="#162032" stopOpacity="0.65" />
-              <stop offset="100%" stopColor="#090D14" stopOpacity="0.1" />
-            </radialGradient>
           </defs>
 
-          <path
-            d="M 55 170 A 210 210 0 0 1 445 170 L 340 245 L 160 245 Z"
-            fill="url(#dialFaceGrad)"
-          />
-
+          {/* Outer Scale Track Arc */}
           <path
             d="M 88 131 A 198 198 0 0 1 412 131"
             fill="none"
-            stroke="#1E293B"
+            stroke={theme.isLight ? '#CBD5E1' : '#1E293B'}
             strokeWidth="3"
           />
 
-          {/* Center ±3.5 Cents Precision Target Zone Arc */}
+          {/* Center ±5 Cents Forgiving Target Fluctuation Zone Arc */}
           <path
-            d="M 237 47.4 A 198 198 0 0 1 263 47.4"
+            d="M 231.0 47.9 A 198 198 0 0 1 269.0 47.9"
             fill="none"
-            stroke="#10B981"
-            strokeWidth="6"
+            stroke={theme.accentHex}
+            strokeWidth="7"
             strokeLinecap="round"
-            opacity="0.85"
+            opacity="0.9"
           />
 
+          {/* Inner Dynamic Hz Scale Track Arc */}
           <path
             d="M 139 156 A 144 144 0 0 1 361 156"
             fill="none"
-            stroke="#1E293B"
+            stroke={theme.isLight ? '#CBD5E1' : '#1E293B'}
             strokeWidth="1.5"
             strokeDasharray="3 3"
           />
@@ -434,19 +482,19 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
             fill="#64748B"
             fontSize="9"
             fontWeight="600"
-            letterSpacing="0.12em"
+            letterSpacing="0.1em"
           >
-            CENTS (延音稳态音分偏差)
+            ±5¢ TARGET HOLD ZONE (重流体阻尼防晃表盘)
           </text>
           <text
             x="250"
             y="142"
             textAnchor="middle"
-            fill="#38BDF8"
+            fill={theme.secondaryHex}
             fontSize="8.5"
             fontWeight="600"
             letterSpacing="0.08em"
-            opacity="0.8"
+            opacity="0.85"
           >
             DYNAMIC Hz (动态频率尺)
           </text>
@@ -454,14 +502,14 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
           <g>{centTicks}</g>
           <g>{hzTicks}</g>
 
-          {/* Damped Physical Needle Group */}
+          {/* Overdamped Fluid Needle Group */}
           <g ref={needleGroupRef} transform="rotate(0 250 245)">
             <line
               x1="250"
               y1="245"
               x2="250"
               y2="38"
-              stroke="rgba(0,0,0,0.65)"
+              stroke="rgba(0,0,0,0.45)"
               strokeWidth="5"
               strokeLinecap="round"
             />
@@ -471,15 +519,15 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
               x2="250"
               y2="36"
               stroke="url(#needleGrad)"
-              strokeWidth="3.2"
+              strokeWidth="3.5"
               strokeLinecap="round"
               filter="url(#needleGlow)"
             />
             <circle
               cx="250"
               cy="44"
-              r="3.2"
-              fill="#FFFFFF"
+              r="3.5"
+              fill={theme.isLight ? '#0f172a' : '#FFFFFF'}
               stroke={accentColor}
               strokeWidth="2"
             />
@@ -489,8 +537,8 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
             cx="250"
             cy="245"
             r="18"
-            fill="#0F172A"
-            stroke="#334155"
+            fill={theme.isLight ? '#e2e8f0' : '#0F172A'}
+            stroke={theme.borderPrimary}
             strokeWidth="2.5"
           />
           <circle
@@ -504,7 +552,15 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
 
         {showPitchTrail && (
           <div className="mx-auto max-w-md px-4 -mt-3 mb-1">
-            <div className="relative h-8 rounded-lg bg-slate-950/75 border border-slate-800/80 overflow-hidden flex items-center">
+            <div
+              className="relative h-8 rounded-lg border overflow-hidden flex items-center"
+              style={{
+                backgroundColor: theme.isLight
+                  ? 'rgba(241,245,249,0.9)'
+                  : 'rgba(2,6,23,0.75)',
+                borderColor: theme.borderPrimary,
+              }}
+            >
               <canvas
                 ref={trailCanvasRef}
                 width={360}
@@ -512,7 +568,7 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
                 className="w-full h-full"
               />
               <span className="absolute left-2 top-1 text-[9px] font-mono text-slate-500 uppercase tracking-wider">
-                延音稳定度轨迹 (过滤瞬态抖动)
+                HOLD STABILITY SCOPE (±5¢)
               </span>
             </div>
           </div>
@@ -520,23 +576,41 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
       </div>
 
       {/* Bottom Digital Readout Panel */}
-      <div className="relative z-10 grid grid-cols-3 items-center gap-2 px-4 py-2.5 bg-slate-950/70 border-t border-slate-800/80">
-        {/* Left: Target Frequency & Lock Status */}
+      <div
+        className="relative z-10 grid grid-cols-3 items-center gap-2 px-3 sm:px-4 py-2.5 border-t"
+        style={{
+          borderColor: theme.borderPrimary,
+          backgroundColor: theme.isLight
+            ? 'rgba(241,245,249,0.85)'
+            : 'rgba(2,6,23,0.72)',
+        }}
+      >
+        {/* Left: Locked Target String & Frequency */}
         <div className="flex flex-col items-start">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-[11px] text-slate-400">目标基准</span>
+            <span className="text-[11px] text-slate-400">{t.targetPitch}</span>
             {isManualLocked && (
-              <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                已锁弦
+              <span
+                className="px-1.5 py-0.5 text-[10px] font-bold rounded border"
+                style={{
+                  backgroundColor: `${theme.accentHex}22`,
+                  color: theme.accentHex,
+                  borderColor: `${theme.accentHex}55`,
+                }}
+              >
+                {t.stringLockedBadge}
               </span>
             )}
             {deepNoiseSuppression && (
-              <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                强效降噪开启
+              <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-sky-500/20 text-sky-400 border border-sky-500/30">
+                窄带抗噪
               </span>
             )}
           </div>
-          <div className="font-mono text-sm sm:text-base font-bold text-sky-400">
+          <div
+            className="font-mono text-sm sm:text-base font-bold"
+            style={{ color: theme.secondaryHex }}
+          >
             {targetNote.frequency.toFixed(2)}{' '}
             <span className="text-xs font-normal text-slate-400">Hz</span>
           </div>
@@ -551,15 +625,19 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
             className="flex items-baseline justify-center gap-1 px-4 py-1 rounded-xl border transition-all duration-200"
             style={{
               borderColor:
-                hasSignal || isSoundItMode ? `${accentColor}66` : '#1E293B',
+                hasSignal || isSoundItMode
+                  ? `${accentColor}88`
+                  : theme.borderPrimary,
               backgroundColor:
-                hasSignal || isSoundItMode ? `${accentColor}15` : '#0F172A',
+                hasSignal || isSoundItMode
+                  ? `${accentColor}18`
+                  : theme.bgCard,
             }}
           >
             <span
               className="font-mono text-2xl sm:text-3xl font-extrabold tracking-tight"
               style={{
-                color: hasSignal || isSoundItMode ? '#F8FAFC' : '#94A3B8',
+                color: theme.textPrimary,
               }}
             >
               {noteDisplay.primary}
@@ -567,16 +645,16 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
           </div>
         </div>
 
-        {/* Right: Real-time Sustain Frequency + Mic Level */}
+        {/* Right: Stabilized Measured Frequency + Mic Level */}
         <div className="flex flex-col items-end">
-          <span className="text-[11px] text-slate-400">稳态实测频率</span>
+          <span className="text-[11px] text-slate-400">{t.measuredPitch}</span>
           <div
             className="font-mono text-sm sm:text-base font-bold transition-colors"
             style={{
               color: hasSignal
-                ? isInTune
-                  ? '#34D399'
-                  : '#F8FAFC'
+                ? isInSmallFluctuationZone
+                  ? theme.accentHex
+                  : theme.textPrimary
                 : '#64748B',
             }}
           >
@@ -587,16 +665,16 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
               : '---.--'}{' '}
             <span className="text-xs font-normal text-slate-400">Hz</span>
           </div>
-          <div className="w-24 h-1.5 mt-1 rounded-full bg-slate-800 overflow-hidden">
+          <div className="w-20 sm:w-24 h-1.5 mt-1 rounded-full bg-slate-800/80 overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-75"
               style={{
                 width: `${isSoundItMode ? 75 : vuPercent}%`,
-                backgroundColor: isInTune
-                  ? '#10B981'
+                backgroundColor: isInSmallFluctuationZone
+                  ? theme.accentHex
                   : vuPercent > 85
-                  ? '#F43F5E'
-                  : '#38BDF8',
+                  ? theme.dangerHex
+                  : theme.secondaryHex,
               }}
             />
           </div>

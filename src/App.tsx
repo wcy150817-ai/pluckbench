@@ -14,6 +14,13 @@ import {
   frequencyToFloatMidi,
   midiToFrequency,
 } from './data/instruments';
+import {
+  THEME_PALETTES,
+  ThemePaletteId,
+  SupportedLang,
+  UI_TRANSLATIONS,
+  detectUserGeoAndTheme,
+} from './i18n/localeTheme';
 import { PitchProcessor, EnvelopePhase } from './audio/pitchDetector';
 import { ReferenceToneGenerator } from './audio/toneGenerator';
 import { GStringsDialMeter } from './components/GStringsDialMeter';
@@ -42,6 +49,8 @@ import {
   Guitar,
   Headphones,
   BarChart3,
+  Globe,
+  Palette,
 } from 'lucide-react';
 
 type ActiveToolTab = 'tuner' | 'metronome' | 'chords' | 'ear-trainer' | 'decibel';
@@ -49,6 +58,55 @@ type ActiveToolTab = 'tuner' | 'metronome' | 'chords' | 'ear-trainer' | 'decibel
 export const App: React.FC = () => {
   // Multi-Tool Navigation State
   const [activeTool, setActiveTool] = useState<ActiveToolTab>('tuner');
+
+  // IP Geolocation -> Language & Theme Palette State
+  const [lang, setLang] = useState<SupportedLang>('zh');
+  const [paletteId, setPaletteId] = useState<ThemePaletteId>('emerald-cn');
+  const [geoLabel, setGeoLabel] = useState<string>('IP: CN · 翡翠主题');
+  const [showRegionMenu, setShowRegionMenu] = useState<boolean>(false);
+
+  const theme = THEME_PALETTES[paletteId];
+  const t = UI_TRANSLATIONS[lang];
+
+  // Auto-detect IP Country -> Language & Theme on mount (also supports ?region=US/CN/EU/JP/LIGHT URL query for testing)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const forcedRegion = params.get('region')?.toUpperCase();
+    if (forcedRegion === 'US') {
+      setLang('en');
+      setPaletteId('cobalt-us');
+      setGeoLabel('IP: US · Cobalt Pro');
+      return;
+    }
+    if (forcedRegion === 'EU') {
+      setLang('en');
+      setPaletteId('amber-eu');
+      setGeoLabel('IP: EU · Warm Amber');
+      return;
+    }
+    if (forcedRegion === 'JP') {
+      setLang('ja');
+      setPaletteId('violet-jp');
+      setGeoLabel('IP: JP · Neon Violet');
+      return;
+    }
+    if (forcedRegion === 'LIGHT') {
+      setLang('zh');
+      setPaletteId('light-studio');
+      setGeoLabel('Daylight · 浅色护眼');
+      return;
+    }
+
+    detectUserGeoAndTheme().then((info) => {
+      setLang(info.lang);
+      setPaletteId(info.paletteId);
+      setGeoLabel(
+        `IP: ${info.countryCode}${info.ip ? ` (${info.ip})` : ''} · ${
+          THEME_PALETTES[info.paletteId].regionBadge
+        }`
+      );
+    });
+  }, []);
 
   // Instrument & Tuning State
   const [selectedPreset, setSelectedPreset] = useState<InstrumentPreset>(
@@ -58,16 +116,16 @@ export const App: React.FC = () => {
     INSTRUMENT_PRESETS[1].tunings[0]
   );
 
-  // Core Mode: 'tune-auto' | 'tune-manual' | 'sound-it'
-  const [tunerMode, setTunerMode] = useState<TunerMode>('tune-auto');
-  const [snapToStringsOnly, setSnapToStringsOnly] = useState<boolean>(true);
+  // Default to 'tune-manual' (String-First Workflow: select which string to tune first!)
+  const [tunerMode, setTunerMode] = useState<TunerMode>('tune-manual');
+  const [autoAdvanceNextString, setAutoAdvanceNextString] = useState<boolean>(false);
 
   // Calibration, Timbre & Noise Reduction Settings
   const [a4Hz, setA4Hz] = useState<number>(440);
   const [temperament, setTemperament] = useState<TemperamentId>('equal');
   const [notationStyle, setNotationStyle] = useState<NotationStyle>('letter');
   const [dampingMode, setDampingMode] = useState<'fast' | 'balanced' | 'smooth'>('balanced');
-  const [noiseGateDb, setNoiseGateDb] = useState<number>(-50);
+  const [noiseGateDb, setNoiseGateDb] = useState<number>(-48);
   const [deepNoiseSuppression, setDeepNoiseSuppression] = useState<boolean>(false);
   const [waveform, setWaveform] = useState<ToneWaveform>('auto-instrument');
   const [toneVolume, setToneVolume] = useState<number>(0.65);
@@ -76,7 +134,7 @@ export const App: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
 
   // Target & Stabilized Pitch State
-  const [targetMidi, setTargetMidi] = useState<number>(40); // Default Guitar 6th string E2 or A4
+  const [targetMidi, setTargetMidi] = useState<number>(40); // Default Guitar 6th string E2
   const [measuredFreq, setMeasuredFreq] = useState<number | null>(null);
   const [currentFloatMidi, setCurrentFloatMidi] = useState<number>(40);
   const [centsOffset, setCentsOffset] = useState<number>(0);
@@ -87,6 +145,7 @@ export const App: React.FC = () => {
   const [isSustainLocked, setIsSustainLocked] = useState<boolean>(false);
   const [isNoisyEnvironment, setIsNoisyEnvironment] = useState<boolean>(false);
   const [noiseAlertDismissed, setNoiseAlertDismissed] = useState<boolean>(false);
+  const [holdProgress, setHoldProgress] = useState<number>(0); // 0 to 100%
   const [tunedStrings, setTunedStrings] = useState<Set<number>>(new Set());
 
   // Microphone & Simulation State
@@ -103,7 +162,11 @@ export const App: React.FC = () => {
   const rafLoopRef = useRef<number | null>(null);
   const pitchProcessorRef = useRef<PitchProcessor>(new PitchProcessor());
   const toneGenRef = useRef<ReferenceToneGenerator>(new ReferenceToneGenerator());
-  const inTuneTimerRef = useRef<{ midi: number; frames: number }>({ midi: -1, frames: 0 });
+  const holdProgressRef = useRef<{ midi: number; progress: number; chimed: boolean }>({
+    midi: 40,
+    progress: 0,
+    chimed: false,
+  });
 
   // Resolve authentic acoustic instrument timbre
   const resolvedTimbre = useMemo(() => {
@@ -112,14 +175,14 @@ export const App: React.FC = () => {
   }, [waveform, selectedTuning, selectedPreset]);
 
   const activeTimbreLabel = useMemo(() => {
-    const found = TIMBRE_OPTIONS.find((t) => t.id === resolvedTimbre);
+    const found = TIMBRE_OPTIONS.find((item) => item.id === resolvedTimbre);
     return found ? found.name.split(' ')[0] : '原声建模';
   }, [resolvedTimbre]);
 
   // Keep latest state in refs for inside requestAnimationFrame loop
   const stateRef = useRef({
     tunerMode,
-    snapToStringsOnly,
+    autoAdvanceNextString,
     selectedPreset,
     selectedTuning,
     targetMidi,
@@ -133,7 +196,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     stateRef.current = {
       tunerMode,
-      snapToStringsOnly,
+      autoAdvanceNextString,
       selectedPreset,
       selectedTuning,
       targetMidi,
@@ -144,37 +207,40 @@ export const App: React.FC = () => {
       enableLockChime,
     };
 
-    // Dynamically adjust hardware bandpass filter cutoffs when instrument or noise mode changes
+    // Dynamically adjust hardware bandpass filter cutoffs to focus on the selected string
     if (highPassFilterRef.current && lowPassFilterRef.current && audioCtxRef.current) {
       const now = audioCtxRef.current.currentTime;
-      if (deepNoiseSuppression) {
-        if (tunerMode === 'tune-manual') {
-          // Narrow bandpass around locked target string (±35%)
-          const targetHz = midiToFrequency(targetMidi, a4Hz, temperament);
-          highPassFilterRef.current.frequency.setTargetAtTime(Math.max(25, targetHz * 0.68), now, 0.04);
-          lowPassFilterRef.current.frequency.setTargetAtTime(Math.min(2500, targetHz * 1.45), now, 0.04);
-        } else {
-          // Bandpass tailored to current instrument's fundamental range
-          highPassFilterRef.current.frequency.setTargetAtTime(
-            Math.max(25, selectedPreset.minFreqHz * 0.78),
-            now,
-            0.04
-          );
-          lowPassFilterRef.current.frequency.setTargetAtTime(
-            Math.min(2500, selectedPreset.maxFreqHz * 1.25),
-            now,
-            0.04
-          );
-        }
+      if (tunerMode === 'tune-manual') {
+        const targetHz = midiToFrequency(targetMidi, a4Hz, temperament);
+        highPassFilterRef.current.frequency.setTargetAtTime(
+          Math.max(22, targetHz * 0.68),
+          now,
+          0.04
+        );
+        lowPassFilterRef.current.frequency.setTargetAtTime(
+          Math.min(2500, targetHz * 1.45),
+          now,
+          0.04
+        );
+      } else if (deepNoiseSuppression) {
+        highPassFilterRef.current.frequency.setTargetAtTime(
+          Math.max(25, selectedPreset.minFreqHz * 0.78),
+          now,
+          0.04
+        );
+        lowPassFilterRef.current.frequency.setTargetAtTime(
+          Math.min(2500, selectedPreset.maxFreqHz * 1.25),
+          now,
+          0.04
+        );
       } else {
-        // Standard broad musical range
         highPassFilterRef.current.frequency.setTargetAtTime(26, now, 0.04);
         lowPassFilterRef.current.frequency.setTargetAtTime(2200, now, 0.04);
       }
     }
   }, [
     tunerMode,
-    snapToStringsOnly,
+    autoAdvanceNextString,
     selectedPreset,
     selectedTuning,
     targetMidi,
@@ -197,7 +263,7 @@ export const App: React.FC = () => {
     return getNoteInfo(targetMidi, a4Hz, temperament);
   }, [targetMidi, a4Hz, temperament]);
 
-  // Process stabilized pitch from PitchProcessor
+  // Process stabilized pitch & Hold-in-Small-Fluctuation-Zone Confirmation Chime!
   const processDetectedPitch = useCallback(
     (
       freq: number | null,
@@ -218,7 +284,14 @@ export const App: React.FC = () => {
       if (!freq || freq <= 0) {
         setHasSignal(false);
         setMeasuredFreq(null);
-        inTuneTimerRef.current.frames = 0;
+        // Gentle decay of hold progress when silent
+        if (!holdProgressRef.current.chimed) {
+          holdProgressRef.current.progress = Math.max(
+            0,
+            holdProgressRef.current.progress - 1.2
+          );
+          setHoldProgress(holdProgressRef.current.progress);
+        }
         return;
       }
 
@@ -233,10 +306,8 @@ export const App: React.FC = () => {
       if (st.tunerMode === 'tune-auto') {
         if (
           st.selectedPreset.id !== 'chromatic' &&
-          st.snapToStringsOnly &&
           st.selectedTuning.strings.length > 0
         ) {
-          // Hysteresis string matching: prefer staying on current string unless new string is > 25 cents closer
           let bestString = st.selectedTuning.strings[0];
           let minDiff = Infinity;
           let currentStringDiff = Infinity;
@@ -253,17 +324,22 @@ export const App: React.FC = () => {
             }
           }
 
-          if (currentStringDiff <= minDiff + 24) {
+          // Strong hysteresis (+30 cents) so it doesn't flip-flop between strings
+          if (currentStringDiff <= minDiff + 30) {
             chosenMidi = st.targetMidi;
           } else {
             chosenMidi = bestString.midi;
           }
         } else {
-          // Use hysteresis-stabilized MIDI from detector
           chosenMidi =
-            lockedMidiFromDetector ?? Math.max(21, Math.min(108, Math.round(floatMidi)));
+            lockedMidiFromDetector ??
+            Math.max(21, Math.min(108, Math.round(floatMidi)));
         }
-        setTargetMidi(chosenMidi);
+        if (chosenMidi !== st.targetMidi) {
+          setTargetMidi(chosenMidi);
+          holdProgressRef.current = { midi: chosenMidi, progress: 0, chimed: false };
+          setHoldProgress(0);
+        }
       }
 
       const targetHz = midiToFrequency(chosenMidi, st.a4Hz, st.temperament);
@@ -271,26 +347,56 @@ export const App: React.FC = () => {
       const clampedCents = Math.max(-50, Math.min(50, rawCents));
       setCentsOffset(clampedCents);
 
-      // Check if string stays locked in tune during sustain phase (|cents| <= 3.0)
-      if (Math.abs(rawCents) <= 3.0 && phase !== 'attack') {
-        if (inTuneTimerRef.current.midi === chosenMidi) {
-          inTuneTimerRef.current.frames += 1;
-          if (inTuneTimerRef.current.frames === 28) {
+      // Hold-in-Small-Fluctuation-Zone (±5.5 cents) Timer & Chime!
+      if (holdProgressRef.current.midi !== chosenMidi) {
+        holdProgressRef.current = { midi: chosenMidi, progress: 0, chimed: false };
+      }
+
+      if (Math.abs(rawCents) <= 5.5 && phase !== 'attack') {
+        // Inside ±5.5 cents small fluctuation window: accumulate progress (~0.85s to reach 100%)
+        if (!holdProgressRef.current.chimed) {
+          const nextProg = Math.min(100, holdProgressRef.current.progress + 2.2);
+          holdProgressRef.current.progress = nextProg;
+          setHoldProgress(nextProg);
+
+          if (nextProg >= 100) {
+            holdProgressRef.current.chimed = true;
+            if (st.enableLockChime) {
+              toneGenRef.current.playLockChime();
+            }
             setTunedStrings((prev) => {
-              if (prev.has(chosenMidi)) return prev;
               const next = new Set(prev);
               next.add(chosenMidi);
-              if (st.enableLockChime) {
-                toneGenRef.current.playLockChime();
+              // Optional auto-advance to next untuned string after 1.3s
+              if (st.autoAdvanceNextString) {
+                setTimeout(() => {
+                  const nextUntuned = st.selectedTuning.strings.find(
+                    (s) => s.midi !== chosenMidi && !next.has(s.midi)
+                  );
+                  if (nextUntuned) {
+                    setTargetMidi(nextUntuned.midi);
+                    setCurrentFloatMidi(nextUntuned.midi);
+                    holdProgressRef.current = {
+                      midi: nextUntuned.midi,
+                      progress: 0,
+                      chimed: false,
+                    };
+                    setHoldProgress(0);
+                  }
+                }, 1300);
               }
               return next;
             });
           }
-        } else {
-          inTuneTimerRef.current = { midi: chosenMidi, frames: 1 };
         }
-      } else {
-        inTuneTimerRef.current.frames = Math.max(0, inTuneTimerRef.current.frames - 1);
+      } else if (!holdProgressRef.current.chimed) {
+        // Forgiving decay if pitch momentarily drifts slightly outside ±5.5 cents
+        const decayStep = Math.abs(rawCents) <= 10 ? 0.5 : 1.5;
+        holdProgressRef.current.progress = Math.max(
+          0,
+          holdProgressRef.current.progress - decayStep
+        );
+        setHoldProgress(holdProgressRef.current.progress);
       }
     },
     []
@@ -322,13 +428,13 @@ export const App: React.FC = () => {
     setIsSustainLocked(false);
   }, []);
 
-  // Start Microphone Listening with Multi-Stage Hardware Bandpass Noise Filter Chain
+  // Start Microphone Listening
   const startMicrophone = useCallback(async () => {
     setMicError(null);
     setIsSimulating(false);
     toneGenRef.current.stopContinuous();
     if (tunerMode === 'sound-it') {
-      setTunerMode('tune-auto');
+      setTunerMode('tune-manual');
     }
 
     try {
@@ -351,27 +457,32 @@ export const App: React.FC = () => {
 
       const source = audioCtx.createMediaStreamSource(stream);
 
-      // Stage 1: 50Hz/60Hz AC Power Hum Notch Filter
       const humNotch = audioCtx.createBiquadFilter();
       humNotch.type = 'notch';
       humNotch.frequency.value = 50;
       humNotch.Q.value = 10;
 
-      // Stage 2: High-Pass Filter (cuts low rumble, footsteps, wind)
+      const targetHz = midiToFrequency(
+        stateRef.current.targetMidi,
+        stateRef.current.a4Hz,
+        stateRef.current.temperament
+      );
+
       const highPass = audioCtx.createBiquadFilter();
       highPass.type = 'highpass';
       highPass.Q.value = 0.707;
-      highPass.frequency.value = stateRef.current.deepNoiseSuppression
-        ? Math.max(25, stateRef.current.selectedPreset.minFreqHz * 0.78)
-        : 26;
+      highPass.frequency.value =
+        stateRef.current.tunerMode === 'tune-manual'
+          ? Math.max(22, targetHz * 0.68)
+          : 26;
 
-      // Stage 3: Low-Pass Filter (cuts high-frequency hiss, sibilance, chatter)
       const lowPass = audioCtx.createBiquadFilter();
       lowPass.type = 'lowpass';
       lowPass.Q.value = 0.707;
-      lowPass.frequency.value = stateRef.current.deepNoiseSuppression
-        ? Math.min(2500, stateRef.current.selectedPreset.maxFreqHz * 1.25)
-        : 2200;
+      lowPass.frequency.value =
+        stateRef.current.tunerMode === 'tune-manual'
+          ? Math.min(2500, targetHz * 1.45)
+          : 2200;
 
       const analyser = audioCtx.createAnalyser();
       analyser.fftSize = 4096;
@@ -395,13 +506,23 @@ export const App: React.FC = () => {
         if (!analyserRef.current || !audioCtxRef.current) return;
         analyserRef.current.getFloatTimeDomainData(buffer);
         const st = stateRef.current;
+        const expectedHz =
+          st.tunerMode === 'tune-manual'
+            ? midiToFrequency(st.targetMidi, st.a4Hz, st.temperament)
+            : null;
+
         const result = pitchProcessorRef.current.detect(
           buffer,
           audioCtxRef.current.sampleRate,
           st.noiseGateDb,
           st.deepNoiseSuppression,
-          st.deepNoiseSuppression ? Math.max(25, st.selectedPreset.minFreqHz * 0.72) : 27.5,
-          st.deepNoiseSuppression ? Math.min(2200, st.selectedPreset.maxFreqHz * 1.35) : 2200
+          st.deepNoiseSuppression
+            ? Math.max(25, st.selectedPreset.minFreqHz * 0.72)
+            : 27.5,
+          st.deepNoiseSuppression
+            ? Math.min(2200, st.selectedPreset.maxFreqHz * 1.35)
+            : 2200,
+          expectedHz
         );
         processDetectedPitch(
           result.frequency,
@@ -428,7 +549,6 @@ export const App: React.FC = () => {
     }
   }, [processDetectedPitch, tunerMode]);
 
-  // Stop mic or tone when switching away from Tuner tab
   useEffect(() => {
     if (activeTool !== 'tuner') {
       if (isMicListening) stopMicrophone();
@@ -437,11 +557,17 @@ export const App: React.FC = () => {
     }
   }, [activeTool, isMicListening, stopMicrophone]);
 
-  // Interactive Simulation Mode (demonstrates Attack -> Sustain Lock -> Decay Hold)
+  // Interactive Simulation Mode (demonstrates String Selection -> Smooth Glide into ±5¢ Zone -> Hold -> Chime!)
   useEffect(() => {
     if (!isSimulating) return;
     let simFrame = 0;
     let rafId: number;
+    holdProgressRef.current = {
+      midi: stateRef.current.targetMidi,
+      progress: 0,
+      chimed: false,
+    };
+    setHoldProgress(0);
 
     const runSimulation = () => {
       simFrame += 1;
@@ -451,28 +577,22 @@ export const App: React.FC = () => {
       const cycle = (simFrame % 360) / 360;
       let simCents = 0;
       let phase: EnvelopePhase = 'sustain';
-      let sustainLocked = true;
+      const sustainLocked = true;
 
-      if (cycle < 0.08) {
-        // Pluck Attack phase (filtered transient)
-        phase = 'attack';
-        sustainLocked = false;
-        simCents = -18 + Math.sin(simFrame * 0.4) * 2;
-      } else if (cycle < 0.48) {
-        // Smoothly turning peg toward 0 cents during Sustain
-        const progress = (cycle - 0.08) / 0.4;
-        simCents = -18 * (1 - progress) + Math.sin(simFrame * 0.15) * 0.5;
-      } else if (cycle < 0.85) {
-        // Locked in Sustain around 0.0 cents
-        simCents = Math.sin(simFrame * 0.1) * 0.25;
+      if (cycle < 0.35) {
+        // Smoothly turning tuning peg from -16 cents into the ±5¢ zone
+        const progress = cycle / 0.35;
+        simCents = -16 * (1 - progress) + Math.sin(simFrame * 0.08) * 0.4;
+      } else if (cycle < 0.88) {
+        // Holding steadily inside ±2 cents small fluctuation window -> triggers Hold Progress 0..100% and Chime!
+        simCents = Math.sin(simFrame * 0.07) * 1.6;
       } else {
-        // Decay tail hold
         phase = 'decay';
-        simCents = 0.1;
+        simCents = 0.2;
       }
 
       const simFreq = baseHz * Math.pow(2, simCents / 1200);
-      const simDb = phase === 'decay' ? -38 : -18 + Math.sin(simFrame * 0.08) * 2;
+      const simDb = phase === 'decay' ? -36 : -18 + Math.sin(simFrame * 0.06) * 1.5;
       processDetectedPitch(
         simFreq,
         st.targetMidi,
@@ -536,6 +656,9 @@ export const App: React.FC = () => {
       const initialStr = firstTuning.strings[0];
       setTargetMidi(initialStr.midi);
       setCurrentFloatMidi(initialStr.midi);
+      holdProgressRef.current = { midi: initialStr.midi, progress: 0, chimed: false };
+      setHoldProgress(0);
+      pitchProcessorRef.current.reset();
       const timbre =
         waveform !== 'auto-instrument'
           ? waveform
@@ -551,14 +674,32 @@ export const App: React.FC = () => {
     setSelectedTuning(tuning);
     setTunedStrings(new Set());
     if (tuning.strings.length > 0) {
-      setTargetMidi(tuning.strings[0].midi);
-      setCurrentFloatMidi(tuning.strings[0].midi);
+      const first = tuning.strings[0];
+      setTargetMidi(first.midi);
+      setCurrentFloatMidi(first.midi);
+      holdProgressRef.current = { midi: first.midi, progress: 0, chimed: false };
+      setHoldProgress(0);
+      pitchProcessorRef.current.reset();
     }
   };
 
+  // Clicking a string locks onto that string first (Requirement 1!)
   const handleSelectString = (str: StringSpec, playPreview: boolean) => {
     setTargetMidi(str.midi);
     setCurrentFloatMidi(str.midi);
+    setCentsOffset(0);
+    holdProgressRef.current = {
+      midi: str.midi,
+      progress: tunedStrings.has(str.midi) ? 100 : 0,
+      chimed: tunedStrings.has(str.midi),
+    };
+    setHoldProgress(tunedStrings.has(str.midi) ? 100 : 0);
+    pitchProcessorRef.current.reset();
+
+    if (tunerMode === 'tune-auto') {
+      setTunerMode('tune-manual');
+    }
+
     const hz = midiToFrequency(str.midi, a4Hz, temperament);
     if (tunerMode === 'sound-it') {
       toneGenRef.current.updateFrequency(hz);
@@ -570,6 +711,10 @@ export const App: React.FC = () => {
   const handleSelectTapeMidi = (midi: number) => {
     setTargetMidi(midi);
     setCurrentFloatMidi(midi);
+    setCentsOffset(0);
+    holdProgressRef.current = { midi, progress: 0, chimed: false };
+    setHoldProgress(0);
+    pitchProcessorRef.current.reset();
     const hz = midiToFrequency(midi, a4Hz, temperament);
     if (tunerMode === 'tune-auto') {
       setTunerMode('tune-manual');
@@ -584,7 +729,7 @@ export const App: React.FC = () => {
     setTemperament('equal');
     setNotationStyle('letter');
     setDampingMode('balanced');
-    setNoiseGateDb(-50);
+    setNoiseGateDb(-48);
     setDeepNoiseSuppression(false);
     setWaveform('auto-instrument');
     setToneVolume(0.65);
@@ -593,52 +738,167 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#070a0f] text-slate-100 flex flex-col justify-between pb-safe">
+    <div
+      className="min-h-screen flex flex-col justify-between pb-safe transition-colors duration-300"
+      style={{
+        backgroundColor: theme.bgPrimary,
+        color: theme.textPrimary,
+      }}
+    >
       {/* Top Header & Multi-Tool Suite Navigation */}
-      <header className="sticky top-0 z-30 backdrop-blur-md bg-[#090d14]/90 border-b border-slate-800/80 px-3 sm:px-6 pt-2.5 pb-2">
-        <div className="max-w-4xl mx-auto space-y-2.5">
-          {/* Row 1: Brand & Quick Action Controls */}
-          <div className="flex items-center justify-between gap-2">
+      <header
+        className="sticky top-0 z-30 backdrop-blur-md border-b px-3 sm:px-6 pt-2.5 pb-2 transition-colors duration-300"
+        style={{
+          backgroundColor: theme.bgHeader,
+          borderColor: theme.borderPrimary,
+        }}
+      >
+        <div className="max-w-7xl mx-auto space-y-2">
+          {/* Row 1: Brand, IP Region/Theme Switcher & Quick Controls */}
+          <div className="flex flex-wrap items-center justify-between gap-2">
             {/* Brand Logo */}
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500/25 to-sky-500/20 border border-emerald-500/40 flex items-center justify-center shadow-[0_0_12px_rgba(16,185,129,0.25)]">
-                <Radio className="w-4 h-4 text-emerald-400" />
+              <div
+                className="w-8 h-8 rounded-xl border flex items-center justify-center"
+                style={{
+                  backgroundColor: `${theme.accentHex}20`,
+                  borderColor: `${theme.accentHex}66`,
+                }}
+              >
+                <Radio className="w-4 h-4" style={{ color: theme.accentHex }} />
               </div>
               <div>
-                <div className="flex items-center gap-1.5">
-                  <h1 className="text-sm sm:text-base font-extrabold tracking-tight text-white">
-                    TuneKit <span className="text-emerald-400 font-mono">Pro</span>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-sm sm:text-base font-extrabold tracking-tight">
+                    TuneKit{' '}
+                    <span className="font-mono" style={{ color: theme.accentHex }}>
+                      Pro
+                    </span>
                   </h1>
-                  <span className="hidden md:inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded bg-slate-800/90 text-slate-400 border border-slate-700/60">
-                    全平台专业音乐工具站
-                  </span>
+
+                  {/* IP Region & Theme/Language Selector Pill */}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setShowRegionMenu((v) => !v)}
+                      className="px-2 py-0.5 rounded-lg text-[11px] font-medium border flex items-center gap-1 transition-all"
+                      style={{
+                        backgroundColor: `${theme.secondaryHex}18`,
+                        borderColor: `${theme.secondaryHex}55`,
+                        color: theme.secondaryHex,
+                      }}
+                      title="根据您的 IP 自动匹配语言与主题配色，点击可手动切换预览"
+                    >
+                      <Globe className="w-3 h-3" />
+                      <span className="truncate max-w-[140px] sm:max-w-none">
+                        {geoLabel}
+                      </span>
+                      <Palette className="w-3 h-3 ml-0.5" />
+                    </button>
+
+                    {showRegionMenu && (
+                      <div
+                        className="absolute left-0 mt-1.5 w-64 rounded-xl border p-2 shadow-2xl z-50 space-y-1 text-xs"
+                        style={{
+                          backgroundColor: theme.bgCard,
+                          borderColor: theme.borderPrimary,
+                          color: theme.textPrimary,
+                        }}
+                      >
+                        <div className="px-2 py-1 text-[10px] text-slate-400 font-semibold border-b border-slate-800/60">
+                          IP 区域主题与多语言切换 (Auto-IP & Manual)
+                        </div>
+                        {[
+                          {
+                            pid: 'emerald-cn' as ThemePaletteId,
+                            l: 'zh' as SupportedLang,
+                            label: '🇨🇳 CN 华语区 · 东方翡翠暗黑 (中文)',
+                          },
+                          {
+                            pid: 'cobalt-us' as ThemePaletteId,
+                            l: 'en' as SupportedLang,
+                            label: '🇺🇸 US 北美区 · 深空电光蓝 (English)',
+                          },
+                          {
+                            pid: 'amber-eu' as ThemePaletteId,
+                            l: 'en' as SupportedLang,
+                            label: '🇪🇺 EU 欧洲区 · 复古电子管暖金 (English)',
+                          },
+                          {
+                            pid: 'violet-jp' as ThemePaletteId,
+                            l: 'ja' as SupportedLang,
+                            label: '🇯🇵 JP 日韩区 · 东京极夜紫晶 (日本語)',
+                          },
+                          {
+                            pid: 'light-studio' as ThemePaletteId,
+                            l: lang,
+                            label: '☀️ Daylight · 日间护眼浅色模式',
+                          },
+                        ].map((opt) => (
+                          <button
+                            key={opt.pid}
+                            type="button"
+                            onClick={() => {
+                              setPaletteId(opt.pid);
+                              setLang(opt.l);
+                              setGeoLabel(THEME_PALETTES[opt.pid].regionBadge);
+                              setShowRegionMenu(false);
+                            }}
+                            className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-slate-800/40 flex items-center justify-between"
+                            style={{
+                              backgroundColor:
+                                paletteId === opt.pid
+                                  ? `${theme.accentHex}22`
+                                  : 'transparent',
+                            }}
+                          >
+                            <span>{opt.label}</span>
+                            <span
+                              className="w-3 h-3 rounded-full border border-white/20 shrink-0"
+                              style={{
+                                backgroundColor: THEME_PALETTES[opt.pid].accentHex,
+                              }}
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <p className="text-[10px] text-slate-400 hidden sm:block">
-                  延音稳态锁频调音器 · 物理建模原声 · 节拍器 · 和弦库 · 练耳
+                  {t.subtitle}
                 </p>
               </div>
             </div>
 
-            {/* Right Controls */}
+            {/* Right Action Controls */}
             <div className="flex items-center gap-1.5">
-              {/* Noise Suppression Quick Toggle */}
               {activeTool === 'tuner' && (
                 <button
                   type="button"
                   onClick={() => setDeepNoiseSuppression((v) => !v)}
-                  className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold border flex items-center gap-1 transition-all ${
-                    deepNoiseSuppression
-                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 shadow-[0_0_12px_rgba(16,185,129,0.25)]'
-                      : 'bg-slate-900/90 text-slate-400 border-slate-800 hover:text-slate-200'
-                  }`}
-                  title="开启硬件级带通滤波与谐波抗噪，过滤嘈杂环境杂音与说话声"
+                  className="px-2.5 py-1.5 rounded-xl text-xs font-semibold border flex items-center gap-1 transition-all"
+                  style={{
+                    backgroundColor: deepNoiseSuppression
+                      ? `${theme.accentHex}22`
+                      : theme.bgCard,
+                    borderColor: deepNoiseSuppression
+                      ? theme.accentHex
+                      : theme.borderPrimary,
+                    color: deepNoiseSuppression
+                      ? theme.accentHex
+                      : theme.textSecondary,
+                  }}
                 >
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>{deepNoiseSuppression ? '强效降噪中' : '抗噪降噪'}</span>
+                  <span>
+                    {deepNoiseSuppression
+                      ? t.noiseReductionOn
+                      : t.noiseReductionOff}
+                  </span>
                 </button>
               )}
 
-              {/* Demo Simulation Button */}
               {activeTool === 'tuner' && (
                 <button
                   type="button"
@@ -650,25 +910,28 @@ export const App: React.FC = () => {
                       setEnvelopePhase('idle');
                     } else {
                       if (isMicListening) stopMicrophone();
-                      if (tunerMode === 'sound-it') setTunerMode('tune-auto');
+                      if (tunerMode === 'sound-it') setTunerMode('tune-manual');
                       setIsSimulating(true);
                     }
                   }}
-                  className={`px-2.5 py-1.5 rounded-xl text-xs font-medium border flex items-center gap-1 transition-all ${
-                    isSimulating
-                      ? 'bg-amber-500/20 text-amber-300 border-amber-500/50'
-                      : 'bg-slate-900/90 text-slate-400 border-slate-800 hover:text-slate-200'
-                  }`}
-                  title="演示拨弦瞬态过滤与延音稳态锁定过程"
+                  className="px-2.5 py-1.5 rounded-xl text-xs font-medium border flex items-center gap-1 transition-all"
+                  style={{
+                    backgroundColor: isSimulating
+                      ? `${theme.warnHex}22`
+                      : theme.bgCard,
+                    borderColor: isSimulating
+                      ? theme.warnHex
+                      : theme.borderPrimary,
+                    color: isSimulating ? theme.warnHex : theme.textSecondary,
+                  }}
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">
-                    {isSimulating ? '停止演示' : '模拟调弦'}
+                    {isSimulating ? t.simOn : t.simOff}
                   </span>
                 </button>
               )}
 
-              {/* Primary Microphone Toggle Button */}
               {activeTool === 'tuner' && (
                 <button
                   type="button"
@@ -679,32 +942,39 @@ export const App: React.FC = () => {
                       startMicrophone();
                     }
                   }}
-                  className={`px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all ${
-                    isMicListening
-                      ? 'bg-emerald-500 text-slate-950 shadow-[0_0_20px_rgba(16,185,129,0.45)] hover:bg-emerald-400'
-                      : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 hover:bg-emerald-500/30'
-                  }`}
+                  className="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 border transition-all"
+                  style={{
+                    backgroundColor: isMicListening
+                      ? theme.accentHex
+                      : `${theme.accentHex}22`,
+                    borderColor: theme.accentHex,
+                    color: isMicListening ? '#022c22' : theme.accentHex,
+                  }}
                 >
                   {isMicListening ? (
                     <>
                       <Mic className="w-4 h-4 animate-pulse" />
-                      <span>正在测音</span>
+                      <span>{t.micOn}</span>
                     </>
                   ) : (
                     <>
                       <MicOff className="w-4 h-4" />
-                      <span>开启麦克风</span>
+                      <span>{t.micOff}</span>
                     </>
                   )}
                 </button>
               )}
 
-              {/* Settings Button */}
               <button
                 type="button"
                 onClick={() => setIsSettingsOpen(true)}
-                className="p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-800 transition-colors"
-                title="声学音色、降噪与律制设置"
+                className="p-2 rounded-xl border transition-colors"
+                style={{
+                  backgroundColor: theme.bgCard,
+                  borderColor: theme.borderPrimary,
+                  color: theme.textPrimary,
+                }}
+                title="Settings"
               >
                 <Sliders className="w-4 h-4" />
               </button>
@@ -713,15 +983,15 @@ export const App: React.FC = () => {
 
           {/* Row 2: 5-in-1 Music Tool Suite Switcher Tabs */}
           <nav
-            aria-label="音乐工具导航"
+            aria-label="Music Tools Navigation"
             className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-0.5"
           >
             {[
-              { id: 'tuner', label: '专业调音器', icon: Gauge },
-              { id: 'metronome', label: '节拍器 & 测速', icon: Timer },
-              { id: 'chords', label: '和弦指法库', icon: Guitar },
-              { id: 'ear-trainer', label: '音感练耳 & 音叉', icon: Headphones },
-              { id: 'decibel', label: '环境分贝仪', icon: BarChart3 },
+              { id: 'tuner', label: t.tabTuner, icon: Gauge },
+              { id: 'metronome', label: t.tabMetronome, icon: Timer },
+              { id: 'chords', label: t.tabChords, icon: Guitar },
+              { id: 'ear-trainer', label: t.tabEar, icon: Headphones },
+              { id: 'decibel', label: t.tabDecibel, icon: BarChart3 },
             ].map((tab) => {
               const IconComp = tab.icon;
               const active = activeTool === tab.id;
@@ -730,11 +1000,12 @@ export const App: React.FC = () => {
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTool(tab.id as ActiveToolTab)}
-                  className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all ${
-                    active
-                      ? 'bg-emerald-500 text-slate-950 border-emerald-400 shadow-[0_0_14px_rgba(16,185,129,0.3)]'
-                      : 'bg-slate-900/70 text-slate-400 border-slate-800/90 hover:bg-slate-800 hover:text-slate-200'
-                  }`}
+                  className="shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 border transition-all"
+                  style={{
+                    backgroundColor: active ? theme.accentHex : theme.bgCard,
+                    borderColor: active ? theme.accentHex : theme.borderPrimary,
+                    color: active ? '#022c22' : theme.textSecondary,
+                  }}
                 >
                   <IconComp className="w-3.5 h-3.5" />
                   <span>{tab.label}</span>
@@ -745,22 +1016,21 @@ export const App: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Content Container */}
-      <main className="flex-1 max-w-4xl w-full mx-auto px-3 sm:px-6 py-3 flex flex-col justify-between gap-3">
-        {/* Tool 1: Precision Instrument Tuner */}
+      {/* Main Responsive Workbench Content Container (max-w-7xl with 12-col Desktop Workbench!) */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-3 flex flex-col justify-between gap-3">
         {activeTool === 'tuner' && (
           <>
-            {/* Smart Noisy Environment Alert Banner (Requirement 4!) */}
+            {/* Smart Noisy Environment Alert Banner */}
             {isMicListening &&
               isNoisyEnvironment &&
               !deepNoiseSuppression &&
               !noiseAlertDismissed && (
-                <div className="rounded-xl bg-amber-950/75 border border-amber-500/50 px-3.5 py-2.5 text-xs text-amber-100 flex flex-wrap items-center justify-between gap-2 shadow-lg animate-fadeIn">
+                <div className="rounded-xl bg-amber-950/80 border border-amber-500/50 px-3.5 py-2.5 text-xs text-amber-100 flex flex-wrap items-center justify-between gap-2 shadow-lg animate-fadeIn">
                   <div className="flex items-center gap-2">
                     <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" />
                     <span>
-                      <strong>检测到周围环境较嘈杂：</strong>
-                      外界谈话或背景噪音可能影响拾音稳定性，建议开启针对当前乐器频段的强效带通降噪。
+                      <strong>{t.noisyAlertTitle}</strong>
+                      {t.noisyAlertDesc}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
@@ -769,20 +1039,19 @@ export const App: React.FC = () => {
                       onClick={() => setDeepNoiseSuppression(true)}
                       className="px-3 py-1 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold transition-colors"
                     >
-                      一键开启强效降噪
+                      {t.noisyAlertBtn}
                     </button>
                     <button
                       type="button"
                       onClick={() => setNoiseAlertDismissed(true)}
                       className="text-amber-300 hover:text-white px-1.5"
                     >
-                      忽略
+                      {t.ignoreBtn}
                     </button>
                   </div>
                 </div>
               )}
 
-            {/* Microphone Permission Error Banner */}
             {micError && (
               <div className="rounded-xl bg-rose-950/60 border border-rose-500/40 px-3.5 py-2 text-xs text-rose-200 flex items-center justify-between gap-2">
                 <span>{micError}</span>
@@ -791,156 +1060,200 @@ export const App: React.FC = () => {
                   onClick={() => setMicError(null)}
                   className="text-rose-400 hover:text-white shrink-0 font-semibold"
                 >
-                  关闭
+                  ✕
                 </button>
               </div>
             )}
 
-            {/* 1. Dual-Scale Damped Analog Meter with Sustain Lock */}
-            <GStringsDialMeter
-              targetNote={targetNote}
-              measuredFreq={measuredFreq}
-              centsOffset={centsOffset}
-              hasSignal={hasSignal}
-              clarity={clarity}
-              rmsDb={rmsDb}
-              envelopePhase={envelopePhase}
-              isSustainLocked={isSustainLocked}
-              deepNoiseSuppression={deepNoiseSuppression}
-              dampingMode={dampingMode}
-              notationStyle={notationStyle}
-              showPitchTrail={showPitchTrail}
-              matchedStringLabel={
-                matchedString
-                  ? `${matchedString.label} · ${matchedString.description || ''}`
-                  : null
-              }
-              activeTimbreLabel={activeTimbreLabel}
-              isManualLocked={tunerMode === 'tune-manual'}
-              isSoundItMode={tunerMode === 'sound-it'}
-            />
-
-            {/* 2. Scrolling Note & Frequency Tape */}
-            <ScrollingNoteTape
-              currentFloatMidi={currentFloatMidi}
-              targetMidi={targetMidi}
-              a4Hz={a4Hz}
-              temperament={temperament}
-              notationStyle={notationStyle}
-              instrumentMidis={instrumentMidis}
-              onSelectMidi={handleSelectTapeMidi}
-              hasSignal={hasSignal}
-              isSoundItMode={tunerMode === 'sound-it'}
-            />
-
-            {/* 3. Instrument Presets & Interactive String Selector */}
-            <InstrumentStringsPanel
-              selectedPreset={selectedPreset}
-              selectedTuning={selectedTuning}
-              targetMidi={targetMidi}
-              a4Hz={a4Hz}
-              temperament={temperament}
-              snapToStringsOnly={snapToStringsOnly}
-              isManualLocked={tunerMode === 'tune-manual'}
-              tunedStrings={tunedStrings}
-              onSelectPreset={handleSelectPreset}
-              onSelectTuning={handleSelectTuning}
-              onSelectString={handleSelectString}
-              onToggleSnapToStrings={() => setSnapToStringsOnly((v) => !v)}
-              onResetTunedStrings={() => setTunedStrings(new Set())}
-            />
-
-            {/* 4. 3-Button Bottom Mode Bar (Tune Auto | Tune Manual | Sound It) */}
-            <div className="grid grid-cols-3 gap-2 pt-0.5">
-              <button
-                type="button"
-                onClick={() => {
-                  setTunerMode('tune-auto');
-                  if (!isMicListening && !isSimulating) {
-                    startMicrophone();
+            {/* Responsive Desktop 2-Column Workbench (Left 7 cols: Dial + Tape + Modes | Right 5 cols: Instrument String Selector) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+              {/* Left Column (7/12 on Desktop): Analog Dial Meter + Scrolling Tape + Mode Buttons */}
+              <div className="lg:col-span-7 space-y-3">
+                <GStringsDialMeter
+                  targetNote={targetNote}
+                  measuredFreq={measuredFreq}
+                  centsOffset={centsOffset}
+                  hasSignal={hasSignal}
+                  clarity={clarity}
+                  rmsDb={rmsDb}
+                  envelopePhase={envelopePhase}
+                  isSustainLocked={isSustainLocked}
+                  deepNoiseSuppression={deepNoiseSuppression}
+                  dampingMode={dampingMode}
+                  notationStyle={notationStyle}
+                  showPitchTrail={showPitchTrail}
+                  matchedStringLabel={
+                    matchedString
+                      ? `${matchedString.label} · ${matchedString.description || ''}`
+                      : null
                   }
-                }}
-                className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl font-semibold text-xs sm:text-sm border transition-all ${
-                  tunerMode === 'tune-auto'
-                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/60 shadow-[0_0_18px_rgba(16,185,129,0.2)]'
-                    : 'bg-[#0d121b] text-slate-400 border-slate-800 hover:bg-slate-900 hover:text-slate-200'
-                }`}
-              >
-                <Wand2 className="w-4 h-4 text-emerald-400" />
-                <div className="text-center sm:text-left">
-                  <div>Tune Auto</div>
-                  <div className="text-[10px] font-normal opacity-75">
-                    延音稳态自动测音
-                  </div>
-                </div>
-              </button>
+                  activeTimbreLabel={activeTimbreLabel}
+                  isManualLocked={tunerMode === 'tune-manual'}
+                  isSoundItMode={tunerMode === 'sound-it'}
+                  holdProgress={holdProgress}
+                  isCurrentStringTuned={tunedStrings.has(targetMidi)}
+                  theme={theme}
+                  lang={lang}
+                />
 
-              <button
-                type="button"
-                onClick={() => {
-                  setTunerMode('tune-manual');
-                  if (!isMicListening && !isSimulating) {
-                    startMicrophone();
-                  }
-                }}
-                className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl font-semibold text-xs sm:text-sm border transition-all ${
-                  tunerMode === 'tune-manual'
-                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/60 shadow-[0_0_18px_rgba(245,158,11,0.2)]'
-                    : 'bg-[#0d121b] text-slate-400 border-slate-800 hover:bg-slate-900 hover:text-slate-200'
-                }`}
-              >
-                <Crosshair className="w-4 h-4 text-amber-400" />
-                <div className="text-center sm:text-left">
-                  <div>Tune Manual</div>
-                  <div className="text-[10px] font-normal opacity-75">
-                    手动锁弦窄带抗噪
-                  </div>
-                </div>
-              </button>
+                <ScrollingNoteTape
+                  currentFloatMidi={currentFloatMidi}
+                  targetMidi={targetMidi}
+                  a4Hz={a4Hz}
+                  temperament={temperament}
+                  notationStyle={notationStyle}
+                  instrumentMidis={instrumentMidis}
+                  onSelectMidi={handleSelectTapeMidi}
+                  hasSignal={hasSignal}
+                  isSoundItMode={tunerMode === 'sound-it'}
+                />
 
-              <button
-                type="button"
-                onClick={() => {
-                  if (tunerMode === 'sound-it') {
-                    setTunerMode('tune-auto');
-                  } else {
-                    setTunerMode('sound-it');
-                  }
-                }}
-                className={`flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl font-semibold text-xs sm:text-sm border transition-all ${
-                  tunerMode === 'sound-it'
-                    ? 'bg-sky-500/25 text-sky-200 border-sky-400/70 shadow-[0_0_20px_rgba(56,189,248,0.3)]'
-                    : 'bg-[#0d121b] text-slate-400 border-slate-800 hover:bg-slate-900 hover:text-slate-200'
-                }`}
-              >
-                {tunerMode === 'sound-it' ? (
-                  <Volume2 className="w-4 h-4 text-sky-300 animate-bounce" />
-                ) : (
-                  <VolumeX className="w-4 h-4 text-sky-400" />
-                )}
-                <div className="text-center sm:text-left">
-                  <div>Sound It</div>
-                  <div className="text-[10px] font-normal opacity-75">
-                    {tunerMode === 'sound-it'
-                      ? `停止${activeTimbreLabel}`
-                      : `播放${activeTimbreLabel}耳调`}
-                  </div>
+                {/* 3-Button Mode Bar (Defaulting to String-First Manual Selection!) */}
+                <div className="grid grid-cols-3 gap-2">
+                  {/* Mode 1 (Recommended): Select String First -> Tune */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTunerMode('tune-manual');
+                      if (!isMicListening && !isSimulating) {
+                        startMicrophone();
+                      }
+                    }}
+                    className="flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm border transition-all"
+                    style={{
+                      backgroundColor:
+                        tunerMode === 'tune-manual'
+                          ? `${theme.accentHex}24`
+                          : theme.bgCard,
+                      borderColor:
+                        tunerMode === 'tune-manual'
+                          ? theme.accentHex
+                          : theme.borderPrimary,
+                      color:
+                        tunerMode === 'tune-manual'
+                          ? theme.accentHex
+                          : theme.textSecondary,
+                    }}
+                  >
+                    <Crosshair className="w-4 h-4 shrink-0" />
+                    <div className="text-center sm:text-left">
+                      <div>{t.modeManualTitle}</div>
+                      <div className="text-[10px] font-normal opacity-80">
+                        {t.modeManualSub}
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* Mode 2: Auto Detect */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTunerMode('tune-auto');
+                      if (!isMicListening && !isSimulating) {
+                        startMicrophone();
+                      }
+                    }}
+                    className="flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm border transition-all"
+                    style={{
+                      backgroundColor:
+                        tunerMode === 'tune-auto'
+                          ? `${theme.secondaryHex}24`
+                          : theme.bgCard,
+                      borderColor:
+                        tunerMode === 'tune-auto'
+                          ? theme.secondaryHex
+                          : theme.borderPrimary,
+                      color:
+                        tunerMode === 'tune-auto'
+                          ? theme.secondaryHex
+                          : theme.textSecondary,
+                    }}
+                  >
+                    <Wand2 className="w-4 h-4 shrink-0" />
+                    <div className="text-center sm:text-left">
+                      <div>{t.modeAutoTitle}</div>
+                      <div className="text-[10px] font-normal opacity-80">
+                        {t.modeAutoSub}
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* Mode 3: Sound It Reference Tone */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (tunerMode === 'sound-it') {
+                        setTunerMode('tune-manual');
+                      } else {
+                        setTunerMode('sound-it');
+                      }
+                    }}
+                    className="flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm border transition-all"
+                    style={{
+                      backgroundColor:
+                        tunerMode === 'sound-it'
+                          ? `${theme.warnHex}24`
+                          : theme.bgCard,
+                      borderColor:
+                        tunerMode === 'sound-it'
+                          ? theme.warnHex
+                          : theme.borderPrimary,
+                      color:
+                        tunerMode === 'sound-it'
+                          ? theme.warnHex
+                          : theme.textSecondary,
+                    }}
+                  >
+                    {tunerMode === 'sound-it' ? (
+                      <Volume2 className="w-4 h-4 shrink-0 animate-bounce" />
+                    ) : (
+                      <VolumeX className="w-4 h-4 shrink-0" />
+                    )}
+                    <div className="text-center sm:text-left">
+                      <div>{t.modeSoundTitle}</div>
+                      <div className="text-[10px] font-normal opacity-80">
+                        {t.modeSoundSub}
+                      </div>
+                    </div>
+                  </button>
                 </div>
-              </button>
+              </div>
+
+              {/* Right Column (5/12 on Desktop): Step 1 Instrument & String Selector Panel */}
+              <div className="lg:col-span-5">
+                <InstrumentStringsPanel
+                  selectedPreset={selectedPreset}
+                  selectedTuning={selectedTuning}
+                  targetMidi={targetMidi}
+                  a4Hz={a4Hz}
+                  temperament={temperament}
+                  isManualLocked={tunerMode === 'tune-manual'}
+                  autoAdvanceNextString={autoAdvanceNextString}
+                  tunedStrings={tunedStrings}
+                  theme={theme}
+                  lang={lang}
+                  onSelectPreset={handleSelectPreset}
+                  onSelectTuning={handleSelectTuning}
+                  onSelectString={handleSelectString}
+                  onToggleAutoAdvance={() => setAutoAdvanceNextString((v) => !v)}
+                  onResetTunedStrings={() => {
+                    setTunedStrings(new Set());
+                    holdProgressRef.current = {
+                      midi: targetMidi,
+                      progress: 0,
+                      chimed: false,
+                    };
+                    setHoldProgress(0);
+                  }}
+                />
+              </div>
             </div>
           </>
         )}
 
-        {/* Tool 2: Visual Pendulum Metronome & Tap BPM */}
         {activeTool === 'metronome' && <MetronomeTool />}
-
-        {/* Tool 3: Interactive Guitar & Ukulele Chord Library */}
         {activeTool === 'chords' && <ChordLibraryTool a4Hz={a4Hz} />}
-
-        {/* Tool 4: Pitch Ear Trainer & Arbitrary Frequency Generator */}
         {activeTool === 'ear-trainer' && <EarTrainerTool a4Hz={a4Hz} />}
-
-        {/* Tool 5: Acoustic Decibel & Room Noise Analyzer */}
         {activeTool === 'decibel' && <DecibelMeterTool />}
       </main>
 

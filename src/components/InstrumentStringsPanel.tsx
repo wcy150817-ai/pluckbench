@@ -7,7 +7,8 @@ import {
   TemperamentId,
   midiToFrequency,
 } from '../data/instruments';
-import { CheckCircle2, Lock, Unlock, Volume2, RotateCcw } from 'lucide-react';
+import { ThemePalette, SupportedLang, UI_TRANSLATIONS } from '../i18n/localeTheme';
+import { CheckCircle2, Lock, Volume2, RotateCcw, ArrowRight } from 'lucide-react';
 
 interface InstrumentStringsPanelProps {
   selectedPreset: InstrumentPreset;
@@ -15,13 +16,15 @@ interface InstrumentStringsPanelProps {
   targetMidi: number;
   a4Hz: number;
   temperament: TemperamentId;
-  snapToStringsOnly: boolean;
   isManualLocked: boolean;
+  autoAdvanceNextString: boolean;
   tunedStrings: Set<number>;
+  theme: ThemePalette;
+  lang: SupportedLang;
   onSelectPreset: (preset: InstrumentPreset) => void;
   onSelectTuning: (tuning: TuningVariant) => void;
   onSelectString: (str: StringSpec, playPreview: boolean) => void;
-  onToggleSnapToStrings: () => void;
+  onToggleAutoAdvance: () => void;
   onResetTunedStrings: () => void;
 }
 
@@ -31,19 +34,61 @@ export const InstrumentStringsPanel: React.FC<InstrumentStringsPanelProps> = ({
   targetMidi,
   a4Hz,
   temperament,
-  snapToStringsOnly,
   isManualLocked,
+  autoAdvanceNextString,
   tunedStrings,
+  theme,
+  lang,
   onSelectPreset,
   onSelectTuning,
   onSelectString,
-  onToggleSnapToStrings,
+  onToggleAutoAdvance,
   onResetTunedStrings,
 }) => {
-  const isChromatic = selectedPreset.id === 'chromatic';
+  const t = UI_TRANSLATIONS[lang];
+  const allTuned =
+    selectedTuning.strings.length > 0 &&
+    selectedTuning.strings.every((s) => tunedStrings.has(s.midi));
 
   return (
-    <div className="w-full rounded-2xl bg-[#0d121b] border border-slate-800/90 p-3 sm:p-4 shadow-lg space-y-3">
+    <div
+      className="w-full rounded-2xl border p-3.5 sm:p-4 shadow-lg space-y-3.5 transition-colors duration-300"
+      style={{
+        backgroundColor: theme.bgCard,
+        borderColor: theme.borderPrimary,
+      }}
+    >
+      {/* Top Step Guidance Banner (String-First Workflow!) */}
+      <div
+        className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 rounded-xl border text-xs"
+        style={{
+          backgroundColor: `${theme.accentHex}14`,
+          borderColor: `${theme.accentHex}44`,
+          color: theme.textPrimary,
+        }}
+      >
+        <div className="flex items-center gap-1.5 font-semibold">
+          <Lock className="w-3.5 h-3.5 shrink-0" style={{ color: theme.accentHex }} />
+          <span>{t.step1SelectString}</span>
+        </div>
+
+        <label className="flex items-center gap-1.5 cursor-pointer text-[11px] opacity-90">
+          <input
+            type="checkbox"
+            checked={autoAdvanceNextString}
+            onChange={onToggleAutoAdvance}
+            className="rounded w-3.5 h-3.5 accent-emerald-500"
+          />
+          <span>
+            {lang === 'en'
+              ? 'Auto-advance after chime'
+              : lang === 'ja'
+              ? '完了後に次の弦へ自動移動'
+              : '调准响铃后自动切下一根弦'}
+          </span>
+        </label>
+      </div>
+
       {/* Row 1: Instrument Preset Tabs */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
         {INSTRUMENT_PRESETS.map((preset) => {
@@ -53,11 +98,16 @@ export const InstrumentStringsPanel: React.FC<InstrumentStringsPanelProps> = ({
               key={preset.id}
               type="button"
               onClick={() => onSelectPreset(preset)}
-              className={`shrink-0 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 ${
-                active
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 shadow-[0_0_12px_rgba(16,185,129,0.2)]'
-                  : 'bg-slate-900/80 text-slate-400 border border-slate-800 hover:bg-slate-800/80 hover:text-slate-200'
-              }`}
+              className="shrink-0 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold border transition-all flex items-center gap-1.5"
+              style={{
+                backgroundColor: active
+                  ? `${theme.accentHex}24`
+                  : theme.isLight
+                  ? '#f1f5f9'
+                  : 'rgba(15,23,42,0.8)',
+                borderColor: active ? theme.accentHex : theme.borderPrimary,
+                color: active ? theme.accentHex : theme.textSecondary,
+              }}
             >
               <span>{preset.name}</span>
             </button>
@@ -65,84 +115,76 @@ export const InstrumentStringsPanel: React.FC<InstrumentStringsPanelProps> = ({
         })}
       </div>
 
-      {/* Row 2: Tuning Variant Selector + String Snap Mode Toggle */}
-      <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5 border-t border-slate-800/60">
-        <div className="flex items-center gap-2 flex-1 min-w-[200px]">
-          <span className="text-xs text-slate-400 shrink-0">定弦方案:</span>
+      {/* Row 2: Tuning Variant Selector + Reset Progress */}
+      <div
+        className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t"
+        style={{ borderColor: theme.borderPrimary }}
+      >
+        <div className="flex items-center gap-2 flex-1 min-w-[190px]">
+          <span className="text-xs text-slate-400 shrink-0">
+            {t.tuningVariantLabel}
+          </span>
           {selectedPreset.tunings.length > 1 ? (
             <select
               value={selectedTuning.id}
               onChange={(e) => {
                 const found = selectedPreset.tunings.find(
-                  (t) => t.id === e.target.value
+                  (tv) => tv.id === e.target.value
                 );
                 if (found) onSelectTuning(found);
               }}
-              className="flex-1 bg-slate-900 text-slate-100 text-xs sm:text-sm rounded-lg px-2.5 py-1.5 border border-slate-700/80 focus:outline-none focus:border-emerald-500"
+              className="flex-1 text-xs sm:text-sm rounded-lg px-2.5 py-1.5 border focus:outline-none"
+              style={{
+                backgroundColor: theme.isLight ? '#f8fafc' : '#0f172a',
+                color: theme.textPrimary,
+                borderColor: theme.borderPrimary,
+              }}
             >
-              {selectedPreset.tunings.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
+              {selectedPreset.tunings.map((tv) => (
+                <option key={tv.id} value={tv.id}>
+                  {tv.name}
                 </option>
               ))}
             </select>
           ) : (
-            <span className="text-xs sm:text-sm font-medium text-slate-200">
+            <span
+              className="text-xs sm:text-sm font-medium"
+              style={{ color: theme.textPrimary }}
+            >
               {selectedTuning.name}
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-2">
-          {!isChromatic && (
-            <button
-              type="button"
-              onClick={onToggleSnapToStrings}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${
-                snapToStringsOnly
-                  ? 'bg-sky-500/15 text-sky-300 border-sky-500/40'
-                  : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200'
-              }`}
-              title="开启后，自动测音将优先匹配当前乐器的各根琴弦，防止杂音跳弦"
-            >
-              {snapToStringsOnly ? (
-                <>
-                  <Lock className="w-3 h-3" />
-                  <span>智能吸附琴弦</span>
-                </>
-              ) : (
-                <>
-                  <Unlock className="w-3 h-3" />
-                  <span>半音自由识别</span>
-                </>
-              )}
-            </button>
-          )}
-
-          {tunedStrings.size > 0 && (
-            <button
-              type="button"
-              onClick={onResetTunedStrings}
-              className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-slate-400 hover:text-slate-200 bg-slate-900 border border-slate-800"
-              title="重置已校准标记"
-            >
-              <RotateCcw className="w-3 h-3" />
-              <span>重置进度 ({tunedStrings.size}/{selectedTuning.strings.length})</span>
-            </button>
-          )}
-        </div>
+        {tunedStrings.size > 0 && (
+          <button
+            type="button"
+            onClick={onResetTunedStrings}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs border transition-colors"
+            style={{
+              backgroundColor: theme.isLight ? '#f1f5f9' : '#0f172a',
+              borderColor: theme.borderPrimary,
+              color: theme.textSecondary,
+            }}
+          >
+            <RotateCcw className="w-3 h-3" />
+            <span>
+              {tunedStrings.size}/{selectedTuning.strings.length}
+            </span>
+          </button>
+        )}
       </div>
 
-      {/* Row 3: Interactive String Buttons Grid / Scrollable List */}
+      {/* Row 3: Interactive String Buttons Grid (Click to Lock String & Audition!) */}
       <div
         className={`grid gap-2 ${
           selectedTuning.strings.length > 8
-            ? 'grid-cols-3 sm:grid-cols-5 md:grid-cols-7 max-h-44 overflow-y-auto pr-1'
+            ? 'grid-cols-3 sm:grid-cols-4 md:grid-cols-5 max-h-56 overflow-y-auto pr-1'
             : selectedTuning.strings.length === 2
             ? 'grid-cols-2'
             : selectedTuning.strings.length === 4
             ? 'grid-cols-2 sm:grid-cols-4'
-            : 'grid-cols-3 sm:grid-cols-6'
+            : 'grid-cols-2 sm:grid-cols-3'
         }`}
       >
         {selectedTuning.strings.map((str) => {
@@ -156,47 +198,72 @@ export const InstrumentStringsPanel: React.FC<InstrumentStringsPanelProps> = ({
               key={`${str.stringNumber}-${str.midi}`}
               type="button"
               onClick={() => onSelectString(str, true)}
-              className={`group relative flex flex-col items-start justify-between p-2.5 rounded-xl border text-left transition-all ${
-                isCurrentTarget
-                  ? 'bg-emerald-500/20 border-emerald-400/70 shadow-[0_0_16px_rgba(16,185,129,0.22)]'
+              className="group relative flex flex-col items-start justify-between p-2.5 sm:p-3 rounded-xl border text-left transition-all"
+              style={{
+                backgroundColor: isCurrentTarget
+                  ? `${theme.accentHex}22`
+                  : isTuned
+                  ? `${theme.accentHex}0d`
                   : isGuzhengGreen
-                  ? 'bg-emerald-950/30 border-emerald-800/60 hover:border-emerald-600/70'
-                  : 'bg-slate-900/75 border-slate-800/90 hover:bg-slate-800/70 hover:border-slate-700'
-              }`}
+                  ? 'rgba(6, 78, 59, 0.25)'
+                  : theme.isLight
+                  ? '#f8fafc'
+                  : 'rgba(15, 23, 42, 0.78)',
+                borderColor: isCurrentTarget
+                  ? theme.accentHex
+                  : isTuned
+                  ? `${theme.accentHex}66`
+                  : theme.borderPrimary,
+                boxShadow: isCurrentTarget
+                  ? `0 0 16px ${theme.accentHex}33`
+                  : 'none',
+              }}
             >
               <div className="flex items-center justify-between w-full gap-1">
                 <span
-                  className={`text-xs font-bold tracking-tight ${
-                    isCurrentTarget
-                      ? 'text-emerald-300'
-                      : isGuzhengGreen
-                      ? 'text-emerald-400'
-                      : 'text-slate-200'
-                  }`}
+                  className="text-xs sm:text-sm font-bold tracking-tight"
+                  style={{
+                    color: isCurrentTarget
+                      ? theme.accentHex
+                      : theme.textPrimary,
+                  }}
                 >
                   {str.label}
                 </span>
                 <div className="flex items-center gap-1">
                   {isTuned && (
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <CheckCircle2
+                      className="w-4 h-4 shrink-0"
+                      style={{ color: theme.accentHex }}
+                    />
                   )}
                   <Volume2
-                    className={`w-3 h-3 transition-opacity ${
+                    className={`w-3.5 h-3.5 transition-opacity ${
                       isCurrentTarget
-                        ? 'text-emerald-300 opacity-90'
-                        : 'text-slate-500 opacity-0 group-hover:opacity-100'
+                        ? 'opacity-90'
+                        : 'opacity-40 group-hover:opacity-100'
                     }`}
+                    style={{ color: theme.secondaryHex }}
                   />
                 </div>
               </div>
 
-              <div className="mt-1 flex items-baseline justify-between w-full">
-                <span className="font-mono text-[11px] text-sky-400 font-medium">
+              <div className="mt-1.5 flex items-center justify-between w-full">
+                <span
+                  className="font-mono text-[11px] font-semibold"
+                  style={{ color: theme.secondaryHex }}
+                >
                   {exactHz.toFixed(1)} Hz
                 </span>
-                {isCurrentTarget && isManualLocked && (
-                  <span className="text-[9px] px-1 rounded bg-amber-500/25 text-amber-300">
-                    锁定
+                {isCurrentTarget && (
+                  <span
+                    className="text-[10px] px-1.5 py-0.5 rounded font-bold"
+                    style={{
+                      backgroundColor: `${theme.accentHex}30`,
+                      color: theme.accentHex,
+                    }}
+                  >
+                    {isManualLocked ? t.stringLockedBadge : '当前弦'}
                   </span>
                 )}
               </div>
@@ -204,6 +271,41 @@ export const InstrumentStringsPanel: React.FC<InstrumentStringsPanelProps> = ({
           );
         })}
       </div>
+
+      {/* All Tuned Banner or Next Untuned String Shortcut */}
+      {allTuned ? (
+        <div
+          className="px-3.5 py-2.5 rounded-xl border text-xs font-bold text-center"
+          style={{
+            backgroundColor: `${theme.accentHex}20`,
+            borderColor: theme.accentHex,
+            color: theme.accentHex,
+          }}
+        >
+          {t.allStringsTuned}
+        </div>
+      ) : (
+        tunedStrings.has(targetMidi) && (
+          <button
+            type="button"
+            onClick={() => {
+              const untuned = selectedTuning.strings.find(
+                (s) => !tunedStrings.has(s.midi)
+              );
+              if (untuned) onSelectString(untuned, true);
+            }}
+            className="w-full py-2 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all"
+            style={{
+              backgroundColor: `${theme.secondaryHex}20`,
+              borderColor: theme.secondaryHex,
+              color: theme.secondaryHex,
+            }}
+          >
+            <span>{t.nextUntunedString}</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        )
+      )}
     </div>
   );
 };

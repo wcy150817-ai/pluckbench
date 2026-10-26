@@ -563,22 +563,47 @@ export class ReferenceToneGenerator {
     });
   }
 
+  /**
+   * Rich, unmistakable two-step confirmation chime ("Ding-Dong!" C5-G5 -> E6-C6)
+   * played when the user holds the string within the ±5¢ small fluctuation window.
+   */
   public playLockChime(): void {
     const ctx = this.ensureContext();
     const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(1046.5, now);
-    osc.frequency.exponentialRampToValueAtTime(1567.98, now + 0.09);
 
-    gain.gain.setValueAtTime(0.001, now);
-    gain.gain.linearRampToValueAtTime(0.09, now + 0.015);
-    gain.gain.exponentialRampToValueAtTime(0.0005, now + 0.32);
+    const notes = [
+      { freq: 523.25, start: 0, dur: 0.25, vol: 0.22 },   // C5
+      { freq: 659.25, start: 0.06, dur: 0.28, vol: 0.22 }, // E5
+      { freq: 783.99, start: 0.12, dur: 0.35, vol: 0.25 }, // G5
+      { freq: 1046.50, start: 0.20, dur: 0.55, vol: 0.30 } // C6 Lock Bell!
+    ];
 
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(now);
-    osc.stop(now + 0.34);
+    for (const n of notes) {
+      const osc = ctx.createOscillator();
+      const oscHarm = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(n.freq, now + n.start);
+
+      oscHarm.type = 'sine';
+      oscHarm.frequency.setValueAtTime(n.freq * 2, now + n.start);
+      const harmGain = ctx.createGain();
+      harmGain.gain.value = 0.2;
+
+      gain.gain.setValueAtTime(0.0001, now + n.start);
+      gain.gain.linearRampToValueAtTime(n.vol, now + n.start + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0005, now + n.start + n.dur);
+
+      osc.connect(gain);
+      oscHarm.connect(harmGain);
+      harmGain.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now + n.start);
+      oscHarm.start(now + n.start);
+      osc.stop(now + n.start + n.dur + 0.02);
+      oscHarm.stop(now + n.start + n.dur + 0.02);
+    }
   }
 }
