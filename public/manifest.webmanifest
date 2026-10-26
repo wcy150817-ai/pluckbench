@@ -1,0 +1,18 @@
+{
+  "name": "gStrings Pro 全平台乐器调音器",
+  "short_name": "gStrings Pro",
+  "description": "致敬 gStrings 经典表盘设计的高精度全平台乐器调音器，支持吉他、尤克里里、小提琴、贝斯、古筝、二胡、琵琶与十二平均律半音阶。",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080b10",
+  "theme_color": "#0a0d12",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/audio/pitchdetector.ts","./src/audio/tonegenerator.ts","./src/components/gstringsdialmeter.tsx","./src/components/instrumentstringspanel.tsx","./src/components/scrollingnotetape.tsx","./src/components/settingsmodal.tsx","./src/data/instruments.ts"],"version":"5.6.3"}
