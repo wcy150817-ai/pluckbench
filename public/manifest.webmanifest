@@ -1,11 +1,11 @@
 {
-  "name": "gStrings Pro 全平台乐器调音器",
-  "short_name": "gStrings Pro",
-  "description": "致敬 gStrings 经典表盘设计的高精度全平台乐器调音器，支持吉他、尤克里里、小提琴、贝斯、古筝、二胡、琵琶与十二平均律半音阶。",
+  "name": "TuneKit Pro — 全平台专业乐器调音器与音乐工具箱",
+  "short_name": "TuneKit Pro",
+  "description": "集成延音稳态锁频调音器、物理建模真实乐器音色、智能抗噪、专业节拍器、和弦指法库、音感练耳与分贝仪的全平台音乐工具工作台。",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#080b10",
-  "theme_color": "#0a0d12",
+  "background_color": "#070a0f",
+  "theme_color": "#090d14",
   "orientation": "portrait-primary",
   "icons": [
     {

@@ -5,40 +5,48 @@ import {
   formatNoteDisplay,
   getFreqAtCents,
 } from '../data/instruments';
+import { EnvelopePhase } from '../audio/pitchDetector';
 
-interface GStringsDialMeterProps {
+interface DialMeterProps {
   targetNote: NoteInfo;
   measuredFreq: number | null;
   centsOffset: number; // -50 to +50
   hasSignal: boolean;
   clarity: number;
   rmsDb: number;
+  envelopePhase: EnvelopePhase;
+  isSustainLocked: boolean;
+  deepNoiseSuppression: boolean;
   dampingMode: 'fast' | 'balanced' | 'smooth';
   notationStyle: NotationStyle;
   showPitchTrail: boolean;
   matchedStringLabel?: string | null;
+  activeTimbreLabel?: string;
   isManualLocked: boolean;
   isSoundItMode: boolean;
 }
 
-export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
+export const GStringsDialMeter: React.FC<DialMeterProps> = ({
   targetNote,
   measuredFreq,
   centsOffset,
   hasSignal,
   rmsDb,
+  envelopePhase,
+  isSustainLocked,
+  deepNoiseSuppression,
   dampingMode,
   notationStyle,
   showPitchTrail,
   matchedStringLabel,
+  activeTimbreLabel,
   isManualLocked,
   isSoundItMode,
 }) => {
   const needleGroupRef = useRef<SVGGElement | null>(null);
-  const glowArcRef = useRef<SVGLineElement | null>(null);
   const trailCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Physics state for smooth needle animation
+  // Physics state for smooth needle animation (tuned for anti-jitter stability!)
   const currentAngleRef = useRef<number>(0);
   const velocityRef = useRef<number>(0);
   const targetCentsRef = useRef<number>(0);
@@ -46,30 +54,33 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
   const pitchHistoryRef = useRef<{ cents: number; active: boolean }[]>([]);
 
   useEffect(() => {
-    targetCentsRef.current = hasSignal || isSoundItMode
-      ? Math.max(-52, Math.min(52, isSoundItMode ? 0 : centsOffset))
-      : -54; // rest slightly to left or center? In gStrings, needle rests at 0 or parks gently at 0 when idle
+    targetCentsRef.current =
+      hasSignal || isSoundItMode
+        ? Math.max(-52, Math.min(52, isSoundItMode ? 0 : centsOffset))
+        : 0;
     hasSignalRef.current = hasSignal || isSoundItMode;
   }, [centsOffset, hasSignal, isSoundItMode]);
 
-  // 60/120fps Spring-Damper Physics Loop for the Needle + Pitch Stability Scope
+  // 60/120fps Heavy-Damped Spring Physics Loop for the Needle + Pitch Stability Scope
   useEffect(() => {
     let rafId: number;
 
+    // Higher damping & lower stiffness so the needle glides smoothly like a fluid-filled analog VU meter
     const physicsParams = {
-      fast: { stiffness: 0.26, damping: 0.72 },
-      balanced: { stiffness: 0.15, damping: 0.78 },
-      smooth: { stiffness: 0.08, damping: 0.84 },
+      fast: { stiffness: 0.16, damping: 0.76 },
+      balanced: { stiffness: 0.09, damping: 0.82 },
+      smooth: { stiffness: 0.045, damping: 0.87 },
     }[dampingMode];
 
     const animate = () => {
-      // Target angle in degrees: -50 cents -> -55 deg, +50 cents -> +55 deg
       const active = hasSignalRef.current;
       const desiredCents = active ? targetCentsRef.current : 0;
       const desiredAngle = (desiredCents / 50) * 55;
 
-      const force = (desiredAngle - currentAngleRef.current) * physicsParams.stiffness;
-      velocityRef.current = (velocityRef.current + force) * physicsParams.damping;
+      const force =
+        (desiredAngle - currentAngleRef.current) * physicsParams.stiffness;
+      velocityRef.current =
+        (velocityRef.current + force) * physicsParams.damping;
       currentAngleRef.current += velocityRef.current;
 
       if (needleGroupRef.current) {
@@ -79,7 +90,6 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
         );
       }
 
-      // Record pitch trail
       if (showPitchTrail && trailCanvasRef.current) {
         const hist = pitchHistoryRef.current;
         hist.push({
@@ -95,7 +105,6 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
           const h = canvas.height;
           ctx.clearRect(0, 0, w, h);
 
-          // Center target line
           ctx.strokeStyle = 'rgba(16, 185, 129, 0.22)';
           ctx.lineWidth = 1;
           ctx.setLineDash([4, 4]);
@@ -105,7 +114,6 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
           ctx.stroke();
           ctx.setLineDash([]);
 
-          // Draw pitch stability curve
           ctx.lineWidth = 2;
           ctx.beginPath();
           let started = false;
@@ -124,7 +132,7 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
               ctx.lineTo(x, y);
             }
           }
-          ctx.strokeStyle = 'rgba(52, 211, 153, 0.78)';
+          ctx.strokeStyle = 'rgba(52, 211, 153, 0.82)';
           ctx.stroke();
         }
       }
@@ -137,25 +145,37 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
   }, [dampingMode, showPitchTrail]);
 
   const absCents = Math.abs(centsOffset);
-  const isInTune = (hasSignal && absCents <= 3.0) || isSoundItMode;
-  const isClose = hasSignal && absCents > 3.0 && absCents <= 12.0;
-  const isFlat = hasSignal && centsOffset < -3.0;
-  const isSharp = hasSignal && centsOffset > 3.0;
+  const isInTune = (hasSignal && absCents <= 3.5) || isSoundItMode;
+  const isClose = hasSignal && absCents > 3.5 && absCents <= 12.0;
+  const isFlat = hasSignal && centsOffset < -3.5;
+  const isSharp = hasSignal && centsOffset > 3.5;
 
-  // Color states
   const accentColor = isSoundItMode
-    ? '#38BDF8' // Cyan for Sound It reference mode
+    ? '#38BDF8'
     : !hasSignal
     ? '#64748B'
     : isInTune
-    ? '#10B981' // Emerald green
+    ? '#10B981'
     : isClose
-    ? '#F59E0B' // Amber
-    : '#F43F5E'; // Rose red
+    ? '#F59E0B'
+    : '#F43F5E';
 
   const noteDisplay = formatNoteDisplay(targetNote, notationStyle);
 
-  // Generate Outer Cents Ticks (-50 to +50 every 1 cent)
+  // Envelope Phase Human-Readable Label
+  const phaseLabel = isSoundItMode
+    ? `原声建模发音中 (${activeTimbreLabel || '物理合成'})`
+    : !hasSignal
+    ? '等待拨弦或拉弓...'
+    : envelopePhase === 'attack'
+    ? '起振瞬态过滤中 (抑制拨弦偏高)...'
+    : envelopePhase === 'decay'
+    ? '余音衰减 · 已保持稳态音高'
+    : isSustainLocked
+    ? '延音稳态已锁定 (Sustain Lock)'
+    : '正在追踪基频延音...';
+
+  // Generate Outer Cents Ticks (-50 to +50)
   const centTicks: React.ReactNode[] = [];
   const centerX = 250;
   const centerY = 245;
@@ -168,7 +188,6 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
     const isMedium = c % 5 === 0 && !isMajor;
     const isInGreenZone = Math.abs(c) <= 3;
 
-    // On mobile/clean scale, draw every 1 cent near 0 (-10..10) and every 2 cents outside
     if (!isMajor && !isMedium && Math.abs(c) > 10 && c % 2 !== 0) continue;
 
     const tickLen = isMajor ? 15 : isMedium ? 10 : 5.5;
@@ -224,7 +243,7 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
     }
   }
 
-  // Generate Inner Dynamic Hz Scale (gStrings signature feature!)
+  // Generate Inner Dynamic Hz Scale
   const hzTicks: React.ReactNode[] = [];
   const innerRadius = 144;
   for (let c = -45; c <= 45; c += 5) {
@@ -276,7 +295,6 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
     }
   }
 
-  // Normalized input VU level [0 - 100%]
   const vuPercent = Math.max(0, Math.min(100, ((rmsDb + 65) / 55) * 100));
 
   return (
@@ -304,35 +322,40 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
           <span>偏低 · 需拧紧 ▶</span>
         </div>
 
-        {/* Center Lock Indicator */}
-        <div
-          className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wide transition-all ${
-            isSoundItMode
-              ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-[0_0_15px_rgba(56,189,248,0.3)]'
-              : isInTune
-              ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/50 shadow-[0_0_18px_rgba(16,185,129,0.4)]'
-              : 'bg-slate-900/80 text-slate-400 border border-slate-800'
-          }`}
-        >
-          <span
-            className={`w-2 h-2 rounded-full ${
+        {/* Center Lock & Acoustic Envelope Status */}
+        <div className="flex flex-col items-center">
+          <div
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wide transition-all ${
               isSoundItMode
-                ? 'bg-sky-400 animate-pulse'
+                ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-[0_0_15px_rgba(56,189,248,0.3)]'
                 : isInTune
-                ? 'bg-emerald-400 shadow-[0_0_8px_#10b981]'
-                : hasSignal
-                ? 'bg-amber-400'
-                : 'bg-slate-600'
+                ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-400/50 shadow-[0_0_18px_rgba(16,185,129,0.4)]'
+                : 'bg-slate-900/80 text-slate-300 border border-slate-800'
             }`}
-          />
-          <span>
-            {isSoundItMode
-              ? '正在播放基准音'
-              : isInTune
-              ? '音准已锁定 IN TUNE'
-              : hasSignal
-              ? `${centsOffset > 0 ? '+' : ''}${centsOffset.toFixed(1)} ¢`
-              : '等待拨弦或发音...'}
+          >
+            <span
+              className={`w-2 h-2 rounded-full ${
+                isSoundItMode
+                  ? 'bg-sky-400 animate-pulse'
+                  : isInTune
+                  ? 'bg-emerald-400 shadow-[0_0_8px_#10b981]'
+                  : hasSignal
+                  ? 'bg-amber-400'
+                  : 'bg-slate-600'
+              }`}
+            />
+            <span>
+              {isSoundItMode
+                ? '原声基准音播放中'
+                : isInTune
+                ? '音准已锁定 IN TUNE'
+                : hasSignal
+                ? `${centsOffset > 0 ? '+' : ''}${centsOffset.toFixed(1)} ¢`
+                : '等待拨弦或发音...'}
+            </span>
+          </div>
+          <span className="text-[10px] text-slate-400 mt-0.5 font-mono">
+            {phaseLabel}
           </span>
         </div>
 
@@ -349,11 +372,11 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
         </div>
       </div>
 
-      {/* Main gStrings Dual-Scale Analog SVG Dial */}
+      {/* Main Dual-Scale Analog SVG Dial */}
       <div className="relative px-2 pt-1 pb-1">
         <svg
           viewBox="0 0 500 265"
-          className="w-full h-auto max-h-[250px] mx-auto overflow-visible"
+          className="w-full h-auto max-h-[245px] mx-auto overflow-visible"
         >
           <defs>
             <linearGradient id="needleGrad" x1="0" y1="1" x2="0" y2="0">
@@ -374,13 +397,11 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
             </radialGradient>
           </defs>
 
-          {/* Fan-shaped Dial Face Background */}
           <path
             d="M 55 170 A 210 210 0 0 1 445 170 L 340 245 L 160 245 Z"
             fill="url(#dialFaceGrad)"
           />
 
-          {/* Outer Scale Track Arc */}
           <path
             d="M 88 131 A 198 198 0 0 1 412 131"
             fill="none"
@@ -388,9 +409,9 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
             strokeWidth="3"
           />
 
-          {/* Center ±3 Cents Precision Target Zone Arc */}
+          {/* Center ±3.5 Cents Precision Target Zone Arc */}
           <path
-            d="M 238.6 47.3 A 198 198 0 0 1 261.4 47.3"
+            d="M 237 47.4 A 198 198 0 0 1 263 47.4"
             fill="none"
             stroke="#10B981"
             strokeWidth="6"
@@ -398,7 +419,6 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
             opacity="0.85"
           />
 
-          {/* Inner Dynamic Hz Scale Track Arc */}
           <path
             d="M 139 156 A 144 144 0 0 1 361 156"
             fill="none"
@@ -407,7 +427,6 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
             strokeDasharray="3 3"
           />
 
-          {/* Scale Unit Labels on Dial Face */}
           <text
             x="250"
             y="22"
@@ -417,7 +436,7 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
             fontWeight="600"
             letterSpacing="0.12em"
           >
-            CENTS (音分偏差)
+            CENTS (延音稳态音分偏差)
           </text>
           <text
             x="250"
@@ -432,13 +451,11 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
             DYNAMIC Hz (动态频率尺)
           </text>
 
-          {/* Render Outer Cent Ticks & Inner Hz Ticks */}
           <g>{centTicks}</g>
           <g>{hzTicks}</g>
 
           {/* Damped Physical Needle Group */}
           <g ref={needleGroupRef} transform="rotate(0 250 245)">
-            {/* Needle Shadow */}
             <line
               x1="250"
               y1="245"
@@ -448,9 +465,7 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
               strokeWidth="5"
               strokeLinecap="round"
             />
-            {/* Main Illuminated Needle */}
             <line
-              ref={glowArcRef}
               x1="250"
               y1="245"
               x2="250"
@@ -460,7 +475,6 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
               strokeLinecap="round"
               filter="url(#needleGlow)"
             />
-            {/* Bright Needle Tip Diamond/Cap */}
             <circle
               cx="250"
               cy="44"
@@ -471,7 +485,6 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
             />
           </g>
 
-          {/* Metallic Pivot Cap at Bottom Center */}
           <circle
             cx="250"
             cy="245"
@@ -489,7 +502,6 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
           />
         </svg>
 
-        {/* Optional Pitch Stability Mini-Scope Overlay at bottom of dial */}
         {showPitchTrail && (
           <div className="mx-auto max-w-md px-4 -mt-3 mb-1">
             <div className="relative h-8 rounded-lg bg-slate-950/75 border border-slate-800/80 overflow-hidden flex items-center">
@@ -500,22 +512,27 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
                 className="w-full h-full"
               />
               <span className="absolute left-2 top-1 text-[9px] font-mono text-slate-500 uppercase tracking-wider">
-                音高稳定度轨迹
+                延音稳定度轨迹 (过滤瞬态抖动)
               </span>
             </div>
           </div>
         )}
       </div>
 
-      {/* Bottom Digital Readout Panel (Target Note, String Badge, Measured vs Target Hz, Mic Level) */}
+      {/* Bottom Digital Readout Panel */}
       <div className="relative z-10 grid grid-cols-3 items-center gap-2 px-4 py-2.5 bg-slate-950/70 border-t border-slate-800/80">
         {/* Left: Target Frequency & Lock Status */}
         <div className="flex flex-col items-start">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-[11px] text-slate-400">目标基准</span>
             {isManualLocked && (
               <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
                 已锁弦
+              </span>
+            )}
+            {deepNoiseSuppression && (
+              <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                强效降噪开启
               </span>
             )}
           </div>
@@ -550,9 +567,9 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
           </div>
         </div>
 
-        {/* Right: Real-time Measured Frequency + Mic Signal Bar */}
+        {/* Right: Real-time Sustain Frequency + Mic Level */}
         <div className="flex flex-col items-end">
-          <span className="text-[11px] text-slate-400">实测频率</span>
+          <span className="text-[11px] text-slate-400">稳态实测频率</span>
           <div
             className="font-mono text-sm sm:text-base font-bold transition-colors"
             style={{
@@ -570,7 +587,6 @@ export const GStringsDialMeter: React.FC<GStringsDialMeterProps> = ({
               : '---.--'}{' '}
             <span className="text-xs font-normal text-slate-400">Hz</span>
           </div>
-          {/* Mini Input Level VU Meter */}
           <div className="w-24 h-1.5 mt-1 rounded-full bg-slate-800 overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-75"

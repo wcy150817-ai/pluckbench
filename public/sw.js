@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gstrings-pro-v1';
+const CACHE_NAME = 'tunekit-pro-v2';
 const ASSETS = ['/', '/index.html', '/manifest.webmanifest', '/icon.svg'];
 
 self.addEventListener('install', (event) => {

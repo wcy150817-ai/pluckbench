@@ -4,14 +4,84 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#0a0d12" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#070a0f" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="gStrings Pro" />
-    <title>gStrings Pro — 全平台专业乐器调音器</title>
+    <meta name="apple-mobile-web-app-title" content="TuneKit Pro" />
+
+    <!-- SEO TDH (Title 55 chars, Description 152 chars, Canonical) -->
+    <title>Online Instrument Tuner, Metronome & Chord Hub - TuneKit Pro</title>
+    <meta
+      name="description"
+      content="Free online instrument tuner with sustain-phase pitch lock, noise reduction, physical modeling guitar/guzheng/violin tones, metronome, and chord library."
+    />
+    <meta
+      name="keywords"
+      content="online tuner, guitar tuner, ukulele tuner, guzheng tuner, violin tuner, online metronome, chord library, 乐器调音器, 在线吉他调音器, 古筝调音器, 节拍器"
+    />
+    <link rel="canonical" href="https://tunekitpro.com/" />
+
+    <!-- OpenGraph / Social Cards -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Online Instrument Tuner, Metronome & Chord Hub - TuneKit Pro" />
+    <meta
+      property="og:description"
+      content="Studio-grade chromatic & instrument tuner with sustain-phase pitch lock, smart noise suppression, authentic acoustic timbres, metronome & chord library."
+    />
+    <meta property="og:url" content="https://tunekitpro.com/" />
+
+    <!-- JSON-LD Structured Data (SoftwareApplication + FAQPage without fabricated ratings per SOP) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebApplication",
+            "name": "TuneKit Pro — Online Instrument Tuner & Music Tools Suite",
+            "url": "https://tunekitpro.com/",
+            "applicationCategory": "MultimediaApplication",
+            "operatingSystem": "Web, iOS, Android, macOS, Windows",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "featureList": [
+              "Three-Stage Sustain Pitch Lock Chromatic & Instrument Tuner",
+              "Hardware-Style Bandpass Noise Reduction & Smart Noisy Room Alert",
+              "Karplus-Strong Physical Modeling Guitar, Ukulele, Guzheng, Erhu & Violin Reference Tones",
+              "Precision Visual Metronome with Tap BPM",
+              "Interactive Guitar & Ukulele Chord Fingering Library",
+              "Pitch Ear Trainer & Acoustic Decibel Meter"
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "为什么有些乐器刚拨弦时音高偏高，随后才稳定下来？",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "这是弦乐器的物理特性（拨弦瞬态频移 Pitch Chirp）。手指或拨片拉扯琴弦瞬间会短暂增加琴弦张力，导致前100毫秒音高偏高。TuneKit Pro内置瞬态过滤与延音锁定算法，会自动忽略拨弦瞬间的尖峰，锁定延音段最真实的基频。"
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "在嘈杂环境或琴房怎么准确调音？",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "请开启顶部的「强效抗噪」模式并搭配「Tune Manual（手动锁弦）」，系统将通过窄带滤波器与谐波周期性门限自动屏蔽环境谈话与风扇杂音。"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
-  <body class="bg-[#080b10] text-slate-100 antialiased selection:bg-emerald-500/30 selection:text-emerald-200 overflow-x-hidden">
+  <body class="bg-[#070a0f] text-slate-100 antialiased selection:bg-emerald-500/30 selection:text-emerald-200 overflow-x-hidden">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

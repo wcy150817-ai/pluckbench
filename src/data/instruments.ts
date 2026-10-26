@@ -1,7 +1,17 @@
 export type TemperamentId = 'equal' | 'pythagorean' | 'just' | 'meantone';
 export type NotationStyle = 'letter' | 'solfege' | 'numbered';
 export type TunerMode = 'tune-auto' | 'tune-manual' | 'sound-it';
-export type ToneWaveform = 'plucked' | 'sine' | 'triangle' | 'organ';
+export type ToneWaveform =
+  | 'auto-instrument'
+  | 'acoustic-guitar'
+  | 'ukulele-nylon'
+  | 'chinese-guzheng'
+  | 'chinese-erhu'
+  | 'chinese-pipa'
+  | 'bowed-violin'
+  | 'deep-bass'
+  | 'grand-piano'
+  | 'tuning-fork';
 
 export interface NoteInfo {
   midi: number;
@@ -15,17 +25,18 @@ export interface NoteInfo {
 }
 
 export interface StringSpec {
-  stringNumber: number; // 1 = highest pitch string (traditional guitar/violin numbering) or sequential
+  stringNumber: number;
   label: string;        // e.g. "1弦 E4" or "内弦 D4"
   noteName: string;     // e.g. "E4"
   midi: number;
-  description?: string; // e.g. "细弦 / 一弦"
+  description?: string;
 }
 
 export interface TuningVariant {
   id: string;
   name: string;
   subtitle: string;
+  defaultTimbre?: Exclude<ToneWaveform, 'auto-instrument'>;
   strings: StringSpec[];
 }
 
@@ -35,6 +46,9 @@ export interface InstrumentPreset {
   category: 'chromatic' | 'plucked' | 'bowed' | 'chinese';
   categoryLabel: string;
   iconName: string;
+  defaultTimbre: Exclude<ToneWaveform, 'auto-instrument'>;
+  minFreqHz: number; // Used by adaptive bandpass noise filter
+  maxFreqHz: number;
   description: string;
   tunings: TuningVariant[];
 }
@@ -43,16 +57,23 @@ export const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A',
 export const SOLFEGE_NAMES = ['Do', 'Do#', 'Re', 'Re#', 'Mi', 'Fa', 'Fa#', 'Sol', 'Sol#', 'La', 'La#', 'Si'] as const;
 export const NUMBERED_NAMES = ['1', '#1', '2', '#2', '3', '4', '#4', '5', '#5', '6', '#6', '7'] as const;
 
-/**
- * Temperament cent offsets relative to 12-TET (root C, normalized to A)
- */
+export const TIMBRE_OPTIONS: { id: ToneWaveform; name: string; badge: string }[] = [
+  { id: 'auto-instrument', name: '智能跟随当前乐器原声', badge: '物理建模推荐' },
+  { id: 'acoustic-guitar', name: '原声木吉他 (Acoustic Guitar)', badge: '箱体共鸣拨弦' },
+  { id: 'chinese-guzheng', name: '古筝桐木共鸣 (Guzheng)', badge: '义甲拨弦泛音' },
+  { id: 'chinese-erhu', name: '二胡蟒皮琴筒 (Erhu)', badge: '弓弦揉弦模拟' },
+  { id: 'chinese-pipa', name: '琵琶/中阮弹拨 (Pipa)', badge: '清脆珠玉面板' },
+  { id: 'bowed-violin', name: '提琴木质弓弦 (Violin/Cello)', badge: '琴桥共振峰' },
+  { id: 'ukulele-nylon', name: '尤克里里尼龙弦 (Ukulele)', badge: '温暖尼龙拨弦' },
+  { id: 'deep-bass', name: '贝斯浑厚低音 (Bass)', badge: '缠弦低频激励' },
+  { id: 'grand-piano', name: '三角钢琴击弦 (Grand Piano)', badge: '琴槌泛音包络' },
+  { id: 'tuning-fork', name: '实验室纯音叉 (Tuning Fork)', badge: '440Hz 纯正弦' },
+];
+
 const TEMPERAMENT_OFFSETS_FROM_C: Record<TemperamentId, number[]> = {
   equal: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  // Five-limit Just Intonation (relative to C major scale)
   just: [0, 11.73, 3.91, 15.64, -13.69, -1.96, -9.78, 1.96, 13.69, -15.64, 17.6, -11.73],
-  // Pythagorean tuning (pure 3:2 fifths, widely favored in Chinese Erhu/Guzheng & solo strings)
   pythagorean: [0, -9.78, 3.91, -5.87, 7.82, -1.96, -11.73, 1.96, -7.82, 5.87, -3.91, 9.78],
-  // Quarter-comma Meantone
   meantone: [0, -24.0, -6.8, 10.3, -13.7, 3.4, -20.5, -3.4, -27.4, -10.3, 6.8, -17.1],
 };
 
@@ -63,9 +84,6 @@ export const TEMPERAMENTS: { id: TemperamentId; name: string; desc: string }[] =
   { id: 'meantone', name: '中庸全音律 (Meantone)', desc: '文艺复兴与早期巴洛克古典键盘/管弦乐常用律制' },
 ];
 
-/**
- * Compute exact target frequency for a MIDI note given A4 reference pitch and temperament
- */
 export function midiToFrequency(
   midi: number,
   a4Hz: number = 440,
@@ -73,38 +91,24 @@ export function midiToFrequency(
 ): number {
   const noteClass = ((midi % 12) + 12) % 12;
   const offsets = TEMPERAMENT_OFFSETS_FROM_C[temperament];
-  // Anchor A4 (midi 69, noteClass 9) to exact a4Hz
   const centOffset = offsets[noteClass] - offsets[9];
   const equalFreq = a4Hz * Math.pow(2, (midi - 69) / 12);
   return equalFreq * Math.pow(2, centOffset / 1200);
 }
 
-/**
- * Convert frequency (Hz) to floating-point MIDI note number
- */
 export function frequencyToFloatMidi(freq: number, a4Hz: number = 440): number {
   return 69 + 12 * Math.log2(freq / a4Hz);
 }
 
-/**
- * Calculate cent deviation between measured frequency and target frequency
- * 1 semitone = 100 cents, 1 octave = 1200 cents
- */
 export function getCentsOffset(measuredHz: number, targetHz: number): number {
   if (measuredHz <= 0 || targetHz <= 0) return 0;
   return 1200 * Math.log2(measuredHz / targetHz);
 }
 
-/**
- * Calculate frequency at a given cents offset from targetHz (for gStrings inner Hz scale)
- */
 export function getFreqAtCents(targetHz: number, cents: number): number {
   return targetHz * Math.pow(2, cents / 1200);
 }
 
-/**
- * Build rich NoteInfo for any integer MIDI number
- */
 export function getNoteInfo(
   midi: number,
   a4Hz: number = 440,
@@ -130,9 +134,6 @@ export function getNoteInfo(
   };
 }
 
-/**
- * Format note display label according to user preference
- */
 export function formatNoteDisplay(note: NoteInfo, style: NotationStyle): { primary: string; secondary: string } {
   if (style === 'solfege') {
     return {
@@ -159,12 +160,16 @@ export const INSTRUMENT_PRESETS: InstrumentPreset[] = [
     category: 'chromatic',
     categoryLabel: '全音域通用',
     iconName: 'Compass',
-    description: 'gStrings 经典全音域半音阶模式（C1 - B7），适用于钢琴、管乐、人声及任意乐器',
+    defaultTimbre: 'grand-piano',
+    minFreqHz: 27.5,
+    maxFreqHz: 2200,
+    description: '全音域半音阶精密测音模式（C1 - B7），适用于钢琴、管乐、人声及任意乐器',
     tunings: [
       {
         id: 'chromatic-standard',
         name: '12半音阶全音域 (C1 ~ B7)',
         subtitle: '自动识别全部半音，亦可快速点选常用基准音',
+        defaultTimbre: 'grand-piano',
         strings: [
           { stringNumber: 1, label: 'C3 低音Do', noteName: 'C3', midi: 48, description: '130.8 Hz' },
           { stringNumber: 2, label: 'G3 低音Sol', noteName: 'G3', midi: 55, description: '196.0 Hz' },
@@ -183,12 +188,16 @@ export const INSTRUMENT_PRESETS: InstrumentPreset[] = [
     category: 'plucked',
     categoryLabel: '西洋弹拨',
     iconName: 'Guitar',
-    description: '民谣吉他 / 电吉他 / 古典吉他，支持标准调弦、Drop D、降半音与指弹开放调弦',
+    defaultTimbre: 'acoustic-guitar',
+    minFreqHz: 65,
+    maxFreqHz: 420,
+    description: '民谣吉他 / 电吉他 / 古典吉他，内置拨弦瞬态防抖与原声木吉他箱体共鸣音色',
     tunings: [
       {
         id: 'guitar-standard',
         name: '6弦标准调弦 (Standard EADGBE)',
         subtitle: '6弦 E2 → 1弦 E4',
+        defaultTimbre: 'acoustic-guitar',
         strings: [
           { stringNumber: 6, label: '6弦 E2', noteName: 'E2', midi: 40, description: '最粗低音弦' },
           { stringNumber: 5, label: '5弦 A2', noteName: 'A2', midi: 45, description: '五弦' },
@@ -202,6 +211,7 @@ export const INSTRUMENT_PRESETS: InstrumentPreset[] = [
         id: 'guitar-drop-d',
         name: 'Drop D 调弦 (DADGBE)',
         subtitle: '6弦降全音至 D2，摇滚/金属/指弹常用',
+        defaultTimbre: 'acoustic-guitar',
         strings: [
           { stringNumber: 6, label: '6弦 D2', noteName: 'D2', midi: 38, description: '降全音低音弦' },
           { stringNumber: 5, label: '5弦 A2', noteName: 'A2', midi: 45, description: '五弦' },
@@ -215,6 +225,7 @@ export const INSTRUMENT_PRESETS: InstrumentPreset[] = [
         id: 'guitar-half-down',
         name: '降半音调弦 (Eb Standard)',
         subtitle: '全弦降低半音 (D#2 G#2 C#3 F#3 A#3 D#4)',
+        defaultTimbre: 'acoustic-guitar',
         strings: [
           { stringNumber: 6, label: '6弦 D#2', noteName: 'D#2', midi: 39, description: 'Eb2' },
           { stringNumber: 5, label: '5弦 G#2', noteName: 'G#2', midi: 44, description: 'Ab2' },
@@ -228,6 +239,7 @@ export const INSTRUMENT_PRESETS: InstrumentPreset[] = [
         id: 'guitar-dadgad',
         name: 'DADGAD 凯尔特/指弹调弦',
         subtitle: '指弹吉他经典开放调弦 (D2 A2 D3 G3 A3 D4)',
+        defaultTimbre: 'acoustic-guitar',
         strings: [
           { stringNumber: 6, label: '6弦 D2', noteName: 'D2', midi: 38, description: '六弦' },
           { stringNumber: 5, label: '5弦 A2', noteName: 'A2', midi: 45, description: '五弦' },
@@ -245,12 +257,16 @@ export const INSTRUMENT_PRESETS: InstrumentPreset[] = [
     category: 'plucked',
     categoryLabel: '西洋弹拨',
     iconName: 'Music2',
-    description: '支持标准高音 G (High-G)、低音 G (Low-G) 以及传统 D 调定弦',
+    defaultTimbre: 'ukulele-nylon',
+    minFreqHz: 170,
+    maxFreqHz: 560,
+    description: '支持标准高音 G (High-G)、低音 G (Low-G)，搭载夏威夷相思木尼龙弦物理建模音色',
     tunings: [
       {
         id: 'ukulele-standard',
         name: '标准高音G (High-G: G4 C4 E4 A4)',
         subtitle: '最常用的尤克里里C调标准定弦',
+        defaultTimbre: 'ukulele-nylon',
         strings: [
           { stringNumber: 4, label: '4弦 G4', noteName: 'G4', midi: 67, description: '高音G四弦' },
           { stringNumber: 3, label: '3弦 C4', noteName: 'C4', midi: 60, description: '最粗三弦' },
@@ -262,6 +278,7 @@ export const INSTRUMENT_PRESETS: InstrumentPreset[] = [
         id: 'ukulele-low-g',
         name: '低音G指弹 (Low-G: G3 C4 E4 A4)',
         subtitle: '4弦更换为低八度G3，扩展低音音域',
+        defaultTimbre: 'ukulele-nylon',
         strings: [
           { stringNumber: 4, label: '4弦 G3', noteName: 'G3', midi: 55, description: '低音G四弦' },
           { stringNumber: 3, label: '3弦 C4', noteName: 'C4', midi: 60, description: '三弦' },
@@ -277,12 +294,16 @@ export const INSTRUMENT_PRESETS: InstrumentPreset[] = [
     category: 'plucked',
     categoryLabel: '西洋弹拨',
     iconName: 'Waves',
-    description: '针对低频基音与泛音优化，支持 4 弦与 5 弦电贝斯/木贝斯',
+    defaultTimbre: 'deep-bass',
+    minFreqHz: 27.5,
+    maxFreqHz: 180,
+    description: '针对超低频基音与泛音优化，配备缠弦电贝斯/木贝斯浑厚低音合成',
     tunings: [
       {
         id: 'bass-4',
         name: '4弦标准贝斯 (E1 A1 D2 G2)',
         subtitle: '4弦 E1 (41.2Hz) → 1弦 G2 (98.0Hz)',
+        defaultTimbre: 'deep-bass',
         strings: [
           { stringNumber: 4, label: '4弦 E1', noteName: 'E1', midi: 28, description: '41.2 Hz 超低音' },
           { stringNumber: 3, label: '3弦 A1', noteName: 'A1', midi: 33, description: '55.0 Hz' },
@@ -294,6 +315,7 @@ export const INSTRUMENT_PRESETS: InstrumentPreset[] = [
         id: 'bass-5',
         name: '5弦标准贝斯 (B0 E1 A1 D2 G2)',
         subtitle: '含 5弦 B0 (30.9Hz)',
+        defaultTimbre: 'deep-bass',
         strings: [
           { stringNumber: 5, label: '5弦 B0', noteName: 'B0', midi: 23, description: '30.9 Hz 极低音' },
           { stringNumber: 4, label: '4弦 E1', noteName: 'E1', midi: 28, description: '41.2 Hz' },
@@ -310,12 +332,16 @@ export const INSTRUMENT_PRESETS: InstrumentPreset[] = [
     category: 'bowed',
     categoryLabel: '西洋弓弦',
     iconName: 'Music',
-    description: '支持小提琴、中提琴、大提琴纯五度标准定弦，可搭配五度相生律使用',
+    defaultTimbre: 'bowed-violin',
+    minFreqHz: 58,
+    maxFreqHz: 880,
+    description: '支持小提琴、中提琴、大提琴纯五度标准定弦，内置克雷莫纳木质琴体弓弦共鸣音色',
     tunings: [
       {
         id: 'violin-standard',
         name: '小提琴标准定弦 (G3 D4 A4 E5)',
         subtitle: '4弦 G3 → 3弦 D4 → 2弦 A4 → 1弦 E5',
+        defaultTimbre: 'bowed-violin',
         strings: [
           { stringNumber: 4, label: '4弦 G3', noteName: 'G3', midi: 55, description: 'G弦 (最粗)' },
           { stringNumber: 3, label: '3弦 D4', noteName: 'D4', midi: 62, description: 'D弦' },
@@ -327,6 +353,7 @@ export const INSTRUMENT_PRESETS: InstrumentPreset[] = [
         id: 'viola-standard',
         name: '中提琴标准定弦 (C3 G3 D4 A4)',
         subtitle: '4弦 C3 → 3弦 G3 → 2弦 D4 → 1弦 A4',
+        defaultTimbre: 'bowed-violin',
         strings: [
           { stringNumber: 4, label: '4弦 C3', noteName: 'C3', midi: 48, description: 'C弦' },
           { stringNumber: 3, label: '3弦 G3', noteName: 'G3', midi: 55, description: 'G弦' },
@@ -338,6 +365,7 @@ export const INSTRUMENT_PRESETS: InstrumentPreset[] = [
         id: 'cello-standard',
         name: '大提琴标准定弦 (C2 G2 D3 A3)',
         subtitle: '4弦 C2 → 3弦 G2 → 2弦 D3 → 1弦 A3',
+        defaultTimbre: 'bowed-violin',
         strings: [
           { stringNumber: 4, label: '4弦 C2', noteName: 'C2', midi: 36, description: 'C弦 (65.4Hz)' },
           { stringNumber: 3, label: '3弦 G2', noteName: 'G2', midi: 43, description: 'G弦 (98.0Hz)' },
@@ -353,12 +381,16 @@ export const INSTRUMENT_PRESETS: InstrumentPreset[] = [
     category: 'chinese',
     categoryLabel: '民族乐器',
     iconName: 'Sparkles',
-    description: '21弦古筝标准五声音阶定弦（D调 / G调），标注绿弦（A弦）位置方便快速校音',
+    defaultTimbre: 'chinese-guzheng',
+    minFreqHz: 65,
+    maxFreqHz: 1350,
+    description: '21弦古筝标准五声音阶定弦（D调 / G调），搭载桐木面板+义甲拨弦泛音物理合成与延音稳态识别',
     tunings: [
       {
         id: 'guzheng-d-21',
         name: '古筝 D调 21弦完整定弦 (1=D)',
         subtitle: '21弦(倍低音1) D2 → 1弦(倍高音1) D6 · 含4根绿色A弦定位',
+        defaultTimbre: 'chinese-guzheng',
         strings: [
           { stringNumber: 21, label: '21弦 D2', noteName: 'D2', midi: 38, description: '倍低音 1 (最粗)' },
           { stringNumber: 20, label: '20弦 E2', noteName: 'E2', midi: 40, description: '倍低音 2' },
@@ -387,6 +419,7 @@ export const INSTRUMENT_PRESETS: InstrumentPreset[] = [
         id: 'guzheng-g-core',
         name: '古筝 G调核心八度定弦 (1=G)',
         subtitle: '将D调中的 F# 弦调低半音至 G (即 C4→G3 宫商角徵羽)',
+        defaultTimbre: 'chinese-guzheng',
         strings: [
           { stringNumber: 16, label: '16弦 D3', noteName: 'D3', midi: 50, description: '低音 5' },
           { stringNumber: 15, label: '15弦 E3', noteName: 'E3', midi: 52, description: '低音 6' },
@@ -407,12 +440,16 @@ export const INSTRUMENT_PRESETS: InstrumentPreset[] = [
     category: 'chinese',
     categoryLabel: '民族乐器',
     iconName: 'Radio',
-    description: '涵盖二胡标准里外弦（D4-A4）、琵琶四弦（A2-D3-E3-A3）及中阮/柳琴定弦',
+    defaultTimbre: 'chinese-erhu',
+    minFreqHz: 85,
+    maxFreqHz: 920,
+    description: '涵盖二胡标准里外弦（配备蟒皮琴筒弓弦音色）、琵琶四弦及中阮/柳琴（配备珠玉弹拨音色）',
     tunings: [
       {
         id: 'erhu-standard',
         name: '二胡标准定弦 (里弦 D4 · 外弦 A4)',
         subtitle: '适用于 D调(1 5弦)、G调(5 2弦)、F调(6 3弦)、C调(2 6弦)',
+        defaultTimbre: 'chinese-erhu',
         strings: [
           { stringNumber: 2, label: '里弦 D4', noteName: 'D4', midi: 62, description: '内弦 (293.7 Hz)' },
           { stringNumber: 1, label: '外弦 A4', noteName: 'A4', midi: 69, description: '外弦 (440.0 Hz 标准音)' },
@@ -422,6 +459,7 @@ export const INSTRUMENT_PRESETS: InstrumentPreset[] = [
         id: 'pipa-standard',
         name: '琵琶标准定弦 (缠弦A2 · 老弦D3 · 中弦E3 · 子弦A3)',
         subtitle: '4弦 A2 → 3弦 D3 → 2弦 E3 → 1弦 A3',
+        defaultTimbre: 'chinese-pipa',
         strings: [
           { stringNumber: 4, label: '4弦 缠弦 A2', noteName: 'A2', midi: 45, description: '110.0 Hz' },
           { stringNumber: 3, label: '3弦 老弦 D3', noteName: 'D3', midi: 50, description: '146.8 Hz' },
@@ -433,6 +471,7 @@ export const INSTRUMENT_PRESETS: InstrumentPreset[] = [
         id: 'zhongruan-standard',
         name: '中阮标准定弦 (G2 D3 G3 D4)',
         subtitle: '4弦 G2 → 3弦 D3 → 2弦 G3 → 1弦 D4',
+        defaultTimbre: 'chinese-pipa',
         strings: [
           { stringNumber: 4, label: '4弦 G2', noteName: 'G2', midi: 43, description: '98.0 Hz' },
           { stringNumber: 3, label: '3弦 D3', noteName: 'D3', midi: 50, description: '146.8 Hz' },
@@ -444,6 +483,7 @@ export const INSTRUMENT_PRESETS: InstrumentPreset[] = [
         id: 'liuqin-standard',
         name: '柳琴标准定弦 (G3 D4 G4 D5)',
         subtitle: '4弦 G3 → 3弦 D4 → 2弦 G4 → 1弦 D5',
+        defaultTimbre: 'chinese-pipa',
         strings: [
           { stringNumber: 4, label: '4弦 G3', noteName: 'G3', midi: 55, description: '196.0 Hz' },
           { stringNumber: 3, label: '3弦 D4', noteName: 'D4', midi: 62, description: '293.7 Hz' },
