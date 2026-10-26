@@ -68,10 +68,16 @@ export const App: React.FC = () => {
   const theme = THEME_PALETTES[paletteId];
   const t = UI_TRANSLATIONS[lang];
 
-  // Auto-detect IP Country -> Language & Theme on mount (also supports ?region=US/CN/EU/JP/LIGHT URL query for testing)
+  // Auto-detect IP Country -> Language & Theme on mount (also supports ?region=CN/US/EU/JP/LIGHT URL query for testing)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const forcedRegion = params.get('region')?.toUpperCase();
+    if (forcedRegion === 'CN') {
+      setLang('zh');
+      setPaletteId('emerald-cn');
+      setGeoLabel('IP: CN · 亚太华语区');
+      return;
+    }
     if (forcedRegion === 'US') {
       setLang('en');
       setPaletteId('cobalt-us');
