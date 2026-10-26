@@ -331,7 +331,7 @@ export const UI_TEXT = {
     doneBtn: '完成并应用',
   },
   en: {
-    brandName: 'TuneKit',
+    brandName: 'PluckBench',
     brandTag: 'Pro',
     subtitle: 'Step 1: Select String · Step 2: Hold in ±5¢ Zone for Chime',
     regionName: {

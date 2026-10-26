@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://tunekitpro.com/sitemap.xml
+Sitemap: https://pluckbench.com/sitemap.xml

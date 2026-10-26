@@ -111,7 +111,7 @@ const FOOTER_CONTENT: Record<
   en: {
     card1Title: '3-Stage Envelope Sustain-Lock Engine',
     card1Desc:
-      'Plucked strings exhibit a +15 to +30 cent pitch chirp during the first 100ms attack transient. TuneKit Pro filters out attack transients, weights the golden sustain plateau, and uses an overdamped fluid needle to lock onto the true fundamental pitch without jitter.',
+      'Plucked strings exhibit a +15 to +30 cent pitch chirp during the first 100ms attack transient. PluckBench Pro filters out attack transients, weights the golden sustain plateau, and uses an overdamped fluid needle to lock onto the true fundamental pitch without jitter.',
     card2Title: 'Karplus-Strong Physical Modeling Synthesis',
     card2Desc:
       'No cheap electronic buzzers. Built-in waveguide string synthesis and multi-band wood body formant resonators reproduce authentic acoustic guitar, concert zither, violin, erhu, and ukulele reference tones.',
@@ -174,7 +174,7 @@ const FOOTER_CONTENT: Record<
         a: 'Never. All pitch detection, FFT spectrum analysis, and decibel measurements run 100% locally inside your browser via the Web Audio API with zero network transmission.',
       },
     ],
-    copyright: '© 2026 TuneKit Pro — Cross-Platform Online Music Toolkit (Tuner · Metronome · Chords · Ear Trainer · dB Meter)',
+    copyright: '© 2026 PluckBench Pro — Cross-Platform Online Music Workbench (Tuner · Metronome · Chords · Ear Trainer · dB Meter)',
     privacyBtn: 'Privacy Policy',
     termsBtn: 'Terms of Service',
     privacyText1:
@@ -182,7 +182,7 @@ const FOOTER_CONTENT: Record<
     privacyText2:
       '2. Local Preferences: Your A4 calibration, temperament, noise filter, and light/dark theme settings are stored locally on your device.',
     termsText1:
-      '1. Free Usage License: TuneKit Pro provides its instrument tuner, metronome, chord library, ear trainer, and decibel meter free of charge for musicians, students, and educators.',
+      '1. Free Usage License: PluckBench Pro provides its instrument tuner, metronome, chord library, ear trainer, and decibel meter free of charge for musicians, students, and educators.',
     termsText2:
       '2. String Safety Notice: When tuning high-tension treble strings, turn tuning pegs gradually while watching the Hz readout to avoid over-tightening and string breakage.',
     closeBtn: 'Close',

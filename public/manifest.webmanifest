@@ -1,15 +1,15 @@
 {
-  "name": "TuneKit Pro — 全平台专业乐器调音器与音乐工具箱",
-  "short_name": "TuneKit Pro",
+  "name": "PluckBench Pro — 音律工坊 · 全平台乐器调音器与音乐工作台",
+  "short_name": "PluckBench",
   "description": "集成延音稳态锁频调音器、物理建模真实乐器音色、智能抗噪、专业节拍器、和弦指法库、音感练耳与分贝仪的全平台音乐工具工作台。",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#070a0f",
   "theme_color": "#090d14",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/icon.svg",
+      "src": "./icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
