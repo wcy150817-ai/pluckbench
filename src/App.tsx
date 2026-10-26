@@ -20,6 +20,7 @@ import {
   GeoRegionCode,
   ColorMode,
   UI_TEXT,
+  getInitialGeoRegion,
   detectUserGeoRegion,
 } from './i18n/localeTheme';
 import { PitchProcessor, EnvelopePhase } from './audio/pitchDetector';
@@ -58,11 +59,19 @@ import {
 type ActiveToolTab = 'tuner' | 'metronome' | 'chords' | 'ear-trainer' | 'decibel';
 
 export const App: React.FC = () => {
-  // Multi-Tool Navigation State
-  const [activeTool, setActiveTool] = useState<ActiveToolTab>('tuner');
+  // Multi-Tool Navigation State (auto-detects dedicated SEO route path)
+  const [activeTool, setActiveTool] = useState<ActiveToolTab>(() => {
+    if (typeof window === 'undefined') return 'tuner';
+    const p = window.location.pathname.toLowerCase();
+    if (p.includes('metronome')) return 'metronome';
+    if (p.includes('chord')) return 'chords';
+    if (p.includes('ear-trainer')) return 'ear-trainer';
+    if (p.includes('decibel')) return 'decibel';
+    return 'tuner';
+  });
 
   // IP Geolocation -> Region (CN | US | EU | JP) + Day/Night Color Mode (dark | light)
-  const [region, setRegion] = useState<GeoRegionCode>('CN');
+  const [region, setRegion] = useState<GeoRegionCode>(() => getInitialGeoRegion());
   const [colorMode, setColorMode] = useState<ColorMode>('dark');
   const [showRegionMenu, setShowRegionMenu] = useState<boolean>(false);
 
@@ -101,12 +110,23 @@ export const App: React.FC = () => {
       lang === 'zh' ? 'zh-CN' : lang === 'ja' ? 'ja' : 'en';
   }, [lang]);
 
-  // Instrument & Tuning State (Default to 6-String Guitar)
+  // Instrument & Tuning State (auto-matches dedicated SEO route path like /ukulele-tuner, /guzheng-tuner, etc.)
+  const initialPreset = useMemo(() => {
+    if (typeof window === 'undefined') return INSTRUMENT_PRESETS[0];
+    const p = window.location.pathname.toLowerCase();
+    if (p.includes('ukulele')) return INSTRUMENT_PRESETS.find((x) => x.id === 'ukulele') || INSTRUMENT_PRESETS[0];
+    if (p.includes('violin')) return INSTRUMENT_PRESETS.find((x) => x.id === 'violin') || INSTRUMENT_PRESETS[0];
+    if (p.includes('guzheng')) return INSTRUMENT_PRESETS.find((x) => x.id === 'guzheng') || INSTRUMENT_PRESETS[0];
+    if (p.includes('bass')) return INSTRUMENT_PRESETS.find((x) => x.id === 'bass') || INSTRUMENT_PRESETS[0];
+    if (p.includes('erhu') || p.includes('pipa')) return INSTRUMENT_PRESETS.find((x) => x.id === 'erhu-pipa') || INSTRUMENT_PRESETS[0];
+    return INSTRUMENT_PRESETS[0];
+  }, []);
+
   const [selectedPreset, setSelectedPreset] = useState<InstrumentPreset>(
-    INSTRUMENT_PRESETS[0]
+    initialPreset
   );
   const [selectedTuning, setSelectedTuning] = useState<TuningVariant>(
-    INSTRUMENT_PRESETS[0].tunings[0]
+    initialPreset.tunings[0]
   );
 
   // Default to 'tune-manual' (String-First Workflow: select which string to tune first!)
@@ -127,9 +147,13 @@ export const App: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
 
   // Target & Stabilized Pitch State
-  const [targetMidi, setTargetMidi] = useState<number>(40); // Default Guitar 6th string E2
+  const [targetMidi, setTargetMidi] = useState<number>(
+    initialPreset.tunings[0]?.strings[0]?.midi ?? 40
+  );
   const [measuredFreq, setMeasuredFreq] = useState<number | null>(null);
-  const [currentFloatMidi, setCurrentFloatMidi] = useState<number>(40);
+  const [currentFloatMidi, setCurrentFloatMidi] = useState<number>(
+    initialPreset.tunings[0]?.strings[0]?.midi ?? 40
+  );
   const [centsOffset, setCentsOffset] = useState<number>(0);
   const [hasSignal, setHasSignal] = useState<boolean>(false);
   const [clarity, setClarity] = useState<number>(0);
@@ -754,6 +778,7 @@ export const App: React.FC = () => {
                     >
                       {t.brandTag}
                     </span>
+                    <span className="sr-only"> — {t.seoH1}</span>
                   </h1>
 
                   {/* Geo Region Selector Pill */}

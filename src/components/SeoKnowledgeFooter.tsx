@@ -30,16 +30,16 @@ const FOOTER_CONTENT: Record<
   }
 > = {
   zh: {
-    card1Title: '三阶段发声包络延音锁定技术',
+    card1Title: '在线乐器调音器：三阶段发声包络延音锁定技术',
     card1Desc:
-      '吉他、古筝、琵琶与尤克里里在拨弦瞬间（起振瞬态）琴弦张力骤增，会产生偏高 15~30 音分的瞬态频移。音律工坊采用起振瞬态过滤 + 黄金延音段能量加权锁定 + 余音保持算法，杜绝指针乱晃，精准锁定琴弦真实基频。',
-    card2Title: '物理建模真实乐器原声合成',
+      '吉他、古筝、琵琶与尤克里里在拨弦瞬间（起振瞬态）琴弦张力骤增，会产生偏高 15~30 音分的瞬态频移。音律工坊在线乐器调音器采用起振瞬态过滤 + 黄金延音段能量加权锁定 + 余音保持算法，杜绝指针乱晃，精准锁定琴弦真实基频。',
+    card2Title: '物理建模真实乐器原声合成参考音',
     card2Desc:
-      '告别生硬廉价的电子蜂鸣音。内置物理波导弦振动合成器与多频段木质音板共振峰滤波器，针对原声木吉他、21弦古筝、蟒皮二胡、小提琴与夏威夷尤克里里还原真实拨弦与弓弦听感。',
+      '告别生硬廉价的电子蜂鸣音。本在线乐器调音器内置物理波导弦振动合成器与多频段木质音板共振峰滤波器，针对原声木吉他、21弦古筝、蟒皮二胡、小提琴与夏威夷尤克里里还原真实拨弦与弓弦听感。',
     card3Title: '智能环境噪音监测与窄带滤波降噪',
     card3Desc:
-      '实时监测周围环境底噪与人声干扰。当身处嘈杂琴房或户外时，先选定目标琴弦并开启强效降噪，系统将自动收窄带通滤波器至该琴弦基频附近，彻底屏蔽谈话声、空调与风扇杂音。',
-    tableTitle: '常用中西乐器标准定弦频率速查表 (A4 = 440.0 Hz)',
+      '实时监测周围环境底噪与人声干扰。当身处嘈杂琴房或户外使用在线乐器调音器时，先选定目标琴弦并开启强效降噪，系统将自动收窄带通滤波器至该琴弦基频附近，彻底屏蔽谈话声、空调与风扇杂音。',
+    tableTitle: '在线乐器调音器：常用中西乐器标准定弦频率速查表 (A4 = 440.0 Hz)',
     thInst: '乐器名称',
     thNotes: '标准定弦音名 (由低到高)',
     thRange: '核心基频范围 (Hz)',
@@ -76,15 +76,15 @@ const FOOTER_CONTENT: Record<
         tip: '二胡运弓保持平稳长音（避免揉弦）以获得最高测量精度',
       },
     ],
-    faqTitle: '常见问题解答',
+    faqTitle: '在线乐器调音器常见问题解答',
     faqs: [
       {
-        q: '1. 为什么要先选定哪根弦再调音？',
-        a: '先点击选定要调的琴弦后，调音器会将带通滤波器精准锁定在该琴弦的频率窗口，不仅能彻底防止相邻琴弦共鸣或外界说话声导致跳弦，还能在音准稳定后自动播放清脆的完成提示音。',
+        q: '1. 为什么使用在线乐器调音器要先选定哪根弦再调音？',
+        a: '先点击选定要调的琴弦后，在线乐器调音器会将带通滤波器精准锁定在该琴弦的频率窗口，不仅能彻底防止相邻琴弦共鸣或外界说话声导致跳弦，还能在音准稳定后自动播放清脆的完成提示音。',
       },
       {
         q: '2. 为什么有些乐器刚拨弦时音高偏高，随后才稳定？',
-        a: '这是弦乐器的物理特性。手指或拨片拉扯琴弦瞬间会短暂增加张力，导致前 100 毫秒音高偏高。本工具内置瞬态过滤与延音锁定算法，会自动忽略拨弦瞬间的尖峰，直接锁定延音段最真实的基频。',
+        a: '这是弦乐器的物理特性。手指或拨片拉扯琴弦瞬间会短暂增加张力，导致前 100 毫秒音高偏高。本在线乐器调音器内置瞬态过滤与延音锁定算法，会自动忽略拨弦瞬间的尖峰，直接锁定延音段最真实的基频。',
       },
       {
         q: '3. 在琴房或户外环境比较吵的时候怎么准确调音？',
@@ -95,7 +95,7 @@ const FOOTER_CONTENT: Record<
         a: '绝不上传。所有音频频谱计算、基频提取与分贝检测均 100% 在您设备本地浏览器的内存中实时完成，零延迟且完全保护您的隐私安全。',
       },
     ],
-    copyright: '© 2026 音律工坊 专业版 — 全平台在线音乐工具箱（调音器 · 节拍器 · 和弦库 · 练耳 · 分贝仪）',
+    copyright: '© 2026 音律工坊 专业版 — 全平台在线乐器调音器与音乐工具箱（调音器 · 节拍器 · 和弦库 · 练耳 · 分贝仪）',
     privacyBtn: '隐私政策',
     termsBtn: '服务条款',
     privacyText1:
@@ -109,16 +109,16 @@ const FOOTER_CONTENT: Record<
     closeBtn: '关闭',
   },
   en: {
-    card1Title: '3-Stage Envelope Sustain-Lock Engine',
+    card1Title: 'Online Instrument Tuner: 3-Stage Sustain-Lock Engine',
     card1Desc:
-      'Plucked strings exhibit a +15 to +30 cent pitch chirp during the first 100ms attack transient. PluckBench Pro filters out attack transients, weights the golden sustain plateau, and uses an overdamped fluid needle to lock onto the true fundamental pitch without jitter.',
-    card2Title: 'Karplus-Strong Physical Modeling Synthesis',
+      'Plucked strings exhibit a +15 to +30 cent pitch chirp during the first 100ms attack transient. Our online instrument tuner filters out attack transients, weights the golden sustain plateau, and uses an overdamped fluid needle to lock onto the true fundamental pitch without jitter.',
+    card2Title: 'Karplus-Strong Physical Modeling Reference Tones',
     card2Desc:
-      'No cheap electronic buzzers. Built-in waveguide string synthesis and multi-band wood body formant resonators reproduce authentic acoustic guitar, concert zither, violin, erhu, and ukulele reference tones.',
+      'No cheap electronic buzzers. Built into this online instrument tuner are waveguide string synthesis and multi-band wood body formant resonators that reproduce authentic acoustic guitar, concert zither, violin, erhu, and ukulele reference tones.',
     card3Title: 'Narrow-Band Hardware Noise Suppression',
     card3Desc:
-      'Select your target string first and enable the Noise Filter in noisy rooms. The audio engine automatically narrows its bandpass filter around that specific string frequency to reject background chatter and room noise.',
-    tableTitle: 'Standard Instrument Tuning Frequency Reference (A4 = 440.0 Hz)',
+      'Select your target string first and enable the Noise Filter in noisy rooms. The online instrument tuner audio engine automatically narrows its bandpass filter around that specific string frequency to reject background chatter and room noise.',
+    tableTitle: 'Online Instrument Tuner Frequency Reference Chart (A4 = 440.0 Hz)',
     thInst: 'Instrument',
     thNotes: 'Standard String Notes (Low to High)',
     thRange: 'Fundamental Range (Hz)',
@@ -155,11 +155,11 @@ const FOOTER_CONTENT: Record<
         tip: 'Pluck gently near the neck pickup for clearer fundamental harmonic',
       },
     ],
-    faqTitle: 'Frequently Asked Questions (FAQ)',
+    faqTitle: 'Online Instrument Tuner Frequently Asked Questions (FAQ)',
     faqs: [
       {
-        q: '1. Why should I select the target string before tuning?',
-        a: 'Selecting your target string locks the bandpass filter directly around that string’s frequency window. It prevents sympathetic string vibration or room chatter from jumping to another note, and plays a confirmation chime once held steady within ±5 cents.',
+        q: '1. Why should I select the target string first on this online instrument tuner?',
+        a: 'Selecting your target string locks the online instrument tuner bandpass filter directly around that string’s frequency window. It prevents sympathetic string vibration or room chatter from jumping to another note, and plays a confirmation chime once held steady within ±5 cents.',
       },
       {
         q: '2. Why does a plucked string read sharp at first and then settle?',
@@ -167,14 +167,14 @@ const FOOTER_CONTENT: Record<
       },
       {
         q: '3. How can I tune accurately in a noisy practice room or outdoors?',
-        a: 'Tap the string you want to tune and enable the "Noise Filter" button in the top bar. This activates a narrow-band hardware filter centered on that single string.',
+        a: 'Tap the string you want to tune and enable the "Noise Filter" button in the top bar of the online instrument tuner. This activates a narrow-band hardware filter centered on that single string.',
       },
       {
         q: '4. Is my microphone audio ever recorded or uploaded?',
         a: 'Never. All pitch detection, FFT spectrum analysis, and decibel measurements run 100% locally inside your browser via the Web Audio API with zero network transmission.',
       },
     ],
-    copyright: '© 2026 PluckBench Pro — Cross-Platform Online Music Workbench (Tuner · Metronome · Chords · Ear Trainer · dB Meter)',
+    copyright: '© 2026 PluckBench Pro — Free Online Instrument Tuner & Cross-Platform Music Workbench (Tuner · Metronome · Chords · Ear Trainer · dB Meter)',
     privacyBtn: 'Privacy Policy',
     termsBtn: 'Terms of Service',
     privacyText1:
@@ -439,6 +439,119 @@ export const SeoKnowledgeFooter: React.FC<{
           ))}
         </div>
       </div>
+
+      {/* Section 4: Dedicated Instrument Tuners & Music Tools Internal Link Matrix (GeFei SEO Internal Linking) */}
+      <nav
+        aria-label={
+          lang === 'zh'
+            ? '专项乐器调音器与音乐工具导航'
+            : lang === 'ja'
+            ? '楽器別チューナー＆音楽ツール一覧'
+            : 'Dedicated Instrument Tuners & Online Music Tools'
+        }
+        className="rounded-2xl border p-4 sm:p-5 space-y-3"
+        style={{
+          backgroundColor: theme.bgCard,
+          borderColor: theme.borderPrimary,
+        }}
+      >
+        <h2 className="font-bold text-xs sm:text-sm" style={{ color: theme.accentHex }}>
+          {lang === 'zh'
+            ? '专项乐器调音器与在线音乐工具直达入口'
+            : lang === 'ja'
+            ? '楽器別オンラインチューナー＆音楽ツール一覧'
+            : 'Dedicated Online Instrument Tuners & Music Tools'}
+        </h2>
+        <div className="flex flex-wrap gap-2 text-xs">
+          {[
+            {
+              href: '/',
+              label: {
+                zh: '全能乐器调音器首页',
+                en: 'Chromatic & Instrument Tuner Home',
+                ja: '楽器チューナー ホーム',
+              },
+            },
+            {
+              href: '/guitar-tuner',
+              label: {
+                zh: '六弦吉他在线调音器',
+                en: 'Online Guitar Tuner (Standard & Drop D)',
+                ja: 'ギターオンラインチューナー',
+              },
+            },
+            {
+              href: '/ukulele-tuner',
+              label: {
+                zh: '尤克里里在线调音器',
+                en: 'Online Ukulele Tuner (GCEA High-G)',
+                ja: 'ウクレレオンラインチューナー',
+              },
+            },
+            {
+              href: '/violin-tuner',
+              label: {
+                zh: '小提琴与大提琴调音器',
+                en: 'Online Violin & Cello Tuner (GDAE)',
+                ja: 'バイオリン・チェロチューナー',
+              },
+            },
+            {
+              href: '/guzheng-tuner',
+              label: {
+                zh: '21弦古筝在线调音器 (D调/G调)',
+                en: 'Online 21-String Guzheng Tuner',
+                ja: '21弦古筝オンラインチューナー',
+              },
+            },
+            {
+              href: '/bass-tuner',
+              label: {
+                zh: '四弦与五弦贝斯调音器',
+                en: 'Online 4 & 5-String Bass Tuner',
+                ja: 'エレキベースチューナー',
+              },
+            },
+            {
+              href: '/online-metronome',
+              label: {
+                zh: '在线专业节拍器 (BPM测速)',
+                en: 'Free Online Metronome with Tap Tempo',
+                ja: 'オンラインメトロノーム (BPM測定)',
+              },
+            },
+            {
+              href: '/guitar-chords',
+              label: {
+                zh: '吉他与尤克里里和弦指法库',
+                en: 'Interactive Guitar & Ukulele Chord Chart',
+                ja: 'ギター＆ウクレレコード指板辞典',
+              },
+            },
+            {
+              href: '/decibel-meter',
+              label: {
+                zh: '在线环境噪音分贝检测仪',
+                en: 'Online Ambient Noise Decibel Meter (dB)',
+                ja: 'オンライン環境騒音計・スペクトラム分析',
+              },
+            },
+          ].map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="px-3 py-1.5 rounded-xl border font-medium transition-colors hover:opacity-90"
+              style={{
+                backgroundColor: theme.bgSubtle,
+                borderColor: theme.borderPrimary,
+                color: theme.textPrimary,
+              }}
+            >
+              {link.label[lang]}
+            </a>
+          ))}
+        </div>
+      </nav>
 
       {/* Footer Bar */}
       <footer

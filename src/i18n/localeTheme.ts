@@ -198,18 +198,40 @@ export interface GeoDetectionInfo {
   ip?: string;
 }
 
-export async function detectUserGeoRegion(): Promise<GeoDetectionInfo> {
-  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
-  const navLang = (navigator.language || 'zh-CN').toLowerCase();
-
-  let fallback: GeoDetectionInfo = { region: 'CN', lang: 'zh' };
-  if (tz.includes('Tokyo') || navLang.startsWith('ja')) {
-    fallback = { region: 'JP', lang: 'ja' };
-  } else if (tz.startsWith('Europe/')) {
-    fallback = { region: 'EU', lang: 'en' };
-  } else if (tz.startsWith('America/')) {
-    fallback = { region: 'US', lang: 'en' };
+export function getInitialGeoRegion(): GeoRegionCode {
+  if (typeof window === 'undefined') return 'US';
+  const params = new URLSearchParams(window.location.search);
+  const forced = params.get('region')?.toUpperCase();
+  if (forced === 'CN' || forced === 'US' || forced === 'EU' || forced === 'JP') {
+    return forced;
   }
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+  const navLang = (navigator.language || 'en-US').toLowerCase();
+  if (tz.includes('Tokyo') || navLang.startsWith('ja')) {
+    return 'JP';
+  }
+  if (
+    tz.includes('Shanghai') ||
+    tz.includes('Chongqing') ||
+    tz.includes('Hong_Kong') ||
+    tz.includes('Taipei') ||
+    tz.includes('Singapore') ||
+    navLang.startsWith('zh')
+  ) {
+    return 'CN';
+  }
+  if (tz.startsWith('Europe/')) {
+    return 'EU';
+  }
+  return 'US';
+}
+
+export async function detectUserGeoRegion(): Promise<GeoDetectionInfo> {
+  const initialRegion = getInitialGeoRegion();
+  const fallback: GeoDetectionInfo = {
+    region: initialRegion,
+    lang: REGION_TO_LANG[initialRegion],
+  };
 
   try {
     const controller = new AbortController();
@@ -250,6 +272,7 @@ export const UI_TEXT = {
   zh: {
     brandName: '音律工坊',
     brandTag: '专业版',
+    seoH1: '在线乐器调音器、节拍器与和弦指法工作台',
     subtitle: '先选定目标琴弦 · 保持音准稳定即可触发完成提示音',
     regionName: {
       CN: '中国区 · 翡翠主题',
@@ -333,6 +356,7 @@ export const UI_TEXT = {
   en: {
     brandName: 'PluckBench',
     brandTag: 'Pro',
+    seoH1: 'Online Instrument Tuner, Metronome & Chord Library',
     subtitle: 'Step 1: Select String · Step 2: Hold in ±5¢ Zone for Chime',
     regionName: {
       CN: 'CN · Emerald Theme',
@@ -416,6 +440,7 @@ export const UI_TEXT = {
   ja: {
     brandName: '音律工房',
     brandTag: 'プロ',
+    seoH1: 'オンライン楽器チューナー・メトロノーム＆コード辞典',
     subtitle: '1. 調律する弦を選択 · 2. ±5¢安定保持で完了音が鳴ります',
     regionName: {
       CN: '中国 · 翡翠テーマ',
