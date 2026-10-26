@@ -1,183 +1,219 @@
 export type SupportedLang = 'zh' | 'en' | 'ja';
-export type ThemePaletteId = 'emerald-cn' | 'cobalt-us' | 'amber-eu' | 'violet-jp' | 'light-studio';
+export type GeoRegionCode = 'CN' | 'US' | 'EU' | 'JP';
+export type ColorMode = 'dark' | 'light';
 
 export interface ThemePalette {
-  id: ThemePaletteId;
-  nameZh: string;
-  nameEn: string;
-  regionBadge: string;
-  isLight?: boolean;
+  region: GeoRegionCode;
+  mode: ColorMode;
+  isLight: boolean;
   bgPrimary: string;
   bgCard: string;
+  bgSubtle: string;
   bgHeader: string;
   borderPrimary: string;
   textPrimary: string;
   textSecondary: string;
-  accentHex: string;       // Primary in-tune / brand accent
-  secondaryHex: string;    // Frequency / secondary accent
-  warnHex: string;         // Flat / approaching
-  dangerHex: string;       // Sharp / out of tune
+  textMuted: string;
+  accentHex: string;
+  secondaryHex: string;
+  warnHex: string;
+  dangerHex: string;
   dialGradientStart: string;
   dialGradientEnd: string;
 }
 
-export const THEME_PALETTES: Record<ThemePaletteId, ThemePalette> = {
-  'emerald-cn': {
-    id: 'emerald-cn',
-    nameZh: '东方翡翠暗黑 (CN 默认)',
-    nameEn: 'Emerald Studio Dark (CN)',
-    regionBadge: 'CN · 亚太华语区',
-    bgPrimary: '#070a0f',
-    bgCard: '#0d121b',
-    bgHeader: 'rgba(9, 13, 20, 0.90)',
-    borderPrimary: '#1e293b',
-    textPrimary: '#f8fafc',
-    textSecondary: '#94a3b8',
-    accentHex: '#10b981',
-    secondaryHex: '#38bdf8',
-    warnHex: '#f59e0b',
-    dangerHex: '#f43f5e',
-    dialGradientStart: '#111927',
-    dialGradientEnd: '#090d14',
+export const REGIONAL_THEMES: Record<GeoRegionCode, Record<ColorMode, ThemePalette>> = {
+  CN: {
+    dark: {
+      region: 'CN',
+      mode: 'dark',
+      isLight: false,
+      bgPrimary: '#070a0f',
+      bgCard: '#0d131c',
+      bgSubtle: '#111926',
+      bgHeader: 'rgba(9, 13, 20, 0.92)',
+      borderPrimary: '#1e293b',
+      textPrimary: '#f8fafc',
+      textSecondary: '#94a3b8',
+      textMuted: '#64748b',
+      accentHex: '#10b981',
+      secondaryHex: '#38bdf8',
+      warnHex: '#f59e0b',
+      dangerHex: '#f43f5e',
+      dialGradientStart: '#111a26',
+      dialGradientEnd: '#090d14',
+    },
+    light: {
+      region: 'CN',
+      mode: 'light',
+      isLight: true,
+      bgPrimary: '#f2f7f5',
+      bgCard: '#ffffff',
+      bgSubtle: '#e6f0ec',
+      bgHeader: 'rgba(255, 255, 255, 0.94)',
+      borderPrimary: '#cbd5e1',
+      textPrimary: '#0f172a',
+      textSecondary: '#334155',
+      textMuted: '#64748b',
+      accentHex: '#059669',
+      secondaryHex: '#0284c7',
+      warnHex: '#d97706',
+      dangerHex: '#e11d48',
+      dialGradientStart: '#f8fafc',
+      dialGradientEnd: '#e2ece8',
+    },
   },
-  'cobalt-us': {
-    id: 'cobalt-us',
-    nameZh: '北美深空电光蓝 (US/NA 默认)',
-    nameEn: 'Cobalt Cyber Pro (US/NA)',
-    regionBadge: 'US · North America',
-    bgPrimary: '#050814',
-    bgCard: '#0b1124',
-    bgHeader: 'rgba(7, 11, 24, 0.90)',
-    borderPrimary: '#1e2b4d',
-    textPrimary: '#f1f5f9',
-    textSecondary: '#94a3b8',
-    accentHex: '#06b6d4',
-    secondaryHex: '#818cf8',
-    warnHex: '#fbbf24',
-    dangerHex: '#fb7185',
-    dialGradientStart: '#101b38',
-    dialGradientEnd: '#070b18',
+  US: {
+    dark: {
+      region: 'US',
+      mode: 'dark',
+      isLight: false,
+      bgPrimary: '#050814',
+      bgCard: '#0b1124',
+      bgSubtle: '#111a36',
+      bgHeader: 'rgba(7, 11, 24, 0.92)',
+      borderPrimary: '#1e2b4d',
+      textPrimary: '#f1f5f9',
+      textSecondary: '#94a3b8',
+      textMuted: '#64748b',
+      accentHex: '#06b6d4',
+      secondaryHex: '#818cf8',
+      warnHex: '#fbbf24',
+      dangerHex: '#fb7185',
+      dialGradientStart: '#101b38',
+      dialGradientEnd: '#070b18',
+    },
+    light: {
+      region: 'US',
+      mode: 'light',
+      isLight: true,
+      bgPrimary: '#f0f5fc',
+      bgCard: '#ffffff',
+      bgSubtle: '#e2ecf8',
+      bgHeader: 'rgba(255, 255, 255, 0.94)',
+      borderPrimary: '#cbd5e1',
+      textPrimary: '#0f172a',
+      textSecondary: '#334155',
+      textMuted: '#64748b',
+      accentHex: '#0284c7',
+      secondaryHex: '#4f46e5',
+      warnHex: '#d97706',
+      dangerHex: '#e11d48',
+      dialGradientStart: '#f8fafc',
+      dialGradientEnd: '#e0eaf8',
+    },
   },
-  'amber-eu': {
-    id: 'amber-eu',
-    nameZh: '欧洲复古电子管暖金 (EU 默认)',
-    nameEn: 'Vintage Warm Amber (EU)',
-    regionBadge: 'EU · Europe Region',
-    bgPrimary: '#0c0907',
-    bgCard: '#17120e',
-    bgHeader: 'rgba(18, 13, 10, 0.90)',
-    borderPrimary: '#2e241d',
-    textPrimary: '#fef3c7',
-    textSecondary: '#a8a29e',
-    accentHex: '#f59e0b',
-    secondaryHex: '#34d399',
-    warnHex: '#fb923c',
-    dangerHex: '#f87171',
-    dialGradientStart: '#241a12',
-    dialGradientEnd: '#120d0a',
+  EU: {
+    dark: {
+      region: 'EU',
+      mode: 'dark',
+      isLight: false,
+      bgPrimary: '#0c0907',
+      bgCard: '#17120e',
+      bgSubtle: '#221a14',
+      bgHeader: 'rgba(18, 13, 10, 0.92)',
+      borderPrimary: '#2e241d',
+      textPrimary: '#fef3c7',
+      textSecondary: '#a8a29e',
+      textMuted: '#78716c',
+      accentHex: '#f59e0b',
+      secondaryHex: '#10b981',
+      warnHex: '#fb923c',
+      dangerHex: '#f87171',
+      dialGradientStart: '#241a12',
+      dialGradientEnd: '#120d0a',
+    },
+    light: {
+      region: 'EU',
+      mode: 'light',
+      isLight: true,
+      bgPrimary: '#faf6f0',
+      bgCard: '#ffffff',
+      bgSubtle: '#f3ece1',
+      bgHeader: 'rgba(255, 255, 255, 0.94)',
+      borderPrimary: '#d6cfc7',
+      textPrimary: '#1c1917',
+      textSecondary: '#44403c',
+      textMuted: '#78716c',
+      accentHex: '#d97706',
+      secondaryHex: '#059669',
+      warnHex: '#ea580c',
+      dangerHex: '#dc2626',
+      dialGradientStart: '#fffbeb',
+      dialGradientEnd: '#f3ead8',
+    },
   },
-  'violet-jp': {
-    id: 'violet-jp',
-    nameZh: '东京极夜霓虹紫 (JP/KR 默认)',
-    nameEn: 'Tokyo Neon Violet (JP)',
-    regionBadge: 'JP · East Asia',
-    bgPrimary: '#090612',
-    bgCard: '#130d24',
-    bgHeader: 'rgba(12, 8, 22, 0.90)',
-    borderPrimary: '#2b1f47',
-    textPrimary: '#f5f3ff',
-    textSecondary: '#a78bfa',
-    accentHex: '#c084fc',
-    secondaryHex: '#2dd4bf',
-    warnHex: '#facc15',
-    dangerHex: '#f43f5e',
-    dialGradientStart: '#1e1438',
-    dialGradientEnd: '#0c0818',
-  },
-  'light-studio': {
-    id: 'light-studio',
-    nameZh: '日间极简浅色工作台 (Light)',
-    nameEn: 'Daylight Studio (Light)',
-    regionBadge: 'Daylight · 护眼浅色',
-    isLight: true,
-    bgPrimary: '#f1f5f9',
-    bgCard: '#ffffff',
-    bgHeader: 'rgba(255, 255, 255, 0.92)',
-    borderPrimary: '#cbd5e1',
-    textPrimary: '#0f172a',
-    textSecondary: '#475569',
-    accentHex: '#059669',
-    secondaryHex: '#0284c7',
-    warnHex: '#d97706',
-    dangerHex: '#e11d48',
-    dialGradientStart: '#f8fafc',
-    dialGradientEnd: '#e2e8f0',
+  JP: {
+    dark: {
+      region: 'JP',
+      mode: 'dark',
+      isLight: false,
+      bgPrimary: '#090612',
+      bgCard: '#130d24',
+      bgSubtle: '#1d1436',
+      bgHeader: 'rgba(12, 8, 22, 0.92)',
+      borderPrimary: '#2b1f47',
+      textPrimary: '#f5f3ff',
+      textSecondary: '#c4b5fd',
+      textMuted: '#7c6f9f',
+      accentHex: '#c084fc',
+      secondaryHex: '#2dd4bf',
+      warnHex: '#facc15',
+      dangerHex: '#f43f5e',
+      dialGradientStart: '#1e1438',
+      dialGradientEnd: '#0c0818',
+    },
+    light: {
+      region: 'JP',
+      mode: 'light',
+      isLight: true,
+      bgPrimary: '#faf5ff',
+      bgCard: '#ffffff',
+      bgSubtle: '#f3e8ff',
+      bgHeader: 'rgba(255, 255, 255, 0.94)',
+      borderPrimary: '#d8b4fe',
+      textPrimary: '#1e1b4b',
+      textSecondary: '#4c1d95',
+      textMuted: '#6b7280',
+      accentHex: '#9333ea',
+      secondaryHex: '#0d9488',
+      warnHex: '#ca8a04',
+      dangerHex: '#e11d48',
+      dialGradientStart: '#fdf4ff',
+      dialGradientEnd: '#f3e8ff',
+    },
   },
 };
 
+export const REGION_TO_LANG: Record<GeoRegionCode, SupportedLang> = {
+  CN: 'zh',
+  US: 'en',
+  EU: 'en',
+  JP: 'ja',
+};
+
 export interface GeoDetectionInfo {
-  countryCode: string;
-  countryName: string;
-  ip?: string;
+  region: GeoRegionCode;
   lang: SupportedLang;
-  paletteId: ThemePaletteId;
-  source: 'ip-api' | 'timezone-fallback' | 'manual';
+  ip?: string;
 }
 
-export async function detectUserGeoAndTheme(): Promise<GeoDetectionInfo> {
-  // 1. Instant timezone heuristic first
+export async function detectUserGeoRegion(): Promise<GeoDetectionInfo> {
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
   const navLang = (navigator.language || 'zh-CN').toLowerCase();
 
-  let defaultInfo: GeoDetectionInfo = {
-    countryCode: 'CN',
-    countryName: 'China',
-    lang: 'zh',
-    paletteId: 'emerald-cn',
-    source: 'timezone-fallback',
-  };
-
+  let fallback: GeoDetectionInfo = { region: 'CN', lang: 'zh' };
   if (tz.includes('Tokyo') || navLang.startsWith('ja')) {
-    defaultInfo = {
-      countryCode: 'JP',
-      countryName: 'Japan',
-      lang: 'ja',
-      paletteId: 'violet-jp',
-      source: 'timezone-fallback',
-    };
-  } else if (
-    tz.startsWith('Europe/') ||
-    navLang.startsWith('de') ||
-    navLang.startsWith('fr')
-  ) {
-    defaultInfo = {
-      countryCode: 'EU',
-      countryName: 'Europe',
-      lang: 'en',
-      paletteId: 'amber-eu',
-      source: 'timezone-fallback',
-    };
-  } else if (
-    tz.startsWith('America/') ||
-    (navLang.startsWith('en') &&
-      !tz.includes('Shanghai') &&
-      !tz.includes('Chongqing') &&
-      !tz.includes('Hong_Kong') &&
-      !tz.includes('Taipei'))
-  ) {
-    defaultInfo = {
-      countryCode: 'US',
-      countryName: 'United States',
-      lang: 'en',
-      paletteId: 'cobalt-us',
-      source: 'timezone-fallback',
-    };
+    fallback = { region: 'JP', lang: 'ja' };
+  } else if (tz.startsWith('Europe/')) {
+    fallback = { region: 'EU', lang: 'en' };
+  } else if (tz.startsWith('America/')) {
+    fallback = { region: 'US', lang: 'en' };
   }
 
-  // 2. Try fast non-blocking IP geolocation lookup (timeout 2.2s)
   try {
     const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), 2200);
+    const timeout = window.setTimeout(() => controller.abort(), 2000);
     const res = await fetch('https://ipwho.is/', { signal: controller.signal });
     clearTimeout(timeout);
     if (res.ok) {
@@ -185,140 +221,132 @@ export async function detectUserGeoAndTheme(): Promise<GeoDetectionInfo> {
       if (data && data.country_code) {
         const cc = String(data.country_code).toUpperCase();
         const ip = data.ip ? String(data.ip) : undefined;
-        const countryName = data.country ? String(data.country) : cc;
-
-        if (['CN', 'HK', 'MO', 'TW', 'SG'].includes(cc)) {
-          return {
-            countryCode: cc,
-            countryName,
-            ip,
-            lang: 'zh',
-            paletteId: 'emerald-cn',
-            source: 'ip-api',
-          };
+        if (['CN', 'HK', 'MO', 'TW', 'SG', 'MY'].includes(cc)) {
+          return { region: 'CN', lang: 'zh', ip };
         }
-        if (['JP', 'KR'].includes(cc)) {
-          return {
-            countryCode: cc,
-            countryName,
-            ip,
-            lang: cc === 'JP' ? 'ja' : 'en',
-            paletteId: 'violet-jp',
-            source: 'ip-api',
-          };
+        if (['JP'].includes(cc)) {
+          return { region: 'JP', lang: 'ja', ip };
         }
         if (
           [
             'DE', 'FR', 'GB', 'IT', 'ES', 'NL', 'SE', 'CH', 'AT', 'BE', 'PL', 'NO', 'DK', 'FI', 'IE', 'PT',
           ].includes(cc)
         ) {
-          return {
-            countryCode: cc,
-            countryName,
-            ip,
-            lang: 'en',
-            paletteId: 'amber-eu',
-            source: 'ip-api',
-          };
+          return { region: 'EU', lang: 'en', ip };
         }
-        return {
-          countryCode: cc,
-          countryName,
-          ip,
-          lang: 'en',
-          paletteId: 'cobalt-us',
-          source: 'ip-api',
-        };
+        return { region: 'US', lang: 'en', ip };
       }
     }
   } catch {
-    // Fallback to timezone heuristic silently
+    // Use timezone fallback
   }
-
-  return defaultInfo;
+  return fallback;
 }
 
-export const UI_TRANSLATIONS: Record<
-  SupportedLang,
-  {
-    subtitle: string;
-    tabTuner: string;
-    tabMetronome: string;
-    tabChords: string;
-    tabEar: string;
-    tabDecibel: string;
-    micOn: string;
-    micOff: string;
-    simOn: string;
-    simOff: string;
-    noiseReductionOn: string;
-    noiseReductionOff: string;
-    step1SelectString: string;
-    step2PluckAndHold: string;
-    flatTighten: string;
-    sharpLoosen: string;
-    inTuneLocked: string;
-    holdingForLock: string;
-    waitingForString: string;
-    targetPitch: string;
-    measuredPitch: string;
-    stringLockedBadge: string;
-    modeManualTitle: string;
-    modeManualSub: string;
-    modeAutoTitle: string;
-    modeAutoSub: string;
-    modeSoundTitle: string;
-    modeSoundSub: string;
-    tuningVariantLabel: string;
-    allStringsTuned: string;
-    nextUntunedString: string;
-    noisyAlertTitle: string;
-    noisyAlertDesc: string;
-    noisyAlertBtn: string;
-    ignoreBtn: string;
-  }
-> = {
+/**
+ * Complete, 100% pure single-language dictionary per locale (zero mixed-language strings!)
+ */
+export const UI_TEXT = {
   zh: {
-    subtitle: '先选定目标琴弦 · 保持音准小幅稳定自动响起完成提示音',
-    tabTuner: '专业调音器',
-    tabMetronome: '节拍器 & 测速',
+    brandName: '音律工坊',
+    brandTag: '专业版',
+    subtitle: '先选定目标琴弦 · 保持音准稳定即可触发完成提示音',
+    regionName: {
+      CN: '中国区 · 翡翠主题',
+      US: '北美区 · 深空蓝主题',
+      EU: '欧洲区 · 琥珀金主题',
+      JP: '日本区 · 紫晶主题',
+    },
+    modeDark: '夜间版',
+    modeLight: '白天版',
+    switchToLight: '切换白天版',
+    switchToDark: '切换夜间版',
+    regionMenuTitle: '切换地区配色与语言',
+    tabTuner: '乐器调音器',
+    tabMetronome: '专业节拍器',
     tabChords: '和弦指法库',
-    tabEar: '音感练耳 & 音叉',
+    tabEar: '音感练耳',
     tabDecibel: '环境分贝仪',
-    micOn: '正在测音',
+    micOn: '测音中',
     micOff: '开启麦克风',
     simOn: '停止演示',
     simOff: '模拟调弦',
-    noiseReductionOn: '强效降噪中',
-    noiseReductionOff: '抗噪降噪',
-    step1SelectString: '第 1 步：请先点击选定要调的琴弦（已锁定防跳弦）',
-    step2PluckAndHold: '第 2 步：拨响该弦，指针在中心 ±5¢ 小波动区保持 0.9 秒即完成校准',
-    flatTighten: '偏低 · 需拧紧 ▶',
-    sharpLoosen: '◀ 偏高 · 需放松',
-    inTuneLocked: '✓ 该弦已调准！已播放确认音',
-    holdingForLock: '音准进入合格区 · 稳定保持中',
+    noiseReductionOn: '强效降噪已开',
+    noiseReductionOff: '环境降噪',
+    step1SelectString: '第1步：点击选定要调的琴弦',
+    autoAdvanceLabel: '调准后自动切下一弦',
+    flatTighten: '偏低 · 拧紧 ▶',
+    sharpLoosen: '◀ 偏高 · 放松',
+    inTuneLocked: '✓ 该弦已调准！已响确认音',
+    holdingForLock: '进入合格区 · 稳定保持中',
     waitingForString: '请拨响当前选定的琴弦...',
+    playingRefTone: '正在播放原声基准音',
+    dialTopScaleLabel: '音分偏差刻度 (±5音分稳定合格区)',
+    dialInnerScaleLabel: '动态赫兹频率尺 (Hz)',
+    dialTrailLabel: '延音稳定度轨迹',
     targetPitch: '当前锁定目标弦',
-    measuredPitch: '稳态实测频率',
-    stringLockedBadge: '单弦锁定',
-    modeManualTitle: '选弦调音 (推荐)',
-    modeManualSub: '先选哪根弦再调音',
-    modeAutoTitle: '自动识别琴弦',
-    modeAutoSub: '自动寻找最近琴弦',
-    modeSoundTitle: '播放标准原声',
-    modeSoundSub: '听真实乐器音色耳调',
-    tuningVariantLabel: '定弦方案:',
-    allStringsTuned: '🎉 恭喜！当前乐器全部琴弦已校准完毕',
-    nextUntunedString: '切换下一根待调弦',
+    measuredPitch: '实测稳态频率',
+    stringLockedBadge: '已锁弦',
+    narrowFilterBadge: '窄带抗噪',
+    currentStringBadge: '当前弦',
+    tapeHint: '点击标尺可指定目标音',
+    modeManualTitle: '选弦调音',
+    modeManualSub: '先选哪根弦再调',
+    modeAutoTitle: '自动寻弦',
+    modeAutoSub: '自动识别最近弦',
+    modeSoundTitle: '标准音耳调',
+    modeSoundSub: '播放真实乐器原声',
+    tuningVariantLabel: '定弦:',
+    allStringsTuned: '🎉 当前乐器全部琴弦已校准完毕！',
+    nextUntunedString: '切换下一根待调琴弦',
     noisyAlertTitle: '检测到周围环境较嘈杂：',
-    noisyAlertDesc: '外界谈话或背景噪音可能影响拾音，建议开启针对当前琴弦频段的强效降噪。',
+    noisyAlertDesc: '环境杂音可能影响拾音，建议开启针对当前琴弦频段的强效降噪。',
     noisyAlertBtn: '一键开启强效降噪',
     ignoreBtn: '忽略',
+    // Settings Modal
+    settingsTitle: '声学参数与抗噪设置',
+    noiseSectionTitle: '硬件级窄带滤波与环境抗噪',
+    noiseSectionDesc: '开启后自动根据目标琴弦频率收窄滤波器，屏蔽说话声、风扇与杂音',
+    noiseBtnOn: '已开启强效降噪',
+    noiseBtnOff: '开启强效降噪',
+    noiseGateLabel: '麦克风拾音门限',
+    noiseGateQuiet: '安静室内',
+    noiseGateNormal: '均衡防抖',
+    noiseGateNoisy: '嘈杂抗噪',
+    timbreSectionTitle: '真实乐器物理建模音色',
+    volumeLabel: '音量',
+    a4SectionTitle: 'A4 标准音基准频率',
+    temperamentSectionTitle: '律制系统',
+    notationSectionTitle: '音名显示格式',
+    notationLetter: '音名 (C D E)',
+    notationSolfege: '唱名 (Do Re Mi)',
+    notationNumbered: '简谱 (1 2 3)',
+    dampingSectionTitle: '指针流体阻尼平顺度',
+    dampingFast: '灵敏跟随',
+    dampingBalanced: '稳态均衡',
+    dampingSmooth: '重阻尼防晃',
+    trailToggleLabel: '显示延音稳定度轨迹线',
+    chimeToggleLabel: '琴弦调准后播放确认提示音',
+    resetDefaultsBtn: '恢复默认设置',
+    doneBtn: '完成并应用',
   },
   en: {
-    subtitle: 'Step 1: Select String · Step 2: Hold in ±5¢ Zone for Confirmation Chime',
-    tabTuner: 'Pro Tuner',
-    tabMetronome: 'Metronome & BPM',
+    brandName: 'TuneKit',
+    brandTag: 'Pro',
+    subtitle: 'Step 1: Select String · Step 2: Hold in ±5¢ Zone for Chime',
+    regionName: {
+      CN: 'CN · Emerald Theme',
+      US: 'US · Cobalt Theme',
+      EU: 'EU · Amber Theme',
+      JP: 'JP · Violet Theme',
+    },
+    modeDark: 'Dark',
+    modeLight: 'Light',
+    switchToLight: 'Light Mode',
+    switchToDark: 'Dark Mode',
+    regionMenuTitle: 'Select Region Theme & Language',
+    tabTuner: 'Instrument Tuner',
+    tabMetronome: 'Metronome',
     tabChords: 'Chord Library',
     tabEar: 'Ear Trainer',
     tabDecibel: 'dB Noise Meter',
@@ -328,56 +356,109 @@ export const UI_TRANSLATIONS: Record<
     simOff: 'Demo Pluck',
     noiseReductionOn: 'Noise Filter ON',
     noiseReductionOff: 'Noise Filter',
-    step1SelectString: 'Step 1: Select the target string below (Locked to prevent jumping)',
-    step2PluckAndHold: 'Step 2: Pluck & hold within ±5¢ zone for 0.9s to trigger confirmation chime',
+    step1SelectString: 'Step 1: Tap a String to Lock Target',
+    autoAdvanceLabel: 'Auto-next string',
     flatTighten: 'Flat · Tighten ▶',
     sharpLoosen: '◀ Sharp · Loosen',
-    inTuneLocked: '✓ String Tuned! Confirmation Chime Played',
-    holdingForLock: 'In ±5¢ Zone · Holding Stability...',
-    waitingForString: 'Pluck the selected target string...',
-    targetPitch: 'Locked Target String',
+    inTuneLocked: '✓ String Tuned! Chime Played',
+    holdingForLock: 'In ±5¢ Zone · Holding...',
+    waitingForString: 'Pluck the selected string...',
+    playingRefTone: 'Playing Acoustic Reference Tone',
+    dialTopScaleLabel: 'CENTS DEVIATION (±5¢ TARGET HOLD ZONE)',
+    dialInnerScaleLabel: 'DYNAMIC FREQUENCY SCALE (Hz)',
+    dialTrailLabel: 'PITCH STABILITY SCOPE',
+    targetPitch: 'Locked Target',
     measuredPitch: 'Measured Pitch',
     stringLockedBadge: 'Locked',
-    modeManualTitle: 'Select String (Rec)',
-    modeManualSub: 'Pick string first, then tune',
+    narrowFilterBadge: 'Noise Filter',
+    currentStringBadge: 'Active',
+    tapeHint: 'Tap ruler to select note',
+    modeManualTitle: 'Select String',
+    modeManualSub: 'Lock string first',
     modeAutoTitle: 'Auto Detect',
-    modeAutoSub: 'Snap to closest string',
-    modeSoundTitle: 'Sound Reference',
-    modeSoundSub: 'Play acoustic tone',
+    modeAutoSub: 'Find closest string',
+    modeSoundTitle: 'Reference Tone',
+    modeSoundSub: 'Play acoustic sound',
     tuningVariantLabel: 'Tuning:',
     allStringsTuned: '🎉 All strings on this instrument are tuned!',
     nextUntunedString: 'Next Untuned String',
-    noisyAlertTitle: 'Noisy Environment Detected:',
-    noisyAlertDesc: 'Background chatter may interfere. Enable Narrow-Band Noise Suppression.',
+    noisyAlertTitle: 'High Ambient Noise Detected: ',
+    noisyAlertDesc: 'Background chatter may interfere. Enable Narrow-Band Noise Filter.',
     noisyAlertBtn: 'Enable Noise Filter',
     ignoreBtn: 'Dismiss',
+    // Settings Modal
+    settingsTitle: 'Acoustic & Noise Filter Settings',
+    noiseSectionTitle: 'Narrow-Band Hardware Noise Suppression',
+    noiseSectionDesc: 'Automatically narrows bandpass around target string to reject chatter and room noise',
+    noiseBtnOn: 'Noise Filter Active',
+    noiseBtnOff: 'Enable Filter',
+    noiseGateLabel: 'Microphone Noise Gate',
+    noiseGateQuiet: 'Quiet Room',
+    noiseGateNormal: 'Balanced',
+    noiseGateNoisy: 'Noisy Room',
+    timbreSectionTitle: 'Physical Modeling Acoustic Timbre',
+    volumeLabel: 'Volume',
+    a4SectionTitle: 'A4 Reference Concert Pitch',
+    temperamentSectionTitle: 'Musical Temperament',
+    notationSectionTitle: 'Note Display Format',
+    notationLetter: 'Letters (C D E)',
+    notationSolfege: 'Solfège (Do Re)',
+    notationNumbered: 'Numbered (1 2 3)',
+    dampingSectionTitle: 'Needle Fluid Damping',
+    dampingFast: 'Responsive',
+    dampingBalanced: 'Balanced',
+    dampingSmooth: 'Heavy Smooth',
+    trailToggleLabel: 'Show Pitch Stability Scope',
+    chimeToggleLabel: 'Play Confirmation Chime When Tuned',
+    resetDefaultsBtn: 'Reset Defaults',
+    doneBtn: 'Apply & Close',
   },
   ja: {
-    subtitle: '1. 調律する弦を選択 · 2. ±5¢安定保持で完了チャイムが鳴ります',
-    tabTuner: '高精度チューナー',
+    brandName: '音律工房',
+    brandTag: 'プロ',
+    subtitle: '1. 調律する弦を選択 · 2. ±5¢安定保持で完了音が鳴ります',
+    regionName: {
+      CN: '中国 · 翡翠テーマ',
+      US: '北米 · コバルトテーマ',
+      EU: '欧州 · 琥珀テーマ',
+      JP: '日本 · 紫水晶テーマ',
+    },
+    modeDark: 'ダーク',
+    modeLight: 'ライト',
+    switchToLight: 'ライトモードへ',
+    switchToDark: 'ダークモードへ',
+    regionMenuTitle: '地域テーマと言語の切り替え',
+    tabTuner: '楽器チューナー',
     tabMetronome: 'メトロノーム',
     tabChords: 'コード辞典',
     tabEar: '耳トレ & 音叉',
-    tabDecibel: '騒音計 (dB)',
+    tabDecibel: '騒音計',
     micOn: '測定中',
     micOff: 'マイク開始',
     simOn: 'デモ停止',
     simOff: '調弦デモ',
-    noiseReductionOn: '強力ノイズ除去中',
+    noiseReductionOn: 'ノイズ除去ON',
     noiseReductionOff: 'ノイズ除去',
-    step1SelectString: 'ステップ1：調律する弦を選択してください（弦ロック済み）',
-    step2PluckAndHold: 'ステップ2：弦を弾き、±5¢以内で0.9秒安定すると完了音が鳴ります',
+    step1SelectString: 'ステップ1：調律する弦をタップして固定',
+    autoAdvanceLabel: '完了後に次の弦へ自動移動',
     flatTighten: '低い · 締める ▶',
     sharpLoosen: '◀ 高い · 緩める',
     inTuneLocked: '✓ 調律完了！確認チャイム再生',
-    holdingForLock: '±5¢圏内 · 安定保持カウント中...',
+    holdingForLock: '±5¢圏内 · 安定保持中...',
     waitingForString: '選択した弦を弾いてください...',
+    playingRefTone: 'リアル楽器基準音を再生中',
+    dialTopScaleLabel: 'セント偏差目盛り (±5¢ 安定合格ゾーン)',
+    dialInnerScaleLabel: '動的ヘルツ周波数目盛り (Hz)',
+    dialTrailLabel: 'ピッチ安定軌跡',
     targetPitch: 'ロック中の目標弦',
     measuredPitch: '実測周波数',
     stringLockedBadge: '弦固定',
-    modeManualTitle: '弦指定モード (推奨)',
-    modeManualSub: '弦を選んでから調律',
-    modeAutoTitle: '自動認識モード',
+    narrowFilterBadge: '狭帯域防音',
+    currentStringBadge: '選択中',
+    tapeHint: '目盛りをタップして音を指定',
+    modeManualTitle: '弦指定モード',
+    modeManualSub: '弦を選んで調律',
+    modeAutoTitle: '自動認識',
     modeAutoSub: '近い弦を自動判定',
     modeSoundTitle: '基準音再生',
     modeSoundSub: 'リアル楽器音で耳調律',
@@ -385,8 +466,34 @@ export const UI_TRANSLATIONS: Record<
     allStringsTuned: '🎉 すべての弦のチューニングが完了しました！',
     nextUntunedString: '次の未調律の弦へ',
     noisyAlertTitle: '周囲の騒音を検知しました：',
-    noisyAlertDesc: '周囲の雑音を防ぐため、狭帯域ノイズ除去フィルターを有効にしてください。',
+    noisyAlertDesc: '雑音を防ぐため、狭帯域ノイズ除去フィルターを有効にしてください。',
     noisyAlertBtn: 'ノイズ除去をON',
     ignoreBtn: '閉じる',
+    // Settings Modal
+    settingsTitle: '音響パラメータとノイズ除去設定',
+    noiseSectionTitle: '狭帯域バンドパス・ノイズ除去',
+    noiseSectionDesc: '対象の弦の周波数帯のみを通過させ、周囲の会話やファン音を遮断します',
+    noiseBtnOn: 'ノイズ除去 有効',
+    noiseBtnOff: '有効にする',
+    noiseGateLabel: 'マイク感度しきい値',
+    noiseGateQuiet: '静かな室内',
+    noiseGateNormal: '標準バランス',
+    noiseGateNoisy: '騒音環境',
+    timbreSectionTitle: '物理モデリング楽器音色',
+    volumeLabel: '音量',
+    a4SectionTitle: 'A4 基準ピッチ周波数',
+    temperamentSectionTitle: '音律システム',
+    notationSectionTitle: '音名表示スタイル',
+    notationLetter: '英音名 (C D E)',
+    notationSolfege: '階名 (Do Re Mi)',
+    notationNumbered: '数字譜 (1 2 3)',
+    dampingSectionTitle: '指針ダンピング滑らかさ',
+    dampingFast: '高速応答',
+    dampingBalanced: '標準安定',
+    dampingSmooth: '高減衰スムーズ',
+    trailToggleLabel: 'ピッチ安定軌跡を表示',
+    chimeToggleLabel: '調律完了時に確認チャイムを鳴らす',
+    resetDefaultsBtn: '初期設定に戻す',
+    doneBtn: '完了',
   },
-};
+} as const;

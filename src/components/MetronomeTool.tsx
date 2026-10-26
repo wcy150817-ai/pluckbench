@@ -1,28 +1,182 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { ThemePalette, SupportedLang } from '../i18n/localeTheme';
 import { Play, Square, Plus, Minus, Hand, Volume2 } from 'lucide-react';
 
 type ClickSoundType = 'woodblock' | 'mechanical' | 'studio' | 'hihat';
-type BeatLevel = 3 | 2 | 1 | 0; // 3 = Strong Accent, 2 = Medium, 1 = Normal, 0 = Mute
+type BeatLevel = 3 | 2 | 1 | 0;
 
-const TEMPO_MARKS: { min: number; max: number; name: string; cn: string }[] = [
-  { min: 30, max: 59, name: 'Largo', cn: '广板 · 极缓庄重' },
-  { min: 60, max: 75, name: 'Adagio', cn: '柔板 · 抒情从容' },
-  { min: 76, max: 107, name: 'Andante', cn: '行板 · 漫步节奏' },
-  { min: 108, max: 119, name: 'Moderato', cn: '中板 · 稳健均衡' },
-  { min: 120, max: 155, name: 'Allegro', cn: '快板 · 明快活力' },
-  { min: 156, max: 260, name: 'Presto', cn: '急板 · 极速炫技' },
+const TEMPO_MARKS: {
+  min: number;
+  max: number;
+  label: Record<SupportedLang, string>;
+}[] = [
+  {
+    min: 30,
+    max: 59,
+    label: {
+      zh: '广板 · 极缓庄重',
+      en: 'Largo · Broad & Slow',
+      ja: 'ラルゴ · 極めて遅く',
+    },
+  },
+  {
+    min: 60,
+    max: 75,
+    label: {
+      zh: '柔板 · 抒情从容',
+      en: 'Adagio · Slow & Expressive',
+      ja: 'アダージョ · ゆるやかに',
+    },
+  },
+  {
+    min: 76,
+    max: 107,
+    label: {
+      zh: '行板 · 漫步节奏',
+      en: 'Andante · Walking Pace',
+      ja: 'アンダンテ · 歩くような速さで',
+    },
+  },
+  {
+    min: 108,
+    max: 119,
+    label: {
+      zh: '中板 · 稳健均衡',
+      en: 'Moderato · Moderate Tempo',
+      ja: 'モデラート · 中くらいの速さで',
+    },
+  },
+  {
+    min: 120,
+    max: 155,
+    label: {
+      zh: '快板 · 明快活力',
+      en: 'Allegro · Fast & Bright',
+      ja: 'アレグロ · 速く快活に',
+    },
+  },
+  {
+    min: 156,
+    max: 260,
+    label: {
+      zh: '急板 · 极速炫技',
+      en: 'Presto · Very Fast',
+      ja: 'プレスト · 極めて速く',
+    },
+  },
 ];
 
-export const MetronomeTool: React.FC = () => {
+const METRONOME_TEXT: Record<
+  SupportedLang,
+  {
+    bpmUnit: string;
+    tapBtn: string;
+    accentHint: string;
+    beatPrefix: (n: number) => string;
+    lvl3: string;
+    lvl2: string;
+    lvl1: string;
+    lvl0: string;
+    timeSigLabel: string;
+    subdivLabel: string;
+    sub1: string;
+    sub2: string;
+    sub3: string;
+    sub4: string;
+    soundLabel: string;
+    woodblock: string;
+    mechanical: string;
+    studio: string;
+    hihat: string;
+    startBtn: string;
+    stopBtn: string;
+  }
+> = {
+  zh: {
+    bpmUnit: '拍/分钟 (BPM)',
+    tapBtn: '点击测速',
+    accentHint: '节拍强弱矩阵（点击任意拍可切换：强拍 / 次强拍 / 弱拍 / 静音）',
+    beatPrefix: (n) => `第 ${n} 拍`,
+    lvl3: '强拍',
+    lvl2: '次强拍',
+    lvl1: '普通拍',
+    lvl0: '静音',
+    timeSigLabel: '拍号 (每小节拍数)',
+    subdivLabel: '节奏细分',
+    sub1: '♩ 一拍',
+    sub2: '♪♪ 二分',
+    sub3: '3 三连音',
+    sub4: '♬ 十六分',
+    soundLabel: '节拍器音色',
+    woodblock: '红木木鱼',
+    mechanical: '机械钟摆',
+    studio: '录音棚点击',
+    hihat: '架子鼓踩镲',
+    startBtn: '启动节拍器',
+    stopBtn: '停止节拍器',
+  },
+  en: {
+    bpmUnit: 'BPM (Beats / Min)',
+    tapBtn: 'Tap Tempo',
+    accentHint: 'Beat Accent Matrix (Tap any beat to cycle: Accent / Medium / Normal / Mute)',
+    beatPrefix: (n) => `Beat ${n}`,
+    lvl3: 'Accent',
+    lvl2: 'Medium',
+    lvl1: 'Normal',
+    lvl0: 'Mute',
+    timeSigLabel: 'Time Signature',
+    subdivLabel: 'Subdivision',
+    sub1: '♩ Quarter',
+    sub2: '♪♪ Eighth',
+    sub3: '3 Triplet',
+    sub4: '♬ Sixteenth',
+    soundLabel: 'Click Sound',
+    woodblock: 'Woodblock',
+    mechanical: 'Pendulum',
+    studio: 'Studio Click',
+    hihat: 'Hi-Hat',
+    startBtn: 'START METRONOME',
+    stopBtn: 'STOP METRONOME',
+  },
+  ja: {
+    bpmUnit: 'BPM (拍/分)',
+    tapBtn: 'タップテンポ',
+    accentHint: 'アクセント設定（各拍をタップして強拍・中強拍・弱拍・消音を切替）',
+    beatPrefix: (n) => `${n} 拍目`,
+    lvl3: '強拍',
+    lvl2: '中強拍',
+    lvl1: '弱拍',
+    lvl0: 'ミュート',
+    timeSigLabel: '拍子記号',
+    subdivLabel: 'リズム分割',
+    sub1: '♩ 4分音符',
+    sub2: '♪♪ 8分音符',
+    sub3: '3 3連符',
+    sub4: '♬ 16分音符',
+    soundLabel: 'クリック音色',
+    woodblock: 'ウッドブロック',
+    mechanical: '振り子時計',
+    studio: 'スタジオ電子音',
+    hihat: 'ハイハット',
+    startBtn: 'メトロノーム開始',
+    stopBtn: 'メトロノーム停止',
+  },
+};
+
+export const MetronomeTool: React.FC<{
+  theme: ThemePalette;
+  lang: SupportedLang;
+}> = ({ theme, lang }) => {
+  const txt = METRONOME_TEXT[lang];
   const [bpm, setBpm] = useState<number>(120);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [beatsPerBar, setBeatsPerBar] = useState<number>(4);
-  const [subdivision, setSubdivision] = useState<number>(1); // 1 = quarter, 2 = eighth, 3 = triplet, 4 = sixteenth
+  const [subdivision, setSubdivision] = useState<number>(1);
   const [soundType, setSoundType] = useState<ClickSoundType>('woodblock');
-  const [volume, setVolume] = useState<number>(0.8);
+  const [volume] = useState<number>(0.8);
   const [beatLevels, setBeatLevels] = useState<BeatLevel[]>([3, 1, 2, 1]);
   const [activeBeatIndex, setActiveBeatIndex] = useState<number>(-1);
-  const [tapTimes, setTapTimes] = useState<number[]>([]);
+  const [, setTapTimes] = useState<number[]>([]);
 
   const audioCtxRef = useRef<AudioContext | null>(null);
   const timerIdRef = useRef<number | null>(null);
@@ -83,7 +237,6 @@ export const MetronomeTool: React.FC = () => {
       gain.gain.exponentialRampToValueAtTime(0.0005, time + 0.055);
 
       if (st === 'hihat') {
-        // Crisp filtered metallic noise hi-hat
         const bufSize = Math.floor(ctx.sampleRate * 0.05);
         const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
         const data = buf.getChannelData(0);
@@ -114,7 +267,6 @@ export const MetronomeTool: React.FC = () => {
         osc.frequency.setValueAtTime(baseFreq, time);
         osc.frequency.exponentialRampToValueAtTime(280, time + 0.028);
       } else {
-        // Studio click
         osc.type = 'sine';
         const baseFreq = isSubBeat ? 880 : level === 3 ? 1760 : 1174.66;
         osc.frequency.setValueAtTime(baseFreq, time);
@@ -215,64 +367,103 @@ export const MetronomeTool: React.FC = () => {
 
   return (
     <div className="w-full space-y-4">
-      {/* Main Metronome Display Card */}
-      <div className="rounded-2xl bg-gradient-to-b from-[#111722] via-[#0c1018] to-[#090d14] border border-slate-800/90 p-4 sm:p-6 shadow-2xl space-y-5">
-        {/* Top Row: Tempo Marking & BPM Readout */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-800/70 pb-4">
+      <div
+        className="rounded-2xl border p-4 sm:p-6 shadow-xl space-y-5 transition-colors duration-300"
+        style={{
+          backgroundColor: theme.bgCard,
+          borderColor: theme.borderPrimary,
+          color: theme.textPrimary,
+        }}
+      >
+        <div
+          className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b pb-4"
+          style={{ borderColor: theme.borderPrimary }}
+        >
           <div className="text-center sm:text-left">
-            <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-              {tempoMark.name} · {tempoMark.cn}
+            <span
+              className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold border"
+              style={{
+                backgroundColor: `${theme.accentHex}20`,
+                color: theme.accentHex,
+                borderColor: `${theme.accentHex}44`,
+              }}
+            >
+              {tempoMark.label[lang]}
             </span>
             <div className="mt-2 flex items-baseline justify-center sm:justify-start gap-2">
-              <span className="font-mono text-5xl sm:text-6xl font-extrabold text-white tracking-tight">
+              <span className="font-mono text-5xl sm:text-6xl font-extrabold tracking-tight">
                 {bpm}
               </span>
-              <span className="text-sm font-mono text-slate-400">BPM (拍/分钟)</span>
+              <span
+                className="text-sm font-mono"
+                style={{ color: theme.textSecondary }}
+              >
+                {txt.bpmUnit}
+              </span>
             </div>
           </div>
 
-          {/* Step Controls & Tap Tempo */}
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setBpm((b) => Math.max(30, b - 5))}
-              className="px-2.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-mono text-slate-300"
+              className="px-2.5 py-2 rounded-xl border text-xs font-mono"
+              style={{
+                backgroundColor: theme.bgSubtle,
+                borderColor: theme.borderPrimary,
+              }}
             >
               -5
             </button>
             <button
               type="button"
               onClick={() => setBpm((b) => Math.max(30, b - 1))}
-              className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200"
+              className="p-2.5 rounded-xl border"
+              style={{
+                backgroundColor: theme.bgSubtle,
+                borderColor: theme.borderPrimary,
+              }}
             >
               <Minus className="w-4 h-4" />
             </button>
             <button
               type="button"
               onClick={() => setBpm((b) => Math.min(260, b + 1))}
-              className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200"
+              className="p-2.5 rounded-xl border"
+              style={{
+                backgroundColor: theme.bgSubtle,
+                borderColor: theme.borderPrimary,
+              }}
             >
               <Plus className="w-4 h-4" />
             </button>
             <button
               type="button"
               onClick={() => setBpm((b) => Math.min(260, b + 5))}
-              className="px-2.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-mono text-slate-300"
+              className="px-2.5 py-2 rounded-xl border text-xs font-mono"
+              style={{
+                backgroundColor: theme.bgSubtle,
+                borderColor: theme.borderPrimary,
+              }}
             >
               +5
             </button>
             <button
               type="button"
               onClick={handleTapTempo}
-              className="px-3.5 py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 active:scale-95 text-sky-300 border border-sky-500/40 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all"
+              className="px-3.5 py-2 rounded-xl border text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all"
+              style={{
+                backgroundColor: `${theme.secondaryHex}20`,
+                color: theme.secondaryHex,
+                borderColor: `${theme.secondaryHex}55`,
+              }}
             >
               <Hand className="w-4 h-4" />
-              <span>点击测速 (Tap)</span>
+              <span>{txt.tapBtn}</span>
             </button>
           </div>
         </div>
 
-        {/* BPM Slider & Quick Presets */}
         <div className="space-y-2">
           <input
             type="range"
@@ -281,7 +472,7 @@ export const MetronomeTool: React.FC = () => {
             step={1}
             value={bpm}
             onChange={(e) => setBpm(Number(e.target.value))}
-            className="w-full accent-emerald-500 cursor-pointer"
+            className="w-full cursor-pointer"
           />
           <div className="flex flex-wrap items-center justify-between gap-1.5">
             {[60, 72, 80, 90, 100, 110, 120, 132, 144, 160, 180].map((preset) => (
@@ -289,11 +480,14 @@ export const MetronomeTool: React.FC = () => {
                 key={preset}
                 type="button"
                 onClick={() => setBpm(preset)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-mono border transition-colors ${
-                  bpm === preset
-                    ? 'bg-emerald-500/25 text-emerald-300 border-emerald-500/50 font-bold'
-                    : 'bg-slate-900/80 text-slate-400 border-slate-800 hover:text-slate-200'
-                }`}
+                className="px-2.5 py-1 rounded-lg text-xs font-mono border transition-colors"
+                style={{
+                  backgroundColor:
+                    bpm === preset ? `${theme.accentHex}22` : theme.bgSubtle,
+                  borderColor:
+                    bpm === preset ? theme.accentHex : theme.borderPrimary,
+                  color: bpm === preset ? theme.accentHex : theme.textSecondary,
+                }}
               >
                 {preset}
               </button>
@@ -301,11 +495,15 @@ export const MetronomeTool: React.FC = () => {
           </div>
         </div>
 
-        {/* Interactive Visual Beat Accent Matrix */}
         <div className="space-y-2 pt-2">
-          <div className="flex items-center justify-between text-xs text-slate-400">
-            <span>节拍强弱矩阵（点击任意拍可切换：强拍 / 次强拍 / 弱拍 / 静音）</span>
-            <span className="font-mono text-emerald-400">{beatsPerBar}/4 拍</span>
+          <div
+            className="flex items-center justify-between text-xs"
+            style={{ color: theme.textSecondary }}
+          >
+            <span>{txt.accentHint}</span>
+            <span className="font-mono" style={{ color: theme.accentHex }}>
+              {beatsPerBar}/4
+            </span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2.5">
             {beatLevels.map((lvl, idx) => {
@@ -315,44 +513,50 @@ export const MetronomeTool: React.FC = () => {
                   key={idx}
                   type="button"
                   onClick={() => toggleBeatLevel(idx)}
-                  className={`relative flex flex-col items-center justify-between p-3 rounded-xl border transition-all ${
-                    isCurrent
-                      ? lvl === 3
-                        ? 'bg-emerald-500/35 border-emerald-400 shadow-[0_0_24px_rgba(16,185,129,0.5)] scale-[1.03]'
-                        : 'bg-sky-500/30 border-sky-400 shadow-[0_0_20px_rgba(56,189,248,0.4)] scale-[1.02]'
-                      : 'bg-slate-900/80 border-slate-800 hover:border-slate-700'
-                  }`}
+                  className="relative flex flex-col items-center justify-between p-3 rounded-xl border transition-all"
+                  style={{
+                    backgroundColor: isCurrent
+                      ? `${theme.accentHex}30`
+                      : theme.bgSubtle,
+                    borderColor: isCurrent
+                      ? theme.accentHex
+                      : theme.borderPrimary,
+                  }}
                 >
-                  <span className="text-xs font-mono text-slate-400">
-                    第 {idx + 1} 拍
+                  <span
+                    className="text-xs font-mono"
+                    style={{ color: theme.textSecondary }}
+                  >
+                    {txt.beatPrefix(idx + 1)}
                   </span>
-                  {/* Visual Bars for Level 3 / 2 / 1 / 0 */}
                   <div className="flex items-end gap-1 h-8 my-1.5">
                     {[1, 2, 3].map((bar) => (
                       <div
                         key={bar}
                         className={`w-2.5 rounded-sm transition-all ${
                           bar === 1 ? 'h-3' : bar === 2 ? 'h-5' : 'h-8'
-                        } ${
-                          lvl >= bar
-                            ? lvl === 3
-                              ? 'bg-emerald-400'
-                              : lvl === 2
-                              ? 'bg-amber-400'
-                              : 'bg-sky-400'
-                            : 'bg-slate-800'
                         }`}
+                        style={{
+                          backgroundColor:
+                            lvl >= bar
+                              ? lvl === 3
+                                ? theme.accentHex
+                                : lvl === 2
+                                ? theme.warnHex
+                                : theme.secondaryHex
+                              : theme.borderPrimary,
+                        }}
                       />
                     ))}
                   </div>
-                  <span className="text-[11px] font-medium text-slate-300">
+                  <span className="text-[11px] font-medium">
                     {lvl === 3
-                      ? '强拍 Accent'
+                      ? txt.lvl3
                       : lvl === 2
-                      ? '次强拍'
+                      ? txt.lvl2
                       : lvl === 1
-                      ? '普通拍'
-                      : '静音 Mute'}
+                      ? txt.lvl1
+                      : txt.lvl0}
                   </span>
                 </button>
               );
@@ -360,12 +564,16 @@ export const MetronomeTool: React.FC = () => {
           </div>
         </div>
 
-        {/* Time Signature, Subdivision & Click Sound Controls */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-800/70">
-          {/* Time Signature */}
+        <div
+          className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t"
+          style={{ borderColor: theme.borderPrimary }}
+        >
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-400 block">
-              拍号 (每小节拍数)
+            <label
+              className="text-xs font-semibold block"
+              style={{ color: theme.textSecondary }}
+            >
+              {txt.timeSigLabel}
             </label>
             <div className="grid grid-cols-5 gap-1">
               {[2, 3, 4, 5, 6].map((cnt) => (
@@ -373,11 +581,21 @@ export const MetronomeTool: React.FC = () => {
                   key={cnt}
                   type="button"
                   onClick={() => handleChangeBeatsPerBar(cnt)}
-                  className={`py-1.5 rounded-lg text-xs font-mono font-semibold border ${
-                    beatsPerBar === cnt
-                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
-                      : 'bg-slate-900 text-slate-400 border-slate-800'
-                  }`}
+                  className="py-1.5 rounded-lg text-xs font-mono font-semibold border"
+                  style={{
+                    backgroundColor:
+                      beatsPerBar === cnt
+                        ? `${theme.accentHex}22`
+                        : theme.bgSubtle,
+                    borderColor:
+                      beatsPerBar === cnt
+                        ? theme.accentHex
+                        : theme.borderPrimary,
+                    color:
+                      beatsPerBar === cnt
+                        ? theme.accentHex
+                        : theme.textSecondary,
+                  }}
                 >
                   {cnt}/4
                 </button>
@@ -385,27 +603,39 @@ export const MetronomeTool: React.FC = () => {
             </div>
           </div>
 
-          {/* Subdivision */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-400 block">
-              节奏细分 (Subdivision)
+            <label
+              className="text-xs font-semibold block"
+              style={{ color: theme.textSecondary }}
+            >
+              {txt.subdivLabel}
             </label>
             <div className="grid grid-cols-4 gap-1">
               {[
-                { sub: 1, label: '♩ 一拍' },
-                { sub: 2, label: '♪♪ 二分' },
-                { sub: 3, label: '3 三连音' },
-                { sub: 4, label: '♬ 十六分' },
+                { sub: 1, label: txt.sub1 },
+                { sub: 2, label: txt.sub2 },
+                { sub: 3, label: txt.sub3 },
+                { sub: 4, label: txt.sub4 },
               ].map((item) => (
                 <button
                   key={item.sub}
                   type="button"
                   onClick={() => setSubdivision(item.sub)}
-                  className={`py-1.5 rounded-lg text-xs font-medium border ${
-                    subdivision === item.sub
-                      ? 'bg-sky-500/20 text-sky-300 border-sky-500/50'
-                      : 'bg-slate-900 text-slate-400 border-slate-800'
-                  }`}
+                  className="py-1.5 rounded-lg text-xs font-medium border"
+                  style={{
+                    backgroundColor:
+                      subdivision === item.sub
+                        ? `${theme.secondaryHex}22`
+                        : theme.bgSubtle,
+                    borderColor:
+                      subdivision === item.sub
+                        ? theme.secondaryHex
+                        : theme.borderPrimary,
+                    color:
+                      subdivision === item.sub
+                        ? theme.secondaryHex
+                        : theme.textSecondary,
+                  }}
                 >
                   {item.label}
                 </button>
@@ -413,28 +643,38 @@ export const MetronomeTool: React.FC = () => {
             </div>
           </div>
 
-          {/* Click Timbre */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-400 flex items-center gap-1">
-              <Volume2 className="w-3.5 h-3.5 text-emerald-400" />
-              <span>节拍器音色</span>
+            <label
+              className="text-xs font-semibold flex items-center gap-1"
+              style={{ color: theme.textSecondary }}
+            >
+              <Volume2 className="w-3.5 h-3.5" style={{ color: theme.accentHex }} />
+              <span>{txt.soundLabel}</span>
             </label>
             <div className="grid grid-cols-2 gap-1">
               {[
-                { id: 'woodblock', label: '红木木鱼' },
-                { id: 'mechanical', label: '机械钟摆' },
-                { id: 'studio', label: '录音棚电子' },
-                { id: 'hihat', label: '架子鼓踩镲' },
+                { id: 'woodblock', label: txt.woodblock },
+                { id: 'mechanical', label: txt.mechanical },
+                { id: 'studio', label: txt.studio },
+                { id: 'hihat', label: txt.hihat },
               ].map((s) => (
                 <button
                   key={s.id}
                   type="button"
                   onClick={() => setSoundType(s.id as ClickSoundType)}
-                  className={`py-1 rounded-lg text-xs font-medium border ${
-                    soundType === s.id
-                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
-                      : 'bg-slate-900 text-slate-400 border-slate-800'
-                  }`}
+                  className="py-1 rounded-lg text-xs font-medium border"
+                  style={{
+                    backgroundColor:
+                      soundType === s.id
+                        ? `${theme.accentHex}22`
+                        : theme.bgSubtle,
+                    borderColor:
+                      soundType === s.id
+                        ? theme.accentHex
+                        : theme.borderPrimary,
+                    color:
+                      soundType === s.id ? theme.accentHex : theme.textSecondary,
+                  }}
                 >
                   {s.label}
                 </button>
@@ -443,26 +683,24 @@ export const MetronomeTool: React.FC = () => {
           </div>
         </div>
 
-        {/* Start / Stop Master Button */}
         <div className="pt-2 flex justify-center">
           <button
             type="button"
             onClick={() => setIsPlaying((p) => !p)}
-            className={`w-full sm:w-72 py-3.5 rounded-2xl font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition-all ${
-              isPlaying
-                ? 'bg-rose-500 hover:bg-rose-400 text-white shadow-[0_0_24px_rgba(244,63,94,0.4)]'
-                : 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-[0_0_24px_rgba(16,185,129,0.4)]'
-            }`}
+            className="w-full sm:w-72 py-3.5 rounded-2xl font-bold text-sm sm:text-base flex items-center justify-center gap-2 text-white transition-all"
+            style={{
+              backgroundColor: isPlaying ? theme.dangerHex : theme.accentHex,
+            }}
           >
             {isPlaying ? (
               <>
                 <Square className="w-5 h-5 fill-current" />
-                <span>停止节拍器 (STOP)</span>
+                <span>{txt.stopBtn}</span>
               </>
             ) : (
               <>
                 <Play className="w-5 h-5 fill-current" />
-                <span>启动节拍器 (START)</span>
+                <span>{txt.startBtn}</span>
               </>
             )}
           </button>

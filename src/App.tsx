@@ -15,11 +15,12 @@ import {
   midiToFrequency,
 } from './data/instruments';
 import {
-  THEME_PALETTES,
-  ThemePaletteId,
-  SupportedLang,
-  UI_TRANSLATIONS,
-  detectUserGeoAndTheme,
+  REGIONAL_THEMES,
+  REGION_TO_LANG,
+  GeoRegionCode,
+  ColorMode,
+  UI_TEXT,
+  detectUserGeoRegion,
 } from './i18n/localeTheme';
 import { PitchProcessor, EnvelopePhase } from './audio/pitchDetector';
 import { ReferenceToneGenerator } from './audio/toneGenerator';
@@ -50,7 +51,8 @@ import {
   Headphones,
   BarChart3,
   Globe,
-  Palette,
+  Sun,
+  Moon,
 } from 'lucide-react';
 
 type ActiveToolTab = 'tuner' | 'metronome' | 'chords' | 'ear-trainer' | 'decibel';
@@ -59,67 +61,52 @@ export const App: React.FC = () => {
   // Multi-Tool Navigation State
   const [activeTool, setActiveTool] = useState<ActiveToolTab>('tuner');
 
-  // IP Geolocation -> Language & Theme Palette State
-  const [lang, setLang] = useState<SupportedLang>('zh');
-  const [paletteId, setPaletteId] = useState<ThemePaletteId>('emerald-cn');
-  const [geoLabel, setGeoLabel] = useState<string>('IP: CN · 翡翠主题');
+  // IP Geolocation -> Region (CN | US | EU | JP) + Day/Night Color Mode (dark | light)
+  const [region, setRegion] = useState<GeoRegionCode>('CN');
+  const [colorMode, setColorMode] = useState<ColorMode>('dark');
   const [showRegionMenu, setShowRegionMenu] = useState<boolean>(false);
 
-  const theme = THEME_PALETTES[paletteId];
-  const t = UI_TRANSLATIONS[lang];
+  const lang = REGION_TO_LANG[region];
+  const theme = REGIONAL_THEMES[region][colorMode];
+  const t = UI_TEXT[lang];
 
-  // Auto-detect IP Country -> Language & Theme on mount (also supports ?region=CN/US/EU/JP/LIGHT URL query for testing)
+  // Auto-detect IP Country -> Region & Language on mount (also supports ?region=CN|US|EU|JP & ?mode=dark|light for testing)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const forcedRegion = params.get('region')?.toUpperCase();
-    if (forcedRegion === 'CN') {
-      setLang('zh');
-      setPaletteId('emerald-cn');
-      setGeoLabel('IP: CN · 亚太华语区');
-      return;
+    const forcedMode = params.get('mode')?.toLowerCase();
+
+    if (forcedMode === 'light' || forcedMode === 'dark') {
+      setColorMode(forcedMode);
     }
-    if (forcedRegion === 'US') {
-      setLang('en');
-      setPaletteId('cobalt-us');
-      setGeoLabel('IP: US · Cobalt Pro');
-      return;
-    }
-    if (forcedRegion === 'EU') {
-      setLang('en');
-      setPaletteId('amber-eu');
-      setGeoLabel('IP: EU · Warm Amber');
-      return;
-    }
-    if (forcedRegion === 'JP') {
-      setLang('ja');
-      setPaletteId('violet-jp');
-      setGeoLabel('IP: JP · Neon Violet');
-      return;
-    }
-    if (forcedRegion === 'LIGHT') {
-      setLang('zh');
-      setPaletteId('light-studio');
-      setGeoLabel('Daylight · 浅色护眼');
+
+    if (
+      forcedRegion === 'CN' ||
+      forcedRegion === 'US' ||
+      forcedRegion === 'EU' ||
+      forcedRegion === 'JP'
+    ) {
+      setRegion(forcedRegion);
       return;
     }
 
-    detectUserGeoAndTheme().then((info) => {
-      setLang(info.lang);
-      setPaletteId(info.paletteId);
-      setGeoLabel(
-        `IP: ${info.countryCode}${info.ip ? ` (${info.ip})` : ''} · ${
-          THEME_PALETTES[info.paletteId].regionBadge
-        }`
-      );
+    detectUserGeoRegion().then((info) => {
+      setRegion(info.region);
     });
   }, []);
 
-  // Instrument & Tuning State
+  // Update document lang attribute dynamically for strict language purity
+  useEffect(() => {
+    document.documentElement.lang =
+      lang === 'zh' ? 'zh-CN' : lang === 'ja' ? 'ja' : 'en';
+  }, [lang]);
+
+  // Instrument & Tuning State (Default to 6-String Guitar)
   const [selectedPreset, setSelectedPreset] = useState<InstrumentPreset>(
-    INSTRUMENT_PRESETS[1] // Guitar Standard
+    INSTRUMENT_PRESETS[0]
   );
   const [selectedTuning, setSelectedTuning] = useState<TuningVariant>(
-    INSTRUMENT_PRESETS[1].tunings[0]
+    INSTRUMENT_PRESETS[0].tunings[0]
   );
 
   // Default to 'tune-manual' (String-First Workflow: select which string to tune first!)
@@ -151,7 +138,7 @@ export const App: React.FC = () => {
   const [isSustainLocked, setIsSustainLocked] = useState<boolean>(false);
   const [isNoisyEnvironment, setIsNoisyEnvironment] = useState<boolean>(false);
   const [noiseAlertDismissed, setNoiseAlertDismissed] = useState<boolean>(false);
-  const [holdProgress, setHoldProgress] = useState<number>(0); // 0 to 100%
+  const [holdProgress, setHoldProgress] = useState<number>(0);
   const [tunedStrings, setTunedStrings] = useState<Set<number>>(new Set());
 
   // Microphone & Simulation State
@@ -182,8 +169,8 @@ export const App: React.FC = () => {
 
   const activeTimbreLabel = useMemo(() => {
     const found = TIMBRE_OPTIONS.find((item) => item.id === resolvedTimbre);
-    return found ? found.name.split(' ')[0] : '原声建模';
-  }, [resolvedTimbre]);
+    return found ? found.name[lang] : '';
+  }, [resolvedTimbre, lang]);
 
   // Keep latest state in refs for inside requestAnimationFrame loop
   const stateRef = useRef({
@@ -213,7 +200,6 @@ export const App: React.FC = () => {
       enableLockChime,
     };
 
-    // Dynamically adjust hardware bandpass filter cutoffs to focus on the selected string
     if (highPassFilterRef.current && lowPassFilterRef.current && audioCtxRef.current) {
       const now = audioCtxRef.current.currentTime;
       if (tunerMode === 'tune-manual') {
@@ -290,7 +276,6 @@ export const App: React.FC = () => {
       if (!freq || freq <= 0) {
         setHasSignal(false);
         setMeasuredFreq(null);
-        // Gentle decay of hold progress when silent
         if (!holdProgressRef.current.chimed) {
           holdProgressRef.current.progress = Math.max(
             0,
@@ -330,7 +315,6 @@ export const App: React.FC = () => {
             }
           }
 
-          // Strong hysteresis (+30 cents) so it doesn't flip-flop between strings
           if (currentStringDiff <= minDiff + 30) {
             chosenMidi = st.targetMidi;
           } else {
@@ -353,13 +337,11 @@ export const App: React.FC = () => {
       const clampedCents = Math.max(-50, Math.min(50, rawCents));
       setCentsOffset(clampedCents);
 
-      // Hold-in-Small-Fluctuation-Zone (±5.5 cents) Timer & Chime!
       if (holdProgressRef.current.midi !== chosenMidi) {
         holdProgressRef.current = { midi: chosenMidi, progress: 0, chimed: false };
       }
 
       if (Math.abs(rawCents) <= 5.5 && phase !== 'attack') {
-        // Inside ±5.5 cents small fluctuation window: accumulate progress (~0.85s to reach 100%)
         if (!holdProgressRef.current.chimed) {
           const nextProg = Math.min(100, holdProgressRef.current.progress + 2.2);
           holdProgressRef.current.progress = nextProg;
@@ -373,7 +355,6 @@ export const App: React.FC = () => {
             setTunedStrings((prev) => {
               const next = new Set(prev);
               next.add(chosenMidi);
-              // Optional auto-advance to next untuned string after 1.3s
               if (st.autoAdvanceNextString) {
                 setTimeout(() => {
                   const nextUntuned = st.selectedTuning.strings.find(
@@ -396,7 +377,6 @@ export const App: React.FC = () => {
           }
         }
       } else if (!holdProgressRef.current.chimed) {
-        // Forgiving decay if pitch momentarily drifts slightly outside ±5.5 cents
         const decayStep = Math.abs(rawCents) <= 10 ? 0.5 : 1.5;
         holdProgressRef.current.progress = Math.max(
           0,
@@ -544,13 +524,8 @@ export const App: React.FC = () => {
 
       rafLoopRef.current = requestAnimationFrame(analyzeLoop);
     } catch (err) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : '无法访问麦克风，请检查浏览器麦克风权限设置';
-      setMicError(
-        `麦克风启动失败：${message}（您仍可使用「模拟调弦」或「Sound It 原声耳调」功能）`
-      );
+      const message = err instanceof Error ? err.message : '';
+      setMicError(message);
       setIsMicListening(false);
     }
   }, [processDetectedPitch, tunerMode]);
@@ -563,7 +538,7 @@ export const App: React.FC = () => {
     }
   }, [activeTool, isMicListening, stopMicrophone]);
 
-  // Interactive Simulation Mode (demonstrates String Selection -> Smooth Glide into ±5¢ Zone -> Hold -> Chime!)
+  // Interactive Simulation Mode
   useEffect(() => {
     if (!isSimulating) return;
     let simFrame = 0;
@@ -586,11 +561,9 @@ export const App: React.FC = () => {
       const sustainLocked = true;
 
       if (cycle < 0.35) {
-        // Smoothly turning tuning peg from -16 cents into the ±5¢ zone
         const progress = cycle / 0.35;
         simCents = -16 * (1 - progress) + Math.sin(simFrame * 0.08) * 0.4;
       } else if (cycle < 0.88) {
-        // Holding steadily inside ±2 cents small fluctuation window -> triggers Hold Progress 0..100% and Chime!
         simCents = Math.sin(simFrame * 0.07) * 1.6;
       } else {
         phase = 'decay';
@@ -652,7 +625,6 @@ export const App: React.FC = () => {
     }
   }, [toneVolume, tunerMode]);
 
-  // Handlers for preset / tuning / string selection
   const handleSelectPreset = (preset: InstrumentPreset) => {
     setSelectedPreset(preset);
     const firstTuning = preset.tunings[0];
@@ -689,7 +661,6 @@ export const App: React.FC = () => {
     }
   };
 
-  // Clicking a string locks onto that string first (Requirement 1!)
   const handleSelectString = (str: StringSpec, playPreview: boolean) => {
     setTargetMidi(str.midi);
     setCurrentFloatMidi(str.midi);
@@ -753,19 +724,19 @@ export const App: React.FC = () => {
     >
       {/* Top Header & Multi-Tool Suite Navigation */}
       <header
-        className="sticky top-0 z-30 backdrop-blur-md border-b px-3 sm:px-6 pt-2.5 pb-2 transition-colors duration-300"
+        className="sticky top-0 z-30 backdrop-blur-md border-b px-3 sm:px-6 pt-2 pb-1.5 transition-colors duration-300"
         style={{
           backgroundColor: theme.bgHeader,
           borderColor: theme.borderPrimary,
         }}
       >
-        <div className="max-w-7xl mx-auto space-y-2">
-          {/* Row 1: Brand, IP Region/Theme Switcher & Quick Controls */}
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            {/* Brand Logo */}
-            <div className="flex items-center gap-2.5">
+        <div className="max-w-7xl mx-auto space-y-1.5">
+          {/* Row 1: Brand, IP Region Switcher, Day/Night Toggle & Quick Controls */}
+          <div className="flex flex-wrap items-center justify-between gap-1.5">
+            {/* Brand Logo + Region + Day/Night Switcher */}
+            <div className="flex items-center gap-2">
               <div
-                className="w-8 h-8 rounded-xl border flex items-center justify-center"
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl border flex items-center justify-center shrink-0"
                 style={{
                   backgroundColor: `${theme.accentHex}20`,
                   borderColor: `${theme.accentHex}66`,
@@ -774,116 +745,140 @@ export const App: React.FC = () => {
                 <Radio className="w-4 h-4" style={{ color: theme.accentHex }} />
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-sm sm:text-base font-extrabold tracking-tight">
-                    TuneKit{' '}
-                    <span className="font-mono" style={{ color: theme.accentHex }}>
-                      Pro
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <h1 className="text-xs sm:text-base font-extrabold tracking-tight">
+                    {t.brandName}{' '}
+                    <span
+                      className="font-mono"
+                      style={{ color: theme.accentHex }}
+                    >
+                      {t.brandTag}
                     </span>
                   </h1>
 
-                  {/* IP Region & Theme/Language Selector Pill */}
+                  {/* Geo Region Selector Pill */}
                   <div className="relative">
                     <button
+                      id="region-selector-btn"
                       type="button"
                       onClick={() => setShowRegionMenu((v) => !v)}
-                      className="px-2 py-0.5 rounded-lg text-[11px] font-medium border flex items-center gap-1 transition-all"
+                      className="px-2 py-0.5 rounded-lg text-[10px] sm:text-[11px] font-semibold border flex items-center gap-1 transition-all"
                       style={{
                         backgroundColor: `${theme.secondaryHex}18`,
                         borderColor: `${theme.secondaryHex}55`,
                         color: theme.secondaryHex,
                       }}
-                      title="根据您的 IP 自动匹配语言与主题配色，点击可手动切换预览"
                     >
-                      <Globe className="w-3 h-3" />
-                      <span className="truncate max-w-[140px] sm:max-w-none">
-                        {geoLabel}
+                      <Globe className="w-3 h-3 shrink-0" />
+                      <span className="truncate max-w-[115px] sm:max-w-none">
+                        {t.regionName[region]}
                       </span>
-                      <Palette className="w-3 h-3 ml-0.5" />
                     </button>
 
                     {showRegionMenu && (
                       <div
-                        className="absolute left-0 mt-1.5 w-64 rounded-xl border p-2 shadow-2xl z-50 space-y-1 text-xs"
+                        className="absolute left-0 mt-1.5 w-60 rounded-xl border p-2 shadow-2xl z-50 space-y-1 text-xs"
                         style={{
                           backgroundColor: theme.bgCard,
                           borderColor: theme.borderPrimary,
                           color: theme.textPrimary,
                         }}
                       >
-                        <div className="px-2 py-1 text-[10px] text-slate-400 font-semibold border-b border-slate-800/60">
-                          IP 区域主题与多语言切换 (Auto-IP & Manual)
+                        <div
+                          className="px-2 py-1 text-[10px] font-semibold border-b"
+                          style={{
+                            borderColor: theme.borderPrimary,
+                            color: theme.textSecondary,
+                          }}
+                        >
+                          {t.regionMenuTitle}
                         </div>
-                        {[
-                          {
-                            pid: 'emerald-cn' as ThemePaletteId,
-                            l: 'zh' as SupportedLang,
-                            label: '🇨🇳 CN 华语区 · 东方翡翠暗黑 (中文)',
-                          },
-                          {
-                            pid: 'cobalt-us' as ThemePaletteId,
-                            l: 'en' as SupportedLang,
-                            label: '🇺🇸 US 北美区 · 深空电光蓝 (English)',
-                          },
-                          {
-                            pid: 'amber-eu' as ThemePaletteId,
-                            l: 'en' as SupportedLang,
-                            label: '🇪🇺 EU 欧洲区 · 复古电子管暖金 (English)',
-                          },
-                          {
-                            pid: 'violet-jp' as ThemePaletteId,
-                            l: 'ja' as SupportedLang,
-                            label: '🇯🇵 JP 日韩区 · 东京极夜紫晶 (日本語)',
-                          },
-                          {
-                            pid: 'light-studio' as ThemePaletteId,
-                            l: lang,
-                            label: '☀️ Daylight · 日间护眼浅色模式',
-                          },
-                        ].map((opt) => (
-                          <button
-                            key={opt.pid}
-                            type="button"
-                            onClick={() => {
-                              setPaletteId(opt.pid);
-                              setLang(opt.l);
-                              setGeoLabel(THEME_PALETTES[opt.pid].regionBadge);
-                              setShowRegionMenu(false);
-                            }}
-                            className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-slate-800/40 flex items-center justify-between"
-                            style={{
-                              backgroundColor:
-                                paletteId === opt.pid
-                                  ? `${theme.accentHex}22`
-                                  : 'transparent',
-                            }}
-                          >
-                            <span>{opt.label}</span>
-                            <span
-                              className="w-3 h-3 rounded-full border border-white/20 shrink-0"
-                              style={{
-                                backgroundColor: THEME_PALETTES[opt.pid].accentHex,
+                        {(['CN', 'US', 'EU', 'JP'] as GeoRegionCode[]).map(
+                          (regCode) => (
+                            <button
+                              key={regCode}
+                              type="button"
+                              onClick={() => {
+                                setRegion(regCode);
+                                setShowRegionMenu(false);
                               }}
-                            />
-                          </button>
-                        ))}
+                              className="w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between transition-colors"
+                              style={{
+                                backgroundColor:
+                                  region === regCode
+                                    ? `${theme.accentHex}22`
+                                    : 'transparent',
+                              }}
+                            >
+                              <span>{t.regionName[regCode]}</span>
+                              <span
+                                className="w-3 h-3 rounded-full border shrink-0"
+                                style={{
+                                  backgroundColor:
+                                    REGIONAL_THEMES[regCode][colorMode]
+                                      .accentHex,
+                                  borderColor: theme.borderPrimary,
+                                }}
+                              />
+                            </button>
+                          )
+                        )}
                       </div>
                     )}
                   </div>
+
+                  {/* Day / Night (Light / Dark) Mode Toggle for EVERY Region! */}
+                  <button
+                    id="color-mode-toggle-btn"
+                    type="button"
+                    onClick={() =>
+                      setColorMode((m) => (m === 'dark' ? 'light' : 'dark'))
+                    }
+                    className="px-2 py-0.5 rounded-lg text-[10px] sm:text-[11px] font-semibold border flex items-center gap-1 transition-all"
+                    style={{
+                      backgroundColor: theme.bgSubtle,
+                      borderColor: theme.borderPrimary,
+                      color: theme.textPrimary,
+                    }}
+                    title={
+                      colorMode === 'dark' ? t.switchToLight : t.switchToDark
+                    }
+                  >
+                    {colorMode === 'dark' ? (
+                      <>
+                        <Sun
+                          className="w-3 h-3"
+                          style={{ color: theme.warnHex }}
+                        />
+                        <span>{t.modeLight}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Moon
+                          className="w-3 h-3"
+                          style={{ color: theme.secondaryHex }}
+                        />
+                        <span>{t.modeDark}</span>
+                      </>
+                    )}
+                  </button>
                 </div>
-                <p className="text-[10px] text-slate-400 hidden sm:block">
+                <p
+                  className="text-[10px] hidden md:block"
+                  style={{ color: theme.textSecondary }}
+                >
                   {t.subtitle}
                 </p>
               </div>
             </div>
 
             {/* Right Action Controls */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 sm:gap-1.5">
               {activeTool === 'tuner' && (
                 <button
                   type="button"
                   onClick={() => setDeepNoiseSuppression((v) => !v)}
-                  className="px-2.5 py-1.5 rounded-xl text-xs font-semibold border flex items-center gap-1 transition-all"
+                  className="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold border flex items-center gap-1 transition-all"
                   style={{
                     backgroundColor: deepNoiseSuppression
                       ? `${theme.accentHex}22`
@@ -897,7 +892,7 @@ export const App: React.FC = () => {
                   }}
                 >
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>
+                  <span className="hidden sm:inline">
                     {deepNoiseSuppression
                       ? t.noiseReductionOn
                       : t.noiseReductionOff}
@@ -920,7 +915,7 @@ export const App: React.FC = () => {
                       setIsSimulating(true);
                     }
                   }}
-                  className="px-2.5 py-1.5 rounded-xl text-xs font-medium border flex items-center gap-1 transition-all"
+                  className="px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-medium border flex items-center gap-1 transition-all"
                   style={{
                     backgroundColor: isSimulating
                       ? `${theme.warnHex}22`
@@ -948,23 +943,23 @@ export const App: React.FC = () => {
                       startMicrophone();
                     }
                   }}
-                  className="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 border transition-all"
+                  className="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 border transition-all"
                   style={{
                     backgroundColor: isMicListening
                       ? theme.accentHex
                       : `${theme.accentHex}22`,
                     borderColor: theme.accentHex,
-                    color: isMicListening ? '#022c22' : theme.accentHex,
+                    color: isMicListening ? '#ffffff' : theme.accentHex,
                   }}
                 >
                   {isMicListening ? (
                     <>
-                      <Mic className="w-4 h-4 animate-pulse" />
+                      <Mic className="w-3.5 h-3.5 animate-pulse" />
                       <span>{t.micOn}</span>
                     </>
                   ) : (
                     <>
-                      <MicOff className="w-4 h-4" />
+                      <MicOff className="w-3.5 h-3.5" />
                       <span>{t.micOff}</span>
                     </>
                   )}
@@ -974,13 +969,13 @@ export const App: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsSettingsOpen(true)}
-                className="p-2 rounded-xl border transition-colors"
+                className="p-1.5 sm:p-2 rounded-xl border transition-colors"
                 style={{
                   backgroundColor: theme.bgCard,
                   borderColor: theme.borderPrimary,
                   color: theme.textPrimary,
                 }}
-                title="Settings"
+                aria-label={t.settingsTitle}
               >
                 <Sliders className="w-4 h-4" />
               </button>
@@ -989,7 +984,7 @@ export const App: React.FC = () => {
 
           {/* Row 2: 5-in-1 Music Tool Suite Switcher Tabs */}
           <nav
-            aria-label="Music Tools Navigation"
+            aria-label={t.tabTuner}
             className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-0.5"
           >
             {[
@@ -1006,11 +1001,11 @@ export const App: React.FC = () => {
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTool(tab.id as ActiveToolTab)}
-                  className="shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 border transition-all"
+                  className="shrink-0 px-2.5 sm:px-3 py-1 rounded-xl text-xs font-bold flex items-center gap-1 border transition-all"
                   style={{
                     backgroundColor: active ? theme.accentHex : theme.bgCard,
                     borderColor: active ? theme.accentHex : theme.borderPrimary,
-                    color: active ? '#022c22' : theme.textSecondary,
+                    color: active ? '#ffffff' : theme.textSecondary,
                   }}
                 >
                   <IconComp className="w-3.5 h-3.5" />
@@ -1022,8 +1017,8 @@ export const App: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Responsive Workbench Content Container (max-w-7xl with 12-col Desktop Workbench!) */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-3 flex flex-col justify-between gap-3">
+      {/* Main Responsive Workbench Content Container */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-2.5 sm:px-6 py-2 sm:py-3 flex flex-col justify-between gap-2.5">
         {activeTool === 'tuner' && (
           <>
             {/* Smart Noisy Environment Alert Banner */}
@@ -1031,9 +1026,19 @@ export const App: React.FC = () => {
               isNoisyEnvironment &&
               !deepNoiseSuppression &&
               !noiseAlertDismissed && (
-                <div className="rounded-xl bg-amber-950/80 border border-amber-500/50 px-3.5 py-2.5 text-xs text-amber-100 flex flex-wrap items-center justify-between gap-2 shadow-lg animate-fadeIn">
+                <div
+                  className="rounded-xl border px-3.5 py-2 text-xs flex flex-wrap items-center justify-between gap-2 shadow-md"
+                  style={{
+                    backgroundColor: `${theme.warnHex}20`,
+                    borderColor: theme.warnHex,
+                    color: theme.textPrimary,
+                  }}
+                >
                   <div className="flex items-center gap-2">
-                    <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" />
+                    <ShieldAlert
+                      className="w-4 h-4 shrink-0"
+                      style={{ color: theme.warnHex }}
+                    />
                     <span>
                       <strong>{t.noisyAlertTitle}</strong>
                       {t.noisyAlertDesc}
@@ -1043,14 +1048,16 @@ export const App: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setDeepNoiseSuppression(true)}
-                      className="px-3 py-1 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold transition-colors"
+                      className="px-3 py-1 rounded-lg text-white font-bold transition-colors"
+                      style={{ backgroundColor: theme.warnHex }}
                     >
                       {t.noisyAlertBtn}
                     </button>
                     <button
                       type="button"
                       onClick={() => setNoiseAlertDismissed(true)}
-                      className="text-amber-300 hover:text-white px-1.5"
+                      className="px-1.5"
+                      style={{ color: theme.textSecondary }}
                     >
                       {t.ignoreBtn}
                     </button>
@@ -1059,22 +1066,63 @@ export const App: React.FC = () => {
               )}
 
             {micError && (
-              <div className="rounded-xl bg-rose-950/60 border border-rose-500/40 px-3.5 py-2 text-xs text-rose-200 flex items-center justify-between gap-2">
+              <div
+                className="rounded-xl border px-3.5 py-2 text-xs flex items-center justify-between gap-2"
+                style={{
+                  backgroundColor: `${theme.dangerHex}20`,
+                  borderColor: theme.dangerHex,
+                  color: theme.dangerHex,
+                }}
+              >
                 <span>{micError}</span>
                 <button
                   type="button"
                   onClick={() => setMicError(null)}
-                  className="text-rose-400 hover:text-white shrink-0 font-semibold"
+                  className="shrink-0 font-semibold"
                 >
                   ✕
                 </button>
               </div>
             )}
 
-            {/* Responsive Desktop 2-Column Workbench (Left 7 cols: Dial + Tape + Modes | Right 5 cols: Instrument String Selector) */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-              {/* Left Column (7/12 on Desktop): Analog Dial Meter + Scrolling Tape + Mode Buttons */}
-              <div className="lg:col-span-7 space-y-3">
+            {/*
+              Responsive Layout:
+              - On Mobile (<1024px): String Selector Panel is FIRST (order-1) right at the top of the first screen,
+                followed immediately by the Dial Meter (order-2), so BOTH fit 100% inside the first screen (<667px)!
+              - On Desktop (>=1024px): 12-col side-by-side Workbench (Left 7 cols: Dial + Tape + Modes | Right 5 cols: String Selector)
+            */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-2.5 sm:gap-4 items-start">
+              {/* String Selector Panel: order-1 on mobile (visible immediately at top of first screen!), order-2 on desktop */}
+              <div className="order-1 lg:order-2 lg:col-span-5">
+                <InstrumentStringsPanel
+                  selectedPreset={selectedPreset}
+                  selectedTuning={selectedTuning}
+                  targetMidi={targetMidi}
+                  a4Hz={a4Hz}
+                  temperament={temperament}
+                  isManualLocked={tunerMode === 'tune-manual'}
+                  autoAdvanceNextString={autoAdvanceNextString}
+                  tunedStrings={tunedStrings}
+                  theme={theme}
+                  lang={lang}
+                  onSelectPreset={handleSelectPreset}
+                  onSelectTuning={handleSelectTuning}
+                  onSelectString={handleSelectString}
+                  onToggleAutoAdvance={() => setAutoAdvanceNextString((v) => !v)}
+                  onResetTunedStrings={() => {
+                    setTunedStrings(new Set());
+                    holdProgressRef.current = {
+                      midi: targetMidi,
+                      progress: 0,
+                      chimed: false,
+                    };
+                    setHoldProgress(0);
+                  }}
+                />
+              </div>
+
+              {/* Dial Meter + Scrolling Tape + Mode Buttons: order-2 on mobile (also inside first screen!), order-1 on desktop */}
+              <div className="order-2 lg:order-1 lg:col-span-7 space-y-2.5 sm:space-y-3">
                 <GStringsDialMeter
                   targetNote={targetNote}
                   measuredFreq={measuredFreq}
@@ -1089,9 +1137,7 @@ export const App: React.FC = () => {
                   notationStyle={notationStyle}
                   showPitchTrail={showPitchTrail}
                   matchedStringLabel={
-                    matchedString
-                      ? `${matchedString.label} · ${matchedString.description || ''}`
-                      : null
+                    matchedString ? matchedString.label[lang] : null
                   }
                   activeTimbreLabel={activeTimbreLabel}
                   isManualLocked={tunerMode === 'tune-manual'}
@@ -1112,11 +1158,12 @@ export const App: React.FC = () => {
                   onSelectMidi={handleSelectTapeMidi}
                   hasSignal={hasSignal}
                   isSoundItMode={tunerMode === 'sound-it'}
+                  theme={theme}
+                  lang={lang}
                 />
 
-                {/* 3-Button Mode Bar (Defaulting to String-First Manual Selection!) */}
+                {/* 3-Button Mode Bar */}
                 <div className="grid grid-cols-3 gap-2">
-                  {/* Mode 1 (Recommended): Select String First -> Tune */}
                   <button
                     type="button"
                     onClick={() => {
@@ -1125,7 +1172,7 @@ export const App: React.FC = () => {
                         startMicrophone();
                       }
                     }}
-                    className="flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm border transition-all"
+                    className="flex flex-col sm:flex-row items-center justify-center gap-1 py-2 px-2.5 rounded-xl font-bold text-xs sm:text-sm border transition-all"
                     style={{
                       backgroundColor:
                         tunerMode === 'tune-manual'
@@ -1150,7 +1197,6 @@ export const App: React.FC = () => {
                     </div>
                   </button>
 
-                  {/* Mode 2: Auto Detect */}
                   <button
                     type="button"
                     onClick={() => {
@@ -1159,7 +1205,7 @@ export const App: React.FC = () => {
                         startMicrophone();
                       }
                     }}
-                    className="flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm border transition-all"
+                    className="flex flex-col sm:flex-row items-center justify-center gap-1 py-2 px-2.5 rounded-xl font-bold text-xs sm:text-sm border transition-all"
                     style={{
                       backgroundColor:
                         tunerMode === 'tune-auto'
@@ -1184,7 +1230,6 @@ export const App: React.FC = () => {
                     </div>
                   </button>
 
-                  {/* Mode 3: Sound It Reference Tone */}
                   <button
                     type="button"
                     onClick={() => {
@@ -1194,7 +1239,7 @@ export const App: React.FC = () => {
                         setTunerMode('sound-it');
                       }
                     }}
-                    className="flex flex-col sm:flex-row items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm border transition-all"
+                    className="flex flex-col sm:flex-row items-center justify-center gap-1 py-2 px-2.5 rounded-xl font-bold text-xs sm:text-sm border transition-all"
                     style={{
                       backgroundColor:
                         tunerMode === 'sound-it'
@@ -1224,47 +1269,26 @@ export const App: React.FC = () => {
                   </button>
                 </div>
               </div>
-
-              {/* Right Column (5/12 on Desktop): Step 1 Instrument & String Selector Panel */}
-              <div className="lg:col-span-5">
-                <InstrumentStringsPanel
-                  selectedPreset={selectedPreset}
-                  selectedTuning={selectedTuning}
-                  targetMidi={targetMidi}
-                  a4Hz={a4Hz}
-                  temperament={temperament}
-                  isManualLocked={tunerMode === 'tune-manual'}
-                  autoAdvanceNextString={autoAdvanceNextString}
-                  tunedStrings={tunedStrings}
-                  theme={theme}
-                  lang={lang}
-                  onSelectPreset={handleSelectPreset}
-                  onSelectTuning={handleSelectTuning}
-                  onSelectString={handleSelectString}
-                  onToggleAutoAdvance={() => setAutoAdvanceNextString((v) => !v)}
-                  onResetTunedStrings={() => {
-                    setTunedStrings(new Set());
-                    holdProgressRef.current = {
-                      midi: targetMidi,
-                      progress: 0,
-                      chimed: false,
-                    };
-                    setHoldProgress(0);
-                  }}
-                />
-              </div>
             </div>
           </>
         )}
 
-        {activeTool === 'metronome' && <MetronomeTool />}
-        {activeTool === 'chords' && <ChordLibraryTool a4Hz={a4Hz} />}
-        {activeTool === 'ear-trainer' && <EarTrainerTool a4Hz={a4Hz} />}
-        {activeTool === 'decibel' && <DecibelMeterTool />}
+        {activeTool === 'metronome' && (
+          <MetronomeTool theme={theme} lang={lang} />
+        )}
+        {activeTool === 'chords' && (
+          <ChordLibraryTool a4Hz={a4Hz} theme={theme} lang={lang} />
+        )}
+        {activeTool === 'ear-trainer' && (
+          <EarTrainerTool a4Hz={a4Hz} theme={theme} lang={lang} />
+        )}
+        {activeTool === 'decibel' && (
+          <DecibelMeterTool theme={theme} lang={lang} />
+        )}
       </main>
 
       {/* SEO Structured Guide, Tuning Reference Table, FAQ & Compliance Footer */}
-      <SeoKnowledgeFooter />
+      <SeoKnowledgeFooter theme={theme} lang={lang} />
 
       {/* Pro Settings Modal */}
       <SettingsModal
@@ -1291,6 +1315,8 @@ export const App: React.FC = () => {
         enableLockChime={enableLockChime}
         onChangeEnableLockChime={setEnableLockChime}
         onResetDefaults={handleResetDefaults}
+        theme={theme}
+        lang={lang}
       />
     </div>
   );

@@ -1,7 +1,89 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { ThemePalette, SupportedLang } from '../i18n/localeTheme';
 import { Mic, MicOff, ShieldAlert, CheckCircle2, RotateCcw } from 'lucide-react';
 
-export const DecibelMeterTool: React.FC = () => {
+const DB_TEXT: Record<
+  SupportedLang,
+  {
+    title: string;
+    subtitle: string;
+    resetTitle: string;
+    startBtn: string;
+    stopBtn: string;
+    curLabel: string;
+    avgLabel: string;
+    minLabel: string;
+    peakLabel: string;
+    specTitle: string;
+    specRunning: string;
+    specIdle: string;
+    quietMsg: string;
+    modMsg: string;
+    noisyMsg: string;
+    micErr: string;
+  }
+> = {
+  zh: {
+    title: '环境噪音分贝仪 & 实时频谱分析',
+    subtitle: '实时评估当前房间底噪是否适合原声乐器拾音调弦，并提供降噪建议',
+    resetTitle: '重置统计峰值',
+    startBtn: '开始检测环境噪音',
+    stopBtn: '停止检测',
+    curLabel: '当前声压估算',
+    avgLabel: '平均底噪',
+    minLabel: '最低安静值',
+    peakLabel: '瞬态峰值',
+    specTitle: '实时环境声学频谱分布 (20Hz ~ 8000Hz)',
+    specRunning: '实时采样中',
+    specIdle: '点击上方按钮开始采样',
+    quietMsg: '当前声学环境极佳（≤52 dB）：非常适合进行木吉他、古筝、小提琴等原声乐器的高精度微米级调音。',
+    modMsg: '当前存在一定环境背景音（53~68 dB）：建议在调音器顶部开启「强效抗噪」模式，并将麦克风靠近乐器音孔 20~30cm 内。',
+    noisyMsg: '当前环境非常嘈杂（>68 dB）：强烈建议开启调音器的「强效抗噪 + 选弦调音」模式，或使用原声基准音耳调。',
+    micErr: '无法开启麦克风测量环境分贝',
+  },
+  en: {
+    title: 'Ambient Noise Decibel Meter & Real-Time Spectrum Analyzer',
+    subtitle: 'Evaluate whether room acoustics are quiet enough for precision instrument tuning',
+    resetTitle: 'Reset Peak Stats',
+    startBtn: 'Start Noise Meter',
+    stopBtn: 'Stop Meter',
+    curLabel: 'Current SPL',
+    avgLabel: 'Average SPL',
+    minLabel: 'Minimum SPL',
+    peakLabel: 'Peak SPL',
+    specTitle: 'Real-Time Acoustic Spectrum (20Hz – 8000Hz)',
+    specRunning: 'Sampling Live Audio',
+    specIdle: 'Tap "Start Noise Meter" above to begin',
+    quietMsg: 'Quiet Acoustic Environment (≤52 dB): Ideal for high-precision acoustic tuning of guitar, violin, and zither.',
+    modMsg: 'Moderate Room Noise (53–68 dB): Enable the Narrow-Band Noise Filter in the top bar and place your mic within 25cm of the instrument.',
+    noisyMsg: 'High Ambient Noise (>68 dB): Strongly recommend enabling Narrow-Band Noise Filter + String Lock Mode.',
+    micErr: 'Unable to access microphone for decibel measurement',
+  },
+  ja: {
+    title: '環境騒音計 ＆ リアルタイム周波数スペクトラム分析',
+    subtitle: '現在の部屋の静けさが楽器の精密チューニングに適しているかをリアルタイム診断します',
+    resetTitle: '統計をリセット',
+    startBtn: '騒音測定を開始',
+    stopBtn: '測定停止',
+    curLabel: '現在の推定騒音',
+    avgLabel: '平均ノイズ',
+    minLabel: '最小値',
+    peakLabel: 'ピーク最大値',
+    specTitle: 'リアルタイム音響スペクトラム (20Hz ～ 8000Hz)',
+    specRunning: 'リアルタイム測定中',
+    specIdle: '上の「騒音測定を開始」をタップしてください',
+    quietMsg: '極めて良好な音響環境（≤52 dB）：アコースティックギター・古筝・バイオリンの精密チューニングに最適です。',
+    modMsg: '周囲にやや生活音があります（53～68 dB）：上部の「ノイズ除去」をONにし、マイクを楽器に近づけてください。',
+    noisyMsg: '周囲が騒がしい環境です（>68 dB）：「ノイズ除去 ＋ 弦指定モード」を併用するか、基準音での耳調律を推奨します。',
+    micErr: 'マイクへのアクセスが許可されていません',
+  },
+};
+
+export const DecibelMeterTool: React.FC<{
+  theme: ThemePalette;
+  lang: SupportedLang;
+}> = ({ theme, lang }) => {
+  const txt = DB_TEXT[lang];
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [currentSplDb, setCurrentSplDb] = useState<number>(32);
   const [peakSplDb, setPeakSplDb] = useState<number>(32);
@@ -65,7 +147,6 @@ export const DecibelMeterTool: React.FC = () => {
         }
         const rms = Math.sqrt(sum / timeBuf.length);
         const dbfs = rms > 1e-6 ? 20 * Math.log10(rms) : -95;
-        // Map dBFS (-95..0) to estimated ambient SPL (28..105 dB)
         const estSpl = Math.max(26, Math.min(108, Math.round(dbfs + 105)));
 
         setCurrentSplDb((prev) => Math.round(prev * 0.75 + estSpl * 0.25));
@@ -79,7 +160,6 @@ export const DecibelMeterTool: React.FC = () => {
           samplesRef.current.length;
         setAvgSplDb(Math.round(avg));
 
-        // Draw spectrum bars
         const canvas = canvasRef.current;
         if (canvas) {
           const c = canvas.getContext('2d');
@@ -93,7 +173,11 @@ export const DecibelMeterTool: React.FC = () => {
               const val = freqBuf[b * 3] / 255;
               const barH = Math.max(3, val * (h - 10));
               c.fillStyle =
-                val > 0.75 ? '#F43F5E' : val > 0.45 ? '#F59E0B' : '#10B981';
+                val > 0.75
+                  ? theme.dangerHex
+                  : val > 0.45
+                  ? theme.warnHex
+                  : theme.accentHex;
               c.fillRect(b * (barW + 2), h - barH, barW, barH);
             }
           }
@@ -104,9 +188,7 @@ export const DecibelMeterTool: React.FC = () => {
 
       rafRef.current = requestAnimationFrame(loop);
     } catch (e) {
-      setErrorMsg(
-        e instanceof Error ? e.message : '无法开启麦克风测量环境分贝'
-      );
+      setErrorMsg(e instanceof Error ? e.message : txt.micErr);
     }
   };
 
@@ -118,14 +200,22 @@ export const DecibelMeterTool: React.FC = () => {
   const isModerateNoise = currentSplDb > 52 && currentSplDb <= 68;
 
   return (
-    <div className="w-full rounded-2xl bg-gradient-to-b from-[#111722] via-[#0c1018] to-[#090d14] border border-slate-800/90 p-4 sm:p-6 shadow-2xl space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
+    <div
+      className="w-full rounded-2xl border p-4 sm:p-6 shadow-xl space-y-5 transition-colors duration-300"
+      style={{
+        backgroundColor: theme.bgCard,
+        borderColor: theme.borderPrimary,
+        color: theme.textPrimary,
+      }}
+    >
+      <div
+        className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b"
+        style={{ borderColor: theme.borderPrimary }}
+      >
         <div>
-          <h2 className="text-base sm:text-lg font-bold text-white">
-            环境噪音分贝仪 & 实时频谱分析 (Acoustic dB & Spectrum Analyzer)
-          </h2>
-          <p className="text-xs text-slate-400">
-            实时评估当前房间的环境底噪是否适合原声乐器拾音调弦，并提供降噪建议
+          <h2 className="text-base sm:text-lg font-bold">{txt.title}</h2>
+          <p className="text-xs" style={{ color: theme.textSecondary }}>
+            {txt.subtitle}
           </p>
         </div>
 
@@ -137,8 +227,13 @@ export const DecibelMeterTool: React.FC = () => {
               setMinSplDb(currentSplDb);
               samplesRef.current = [];
             }}
-            className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800"
-            title="重置统计峰值"
+            className="p-2 rounded-xl border"
+            style={{
+              backgroundColor: theme.bgSubtle,
+              borderColor: theme.borderPrimary,
+              color: theme.textSecondary,
+            }}
+            title={txt.resetTitle}
           >
             <RotateCcw className="w-4 h-4" />
           </button>
@@ -146,21 +241,20 @@ export const DecibelMeterTool: React.FC = () => {
           <button
             type="button"
             onClick={() => (isRunning ? stopMeter() : startMeter())}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all ${
-              isRunning
-                ? 'bg-rose-500 text-white'
-                : 'bg-emerald-500 text-slate-950'
-            }`}
+            className="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 text-white transition-all"
+            style={{
+              backgroundColor: isRunning ? theme.dangerHex : theme.accentHex,
+            }}
           >
             {isRunning ? (
               <>
                 <MicOff className="w-4 h-4" />
-                <span>停止检测</span>
+                <span>{txt.stopBtn}</span>
               </>
             ) : (
               <>
                 <Mic className="w-4 h-4" />
-                <span>开始检测环境噪音</span>
+                <span>{txt.startBtn}</span>
               </>
             )}
           </button>
@@ -168,46 +262,101 @@ export const DecibelMeterTool: React.FC = () => {
       </div>
 
       {errorMsg && (
-        <div className="p-3 rounded-xl bg-rose-950/60 border border-rose-500/40 text-xs text-rose-200">
+        <div
+          className="p-3 rounded-xl border text-xs"
+          style={{
+            backgroundColor: `${theme.dangerHex}20`,
+            borderColor: theme.dangerHex,
+            color: theme.dangerHex,
+          }}
+        >
           {errorMsg}
         </div>
       )}
 
-      {/* Readout Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
-          <div className="text-xs text-slate-400">当前声压估算</div>
-          <div className="mt-1 font-mono text-3xl font-extrabold text-emerald-400">
+        <div
+          className="p-3.5 rounded-xl border"
+          style={{
+            backgroundColor: theme.bgSubtle,
+            borderColor: theme.borderPrimary,
+          }}
+        >
+          <div className="text-xs" style={{ color: theme.textSecondary }}>
+            {txt.curLabel}
+          </div>
+          <div
+            className="mt-1 font-mono text-3xl font-extrabold"
+            style={{ color: theme.accentHex }}
+          >
             {currentSplDb} <span className="text-xs font-normal">dB</span>
           </div>
         </div>
-        <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
-          <div className="text-xs text-slate-400">平均底噪 (Avg)</div>
-          <div className="mt-1 font-mono text-2xl font-bold text-sky-400">
+        <div
+          className="p-3.5 rounded-xl border"
+          style={{
+            backgroundColor: theme.bgSubtle,
+            borderColor: theme.borderPrimary,
+          }}
+        >
+          <div className="text-xs" style={{ color: theme.textSecondary }}>
+            {txt.avgLabel}
+          </div>
+          <div
+            className="mt-1 font-mono text-2xl font-bold"
+            style={{ color: theme.secondaryHex }}
+          >
             {avgSplDb} <span className="text-xs font-normal">dB</span>
           </div>
         </div>
-        <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
-          <div className="text-xs text-slate-400">最低安静值 (Min)</div>
-          <div className="mt-1 font-mono text-2xl font-bold text-slate-200">
+        <div
+          className="p-3.5 rounded-xl border"
+          style={{
+            backgroundColor: theme.bgSubtle,
+            borderColor: theme.borderPrimary,
+          }}
+        >
+          <div className="text-xs" style={{ color: theme.textSecondary }}>
+            {txt.minLabel}
+          </div>
+          <div className="mt-1 font-mono text-2xl font-bold">
             {minSplDb > 80 && !isRunning ? '--' : minSplDb}{' '}
             <span className="text-xs font-normal">dB</span>
           </div>
         </div>
-        <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
-          <div className="text-xs text-slate-400">瞬态峰值 (Peak)</div>
-          <div className="mt-1 font-mono text-2xl font-bold text-amber-400">
+        <div
+          className="p-3.5 rounded-xl border"
+          style={{
+            backgroundColor: theme.bgSubtle,
+            borderColor: theme.borderPrimary,
+          }}
+        >
+          <div className="text-xs" style={{ color: theme.textSecondary }}>
+            {txt.peakLabel}
+          </div>
+          <div
+            className="mt-1 font-mono text-2xl font-bold"
+            style={{ color: theme.warnHex }}
+          >
             {peakSplDb} <span className="text-xs font-normal">dB</span>
           </div>
         </div>
       </div>
 
-      {/* Spectrum Canvas */}
-      <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800/80">
-        <div className="text-xs text-slate-400 mb-2 flex justify-between">
-          <span>实时环境声学频谱分布 (20Hz ~ 8000Hz)</span>
-          <span className="font-mono text-[11px] text-slate-500">
-            {isRunning ? '实时采样中' : '点击上方「开始检测环境噪音」激活'}
+      <div
+        className="p-4 rounded-xl border"
+        style={{
+          backgroundColor: theme.bgSubtle,
+          borderColor: theme.borderPrimary,
+        }}
+      >
+        <div
+          className="text-xs mb-2 flex justify-between"
+          style={{ color: theme.textSecondary }}
+        >
+          <span>{txt.specTitle}</span>
+          <span className="font-mono text-[11px]">
+            {isRunning ? txt.specRunning : txt.specIdle}
           </span>
         </div>
         <canvas
@@ -218,39 +367,39 @@ export const DecibelMeterTool: React.FC = () => {
         />
       </div>
 
-      {/* Suitability Assessment Card */}
       <div
-        className={`p-3.5 rounded-xl border flex items-center gap-3 ${
-          isQuietForTuning
-            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200'
+        className="p-3.5 rounded-xl border flex items-center gap-3 text-xs leading-relaxed"
+        style={{
+          backgroundColor: isQuietForTuning
+            ? `${theme.accentHex}18`
             : isModerateNoise
-            ? 'bg-amber-500/10 border-amber-500/30 text-amber-200'
-            : 'bg-rose-500/15 border-rose-500/40 text-rose-200'
-        }`}
+            ? `${theme.warnHex}18`
+            : `${theme.dangerHex}18`,
+          borderColor: isQuietForTuning
+            ? theme.accentHex
+            : isModerateNoise
+            ? theme.warnHex
+            : theme.dangerHex,
+        }}
       >
         {isQuietForTuning ? (
-          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+          <CheckCircle2
+            className="w-5 h-5 shrink-0"
+            style={{ color: theme.accentHex }}
+          />
         ) : (
-          <ShieldAlert className="w-5 h-5 text-amber-400 shrink-0" />
+          <ShieldAlert
+            className="w-5 h-5 shrink-0"
+            style={{ color: theme.warnHex }}
+          />
         )}
-        <div className="text-xs leading-relaxed">
-          {isQuietForTuning ? (
-            <span>
-              <strong>当前声学环境极佳（≤52 dB）：</strong>
-              非常适合进行木吉他、古筝、小提琴等原声乐器的高精度微米级调音。
-            </span>
-          ) : isModerateNoise ? (
-            <span>
-              <strong>当前存在一定环境背景音（53~68 dB）：</strong>
-              建议在调音器顶部开启<strong>「强效抗噪」</strong>模式，并将手机/麦克风靠近乐器音孔 20~30cm 内。
-            </span>
-          ) : (
-            <span>
-              <strong>当前环境非常嘈杂（&gt;68 dB）：</strong>
-              强烈建议开启调音器的<strong>「强效抗噪 + 手动锁弦 (Tune Manual)」</strong>，或使用<strong>「Sound It 原声耳调」</strong>功能。
-            </span>
-          )}
-        </div>
+        <span>
+          {isQuietForTuning
+            ? txt.quietMsg
+            : isModerateNoise
+            ? txt.modMsg
+            : txt.noisyMsg}
+        </span>
       </div>
     </div>
   );

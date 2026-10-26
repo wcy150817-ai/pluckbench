@@ -6,7 +6,7 @@ import {
   getFreqAtCents,
 } from '../data/instruments';
 import { EnvelopePhase } from '../audio/pitchDetector';
-import { ThemePalette, SupportedLang, UI_TRANSLATIONS } from '../i18n/localeTheme';
+import { ThemePalette, SupportedLang, UI_TEXT } from '../i18n/localeTheme';
 
 interface DialMeterProps {
   targetNote: NoteInfo;
@@ -49,7 +49,7 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
   theme,
   lang,
 }) => {
-  const t = UI_TRANSLATIONS[lang];
+  const t = UI_TEXT[lang];
   const needleGroupRef = useRef<SVGGElement | null>(null);
   const trailCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -97,7 +97,6 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
       );
       displayAngleRef.current += step;
 
-      // Snap gently within ±1.2° if already inside the ±5¢ green zone
       if (needleGroupRef.current) {
         needleGroupRef.current.setAttribute(
           'transform',
@@ -161,7 +160,6 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
   }, [dampingMode, showPitchTrail, theme.accentHex]);
 
   const absCents = Math.abs(centsOffset);
-  // ±5 cents forgiving tolerance zone for real instruments
   const isInSmallFluctuationZone = (hasSignal && absCents <= 5.5) || isSoundItMode;
   const isClose = hasSignal && absCents > 5.5 && absCents <= 14.0;
   const isFlat = hasSignal && centsOffset < -5.5;
@@ -177,7 +175,7 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
     ? theme.warnHex
     : theme.dangerHex;
 
-  const noteDisplay = formatNoteDisplay(targetNote, notationStyle);
+  const noteDisplay = formatNoteDisplay(targetNote, notationStyle, lang);
 
   // Generate Outer Cents Ticks (-50 to +50)
   const centTicks: React.ReactNode[] = [];
@@ -321,7 +319,8 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
 
   return (
     <div
-      className="relative w-full rounded-2xl border shadow-[0_16px_40px_rgba(0,0,0,0.45)] overflow-hidden select-none transition-colors duration-300"
+      id="dial-meter-card"
+      className="relative w-full rounded-2xl border shadow-lg overflow-hidden select-none transition-colors duration-300"
       style={{
         background: `linear-gradient(180deg, ${theme.dialGradientStart} 0%, ${theme.dialGradientEnd} 100%)`,
         borderColor: theme.borderPrimary,
@@ -338,7 +337,7 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
 
       {/* Top Hardware-Style LED Tuning Guidance Strip */}
       <div
-        className="relative z-10 flex items-center justify-between px-3 sm:px-4 pt-3 pb-2 border-b"
+        className="relative z-10 flex items-center justify-between px-2.5 sm:px-4 pt-2 pb-1.5 border-b"
         style={{
           borderColor: theme.borderPrimary,
           backgroundColor: theme.isLight
@@ -348,29 +347,28 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
       >
         {/* Flat Indicator */}
         <div
-          className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-medium transition-all ${
-            isFlat
-              ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
-              : 'text-slate-500 border border-transparent'
-          }`}
+          className="flex items-center gap-1 px-1.5 sm:px-2.5 py-0.5 rounded-lg text-[10px] sm:text-xs font-medium transition-all border"
+          style={{
+            backgroundColor: isFlat ? `${theme.warnHex}22` : 'transparent',
+            borderColor: isFlat ? `${theme.warnHex}66` : 'transparent',
+            color: isFlat ? theme.warnHex : theme.textMuted,
+          }}
         >
-          <span className="text-sm font-bold">♭</span>
+          <span className="text-xs sm:text-sm font-bold">♭</span>
           <span>{t.flatTighten}</span>
         </div>
 
         {/* Center Lock & Hold-to-Confirm Progress Bar */}
-        <div className="flex flex-col items-center min-w-[160px] sm:min-w-[220px]">
+        <div className="flex flex-col items-center min-w-[140px] sm:min-w-[210px]">
           <div
-            className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wide border transition-all"
+            className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-bold tracking-wide border transition-all"
             style={{
               backgroundColor:
                 isCurrentStringTuned || holdProgress >= 100
                   ? `${theme.accentHex}28`
                   : isInSmallFluctuationZone
                   ? `${theme.accentHex}18`
-                  : theme.isLight
-                  ? '#e2e8f0'
-                  : 'rgba(15,23,42,0.85)',
+                  : theme.bgSubtle,
               borderColor:
                 isCurrentStringTuned || isInSmallFluctuationZone
                   ? theme.accentHex
@@ -382,7 +380,7 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
             }}
           >
             <span
-              className="w-2 h-2 rounded-full"
+              className="w-2 h-2 rounded-full shrink-0"
               style={{
                 backgroundColor: isInSmallFluctuationZone
                   ? theme.accentHex
@@ -391,11 +389,13 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
                   : '#64748B',
               }}
             />
-            <span>
+            <span className="truncate max-w-[165px] sm:max-w-none">
               {isCurrentStringTuned || holdProgress >= 100
                 ? t.inTuneLocked
                 : isInSmallFluctuationZone && hasSignal
                 ? `${t.holdingForLock} (${Math.round(holdProgress)}%)`
+                : isSoundItMode
+                ? t.playingRefTone
                 : hasSignal
                 ? `${centsOffset > 0 ? '+' : ''}${centsOffset.toFixed(1)} ¢`
                 : t.waitingForString}
@@ -403,7 +403,13 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
           </div>
 
           {/* Hold-in-Small-Fluctuation-Zone Progress Bar (0% -> 100%) */}
-          <div className="w-40 sm:w-52 h-1.5 mt-1.5 rounded-full bg-slate-800/80 overflow-hidden border border-slate-700/50">
+          <div
+            className="w-36 sm:w-52 h-1.5 mt-1 rounded-full overflow-hidden border"
+            style={{
+              backgroundColor: theme.bgSubtle,
+              borderColor: theme.borderPrimary,
+            }}
+          >
             <div
               className="h-full transition-all duration-100 rounded-full"
               style={{
@@ -416,22 +422,23 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
 
         {/* Sharp Indicator */}
         <div
-          className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-medium transition-all ${
-            isSharp
-              ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
-              : 'text-slate-500 border border-transparent'
-          }`}
+          className="flex items-center gap-1 px-1.5 sm:px-2.5 py-0.5 rounded-lg text-[10px] sm:text-xs font-medium transition-all border"
+          style={{
+            backgroundColor: isSharp ? `${theme.dangerHex}22` : 'transparent',
+            borderColor: isSharp ? `${theme.dangerHex}66` : 'transparent',
+            color: isSharp ? theme.dangerHex : theme.textMuted,
+          }}
         >
           <span>{t.sharpLoosen}</span>
-          <span className="text-sm font-bold">♯</span>
+          <span className="text-xs sm:text-sm font-bold">♯</span>
         </div>
       </div>
 
-      {/* Main Dual-Scale Analog SVG Dial */}
-      <div className="relative px-2 pt-1 pb-1">
+      {/* Main Dual-Scale Analog SVG Dial (compact on mobile so first-screen fits String Selector + Dial!) */}
+      <div className="relative px-2 pt-0.5 pb-0.5">
         <svg
           viewBox="0 0 500 265"
-          className="w-full h-auto max-h-[240px] mx-auto overflow-visible"
+          className="w-full h-auto max-h-[155px] sm:max-h-[235px] mx-auto overflow-visible"
         >
           <defs>
             <linearGradient id="needleGrad" x1="0" y1="1" x2="0" y2="0">
@@ -479,12 +486,12 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
             x="250"
             y="22"
             textAnchor="middle"
-            fill="#64748B"
+            fill={theme.textMuted}
             fontSize="9"
             fontWeight="600"
-            letterSpacing="0.1em"
+            letterSpacing="0.06em"
           >
-            ±5¢ TARGET HOLD ZONE (重流体阻尼防晃表盘)
+            {t.dialTopScaleLabel}
           </text>
           <text
             x="250"
@@ -493,10 +500,10 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
             fill={theme.secondaryHex}
             fontSize="8.5"
             fontWeight="600"
-            letterSpacing="0.08em"
+            letterSpacing="0.06em"
             opacity="0.85"
           >
-            DYNAMIC Hz (动态频率尺)
+            {t.dialInnerScaleLabel}
           </text>
 
           <g>{centTicks}</g>
@@ -509,7 +516,7 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
               y1="245"
               x2="250"
               y2="38"
-              stroke="rgba(0,0,0,0.45)"
+              stroke="rgba(0,0,0,0.35)"
               strokeWidth="5"
               strokeLinecap="round"
             />
@@ -551,9 +558,9 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
         </svg>
 
         {showPitchTrail && (
-          <div className="mx-auto max-w-md px-4 -mt-3 mb-1">
+          <div className="mx-auto max-w-md px-4 -mt-2 mb-1 hidden sm:block">
             <div
-              className="relative h-8 rounded-lg border overflow-hidden flex items-center"
+              className="relative h-7 rounded-lg border overflow-hidden flex items-center"
               style={{
                 backgroundColor: theme.isLight
                   ? 'rgba(241,245,249,0.9)'
@@ -564,11 +571,14 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
               <canvas
                 ref={trailCanvasRef}
                 width={360}
-                height={32}
+                height={28}
                 className="w-full h-full"
               />
-              <span className="absolute left-2 top-1 text-[9px] font-mono text-slate-500 uppercase tracking-wider">
-                HOLD STABILITY SCOPE (±5¢)
+              <span
+                className="absolute left-2 top-1 text-[9px] font-mono tracking-wider"
+                style={{ color: theme.textMuted }}
+              >
+                {t.dialTrailLabel}
               </span>
             </div>
           </div>
@@ -577,7 +587,7 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
 
       {/* Bottom Digital Readout Panel */}
       <div
-        className="relative z-10 grid grid-cols-3 items-center gap-2 px-3 sm:px-4 py-2.5 border-t"
+        className="relative z-10 grid grid-cols-3 items-center gap-2 px-3 sm:px-4 py-2 border-t"
         style={{
           borderColor: theme.borderPrimary,
           backgroundColor: theme.isLight
@@ -587,11 +597,13 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
       >
         {/* Left: Locked Target String & Frequency */}
         <div className="flex flex-col items-start">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-[11px] text-slate-400">{t.targetPitch}</span>
+          <div className="flex items-center gap-1 flex-wrap">
+            <span className="text-[10px] sm:text-[11px]" style={{ color: theme.textMuted }}>
+              {t.targetPitch}
+            </span>
             {isManualLocked && (
               <span
-                className="px-1.5 py-0.5 text-[10px] font-bold rounded border"
+                className="px-1.5 py-0.2 text-[9px] sm:text-[10px] font-bold rounded border"
                 style={{
                   backgroundColor: `${theme.accentHex}22`,
                   color: theme.accentHex,
@@ -602,19 +614,31 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
               </span>
             )}
             {deepNoiseSuppression && (
-              <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-sky-500/20 text-sky-400 border border-sky-500/30">
-                窄带抗噪
+              <span
+                className="px-1.5 py-0.2 text-[9px] sm:text-[10px] font-semibold rounded border"
+                style={{
+                  backgroundColor: `${theme.secondaryHex}20`,
+                  color: theme.secondaryHex,
+                  borderColor: `${theme.secondaryHex}44`,
+                }}
+              >
+                {t.narrowFilterBadge}
               </span>
             )}
           </div>
           <div
-            className="font-mono text-sm sm:text-base font-bold"
+            className="font-mono text-xs sm:text-base font-bold"
             style={{ color: theme.secondaryHex }}
           >
             {targetNote.frequency.toFixed(2)}{' '}
-            <span className="text-xs font-normal text-slate-400">Hz</span>
+            <span className="text-[10px] font-normal" style={{ color: theme.textMuted }}>
+              Hz
+            </span>
           </div>
-          <div className="text-[11px] text-slate-500 truncate max-w-full">
+          <div
+            className="text-[10px] sm:text-[11px] truncate max-w-full"
+            style={{ color: theme.textSecondary }}
+          >
             {matchedStringLabel || noteDisplay.secondary}
           </div>
         </div>
@@ -622,7 +646,7 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
         {/* Center: Prominent Target Note Badge */}
         <div className="flex flex-col items-center justify-center">
           <div
-            className="flex items-baseline justify-center gap-1 px-4 py-1 rounded-xl border transition-all duration-200"
+            className="flex items-baseline justify-center gap-1 px-3 sm:px-4 py-0.5 sm:py-1 rounded-xl border transition-all duration-200"
             style={{
               borderColor:
                 hasSignal || isSoundItMode
@@ -635,7 +659,7 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
             }}
           >
             <span
-              className="font-mono text-2xl sm:text-3xl font-extrabold tracking-tight"
+              className="font-mono text-xl sm:text-3xl font-extrabold tracking-tight"
               style={{
                 color: theme.textPrimary,
               }}
@@ -647,15 +671,17 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
 
         {/* Right: Stabilized Measured Frequency + Mic Level */}
         <div className="flex flex-col items-end">
-          <span className="text-[11px] text-slate-400">{t.measuredPitch}</span>
+          <span className="text-[10px] sm:text-[11px]" style={{ color: theme.textMuted }}>
+            {t.measuredPitch}
+          </span>
           <div
-            className="font-mono text-sm sm:text-base font-bold transition-colors"
+            className="font-mono text-xs sm:text-base font-bold transition-colors"
             style={{
               color: hasSignal
                 ? isInSmallFluctuationZone
                   ? theme.accentHex
                   : theme.textPrimary
-                : '#64748B',
+                : theme.textMuted,
             }}
           >
             {hasSignal && measuredFreq
@@ -663,9 +689,14 @@ export const GStringsDialMeter: React.FC<DialMeterProps> = ({
               : isSoundItMode
               ? targetNote.frequency.toFixed(2)
               : '---.--'}{' '}
-            <span className="text-xs font-normal text-slate-400">Hz</span>
+            <span className="text-[10px] font-normal" style={{ color: theme.textMuted }}>
+              Hz
+            </span>
           </div>
-          <div className="w-20 sm:w-24 h-1.5 mt-1 rounded-full bg-slate-800/80 overflow-hidden">
+          <div
+            className="w-16 sm:w-24 h-1.5 mt-1 rounded-full overflow-hidden"
+            style={{ backgroundColor: theme.bgSubtle }}
+          >
             <div
               className="h-full rounded-full transition-all duration-75"
               style={{

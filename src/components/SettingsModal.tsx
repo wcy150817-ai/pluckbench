@@ -6,6 +6,7 @@ import {
   NotationStyle,
   ToneWaveform,
 } from '../data/instruments';
+import { ThemePalette, SupportedLang, UI_TEXT } from '../i18n/localeTheme';
 import { X, Sliders, Volume2, Activity, RotateCcw, ShieldCheck } from 'lucide-react';
 
 interface SettingsModalProps {
@@ -32,6 +33,8 @@ interface SettingsModalProps {
   enableLockChime: boolean;
   onChangeEnableLockChime: (val: boolean) => void;
   onResetDefaults: () => void;
+  theme: ThemePalette;
+  lang: SupportedLang;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -58,77 +61,109 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   enableLockChime,
   onChangeEnableLockChime,
   onResetDefaults,
+  theme,
+  lang,
 }) => {
   if (!isOpen) return null;
 
-  const a4Presets = [
-    { hz: 415, label: '415Hz 巴洛克' },
-    { hz: 432, label: '432Hz 古典温和' },
-    { hz: 440, label: '440Hz 国际标准' },
-    { hz: 442, label: '442Hz 交响/民乐团' },
-    { hz: 444, label: '444Hz 高亮管弦' },
-  ];
+  const t = UI_TEXT[lang];
+  const a4Presets = [415, 432, 440, 442, 444];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl bg-[#0e1420] border border-slate-700/80 shadow-2xl text-slate-100 p-4 sm:p-6 space-y-5">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm">
+      <div
+        className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl border shadow-2xl p-4 sm:p-6 space-y-5"
+        style={{
+          backgroundColor: theme.bgCard,
+          borderColor: theme.borderPrimary,
+          color: theme.textPrimary,
+        }}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div
+          className="flex items-center justify-between pb-3 border-b"
+          style={{ borderColor: theme.borderPrimary }}
+        >
           <div className="flex items-center gap-2">
-            <Sliders className="w-5 h-5 text-emerald-400" />
-            <h2 className="text-base sm:text-lg font-bold">
-              TuneKit Pro 专业声学与降噪设置
-            </h2>
+            <Sliders className="w-5 h-5" style={{ color: theme.accentHex }} />
+            <h2 className="text-base sm:text-lg font-bold">{t.settingsTitle}</h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg transition-colors"
+            style={{ color: theme.textSecondary }}
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* 1. Deep Noise Suppression & Microphone Sensitivity */}
-        <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-3">
+        <div
+          className="p-3.5 rounded-xl border space-y-3"
+          style={{
+            backgroundColor: theme.bgSubtle,
+            borderColor: theme.borderPrimary,
+          }}
+        >
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+              <ShieldCheck
+                className="w-4 h-4 shrink-0"
+                style={{ color: theme.accentHex }}
+              />
               <div>
-                <div className="text-xs sm:text-sm font-bold text-slate-100">
-                  强效硬件级带通降噪 + 谐波人声过滤
+                <div className="text-xs sm:text-sm font-bold">
+                  {t.noiseSectionTitle}
                 </div>
-                <div className="text-[11px] text-slate-400">
-                  开启后将根据当前乐器音域自动收窄带通滤波器，过滤外界交谈、风扇与杂音
+                <div
+                  className="text-[11px]"
+                  style={{ color: theme.textSecondary }}
+                >
+                  {t.noiseSectionDesc}
                 </div>
               </div>
             </div>
             <button
               type="button"
               onClick={() => onChangeDeepNoiseSuppression(!deepNoiseSuppression)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 border transition-all ${
-                deepNoiseSuppression
-                  ? 'bg-emerald-500 text-slate-950 border-emerald-400'
-                  : 'bg-slate-800 text-slate-300 border-slate-700'
-              }`}
+              className="px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 border transition-all"
+              style={{
+                backgroundColor: deepNoiseSuppression
+                  ? theme.accentHex
+                  : theme.bgCard,
+                color: deepNoiseSuppression ? '#ffffff' : theme.textPrimary,
+                borderColor: deepNoiseSuppression
+                  ? theme.accentHex
+                  : theme.borderPrimary,
+              }}
             >
-              {deepNoiseSuppression ? '已开启强效降噪' : '点击开启'}
+              {deepNoiseSuppression ? t.noiseBtnOn : t.noiseBtnOff}
             </button>
           </div>
 
-          <div className="space-y-1.5 pt-2 border-t border-slate-800/80">
+          <div
+            className="space-y-1.5 pt-2 border-t"
+            style={{ borderColor: theme.borderPrimary }}
+          >
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                <Activity className="w-3.5 h-3.5 text-sky-400" />
-                <span>麦克风拾音门限 (Noise Gate)</span>
+              <label className="text-xs font-semibold flex items-center gap-1.5">
+                <Activity
+                  className="w-3.5 h-3.5"
+                  style={{ color: theme.secondaryHex }}
+                />
+                <span>{t.noiseGateLabel}</span>
               </label>
-              <span className="font-mono text-xs text-sky-400">
+              <span
+                className="font-mono text-xs"
+                style={{ color: theme.secondaryHex }}
+              >
                 {noiseGateDb} dB (
                 {noiseGateDb <= -56
-                  ? '安静室内'
+                  ? t.noiseGateQuiet
                   : noiseGateDb >= -42
-                  ? '强抗噪模式'
-                  : '均衡防抖'}
+                  ? t.noiseGateNoisy
+                  : t.noiseGateNormal}
                 )
               </span>
             </div>
@@ -139,25 +174,23 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               step={1}
               value={noiseGateDb}
               onChange={(e) => onChangeNoiseGateDb(Number(e.target.value))}
-              className="w-full accent-sky-400 cursor-pointer"
+              className="w-full cursor-pointer"
             />
-            <div className="flex justify-between text-[10px] text-slate-500">
-              <span>安静房间 (-65dB)</span>
-              <span>推荐均衡 (-50dB)</span>
-              <span>嘈杂户外/琴房过滤杂音 (-30dB)</span>
-            </div>
           </div>
         </div>
 
         {/* 2. Realistic Physical Instrument Timbre Selector */}
         <div className="space-y-2.5 pt-1">
           <div className="flex items-center justify-between">
-            <label className="text-xs sm:text-sm font-semibold text-slate-200 flex items-center gap-1.5">
-              <Volume2 className="w-4 h-4 text-emerald-400" />
-              <span>真实乐器物理建模音色 (Karplus-Strong & 共振峰合成)</span>
+            <label className="text-xs sm:text-sm font-semibold flex items-center gap-1.5">
+              <Volume2 className="w-4 h-4" style={{ color: theme.accentHex }} />
+              <span>{t.timbreSectionTitle}</span>
             </label>
-            <span className="font-mono text-xs text-emerald-400">
-              音量 {Math.round(toneVolume * 100)}%
+            <span
+              className="font-mono text-xs"
+              style={{ color: theme.accentHex }}
+            >
+              {t.volumeLabel} {Math.round(toneVolume * 100)}%
             </span>
           </div>
 
@@ -169,14 +202,24 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   key={w.id}
                   type="button"
                   onClick={() => onChangeWaveform(w.id)}
-                  className={`p-2 rounded-xl text-left border transition-all ${
-                    active
-                      ? 'bg-emerald-500/20 text-emerald-200 border-emerald-500/60'
-                      : 'bg-slate-900/80 text-slate-300 border-slate-800 hover:bg-slate-800/60'
-                  }`}
+                  className="p-2 rounded-xl text-left border transition-all"
+                  style={{
+                    backgroundColor: active
+                      ? `${theme.accentHex}22`
+                      : theme.bgSubtle,
+                    borderColor: active ? theme.accentHex : theme.borderPrimary,
+                    color: active ? theme.accentHex : theme.textPrimary,
+                  }}
                 >
-                  <div className="text-xs font-bold truncate">{w.name}</div>
-                  <div className="text-[10px] text-slate-400">{w.badge}</div>
+                  <div className="text-xs font-bold truncate">
+                    {w.name[lang]}
+                  </div>
+                  <div
+                    className="text-[10px]"
+                    style={{ color: theme.textSecondary }}
+                  >
+                    {w.badge[lang]}
+                  </div>
                 </button>
               );
             })}
@@ -189,87 +232,102 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             step={0.05}
             value={toneVolume}
             onChange={(e) => onChangeToneVolume(Number(e.target.value))}
-            className="w-full accent-emerald-500 cursor-pointer"
+            className="w-full cursor-pointer"
           />
         </div>
 
         {/* 3. A4 Reference Pitch Calibration */}
-        <div className="space-y-2.5 pt-2 border-t border-slate-800/80">
+        <div
+          className="space-y-2.5 pt-2 border-t"
+          style={{ borderColor: theme.borderPrimary }}
+        >
           <div className="flex items-center justify-between">
-            <label className="text-xs sm:text-sm font-semibold text-slate-200">
-              A4 标准音基准频率 (Concert Pitch)
+            <label className="text-xs sm:text-sm font-semibold">
+              {t.a4SectionTitle}
             </label>
             <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={() => onChangeA4Hz(Math.max(410, a4Hz - 1))}
-                className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-mono"
+                className="px-2 py-0.5 rounded border text-xs font-mono"
+                style={{
+                  backgroundColor: theme.bgSubtle,
+                  borderColor: theme.borderPrimary,
+                }}
               >
                 -1
               </button>
-              <span className="font-mono text-sm font-bold text-emerald-400 px-2">
+              <span
+                className="font-mono text-sm font-bold px-2"
+                style={{ color: theme.accentHex }}
+              >
                 {a4Hz} Hz
               </span>
               <button
                 type="button"
                 onClick={() => onChangeA4Hz(Math.min(470, a4Hz + 1))}
-                className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-mono"
+                className="px-2 py-0.5 rounded border text-xs font-mono"
+                style={{
+                  backgroundColor: theme.bgSubtle,
+                  borderColor: theme.borderPrimary,
+                }}
               >
                 +1
               </button>
             </div>
           </div>
 
-          <input
-            type="range"
-            min={410}
-            max={470}
-            step={1}
-            value={a4Hz}
-            onChange={(e) => onChangeA4Hz(Number(e.target.value))}
-            className="w-full accent-emerald-500 cursor-pointer"
-          />
-
           <div className="flex flex-wrap gap-1.5">
-            {a4Presets.map((p) => (
+            {a4Presets.map((hz) => (
               <button
-                key={p.hz}
+                key={hz}
                 type="button"
-                onClick={() => onChangeA4Hz(p.hz)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${
-                  a4Hz === p.hz
-                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
-                    : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200'
-                }`}
+                onClick={() => onChangeA4Hz(hz)}
+                className="px-2.5 py-1 rounded-lg text-xs font-mono font-medium border transition-colors"
+                style={{
+                  backgroundColor:
+                    a4Hz === hz ? `${theme.accentHex}22` : theme.bgSubtle,
+                  borderColor:
+                    a4Hz === hz ? theme.accentHex : theme.borderPrimary,
+                  color: a4Hz === hz ? theme.accentHex : theme.textSecondary,
+                }}
               >
-                {p.label}
+                {hz} Hz
               </button>
             ))}
           </div>
         </div>
 
-        {/* 4. Musical Temperament (律制) */}
-        <div className="space-y-2 pt-2 border-t border-slate-800/80">
-          <label className="text-xs sm:text-sm font-semibold text-slate-200 block">
-            律制系统 (Musical Temperament)
+        {/* 4. Musical Temperament */}
+        <div
+          className="space-y-2 pt-2 border-t"
+          style={{ borderColor: theme.borderPrimary }}
+        >
+          <label className="text-xs sm:text-sm font-semibold block">
+            {t.temperamentSectionTitle}
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {TEMPERAMENTS.map((t) => {
-              const active = temperament === t.id;
+            {TEMPERAMENTS.map((temp) => {
+              const active = temperament === temp.id;
               return (
                 <button
-                  key={t.id}
+                  key={temp.id}
                   type="button"
-                  onClick={() => onChangeTemperament(t.id)}
-                  className={`p-2.5 rounded-xl border text-left transition-all ${
-                    active
-                      ? 'bg-emerald-500/15 border-emerald-500/60 text-emerald-200'
-                      : 'bg-slate-900/70 border-slate-800 text-slate-300 hover:bg-slate-800/60'
-                  }`}
+                  onClick={() => onChangeTemperament(temp.id)}
+                  className="p-2.5 rounded-xl border text-left transition-all"
+                  style={{
+                    backgroundColor: active
+                      ? `${theme.accentHex}20`
+                      : theme.bgSubtle,
+                    borderColor: active ? theme.accentHex : theme.borderPrimary,
+                  }}
                 >
-                  <div className="text-xs font-bold">{t.name}</div>
-                  <div className="text-[11px] text-slate-400 mt-0.5 leading-snug">
-                    {t.desc}
+                  <div className="text-xs font-bold">{temp.name[lang]}</div>
+                  <div
+                    className="text-[11px] mt-0.5 leading-snug"
+                    style={{ color: theme.textSecondary }}
+                  >
+                    {temp.desc[lang]}
                   </div>
                 </button>
               );
@@ -278,16 +336,19 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         </div>
 
         {/* 5. Notation & Needle Damping */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-800/80">
+        <div
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t"
+          style={{ borderColor: theme.borderPrimary }}
+        >
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300 block">
-              音名显示方式
+            <label className="text-xs font-semibold block">
+              {t.notationSectionTitle}
             </label>
             <div className="grid grid-cols-3 gap-1.5">
               {[
-                { id: 'letter', label: 'C D E 音名' },
-                { id: 'solfege', label: 'Do Re Mi' },
-                { id: 'numbered', label: '1 2 3 简谱' },
+                { id: 'letter', label: t.notationLetter },
+                { id: 'solfege', label: t.notationSolfege },
+                { id: 'numbered', label: t.notationNumbered },
               ].map((item) => (
                 <button
                   key={item.id}
@@ -295,11 +356,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   onClick={() =>
                     onChangeNotationStyle(item.id as NotationStyle)
                   }
-                  className={`py-1.5 px-2 rounded-lg text-xs font-medium border ${
-                    notationStyle === item.id
-                      ? 'bg-sky-500/20 text-sky-300 border-sky-500/50'
-                      : 'bg-slate-900 text-slate-400 border-slate-800'
-                  }`}
+                  className="py-1.5 px-2 rounded-lg text-xs font-medium border"
+                  style={{
+                    backgroundColor:
+                      notationStyle === item.id
+                        ? `${theme.secondaryHex}22`
+                        : theme.bgSubtle,
+                    borderColor:
+                      notationStyle === item.id
+                        ? theme.secondaryHex
+                        : theme.borderPrimary,
+                    color:
+                      notationStyle === item.id
+                        ? theme.secondaryHex
+                        : theme.textSecondary,
+                  }}
                 >
                   {item.label}
                 </button>
@@ -308,14 +379,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300 block">
-              表盘指针阻尼感 (防抖平顺度)
+            <label className="text-xs font-semibold block">
+              {t.dampingSectionTitle}
             </label>
             <div className="grid grid-cols-3 gap-1.5">
               {[
-                { id: 'fast', label: '灵敏跟踪' },
-                { id: 'balanced', label: '稳态均衡' },
-                { id: 'smooth', label: '重阻尼防抖' },
+                { id: 'fast', label: t.dampingFast },
+                { id: 'balanced', label: t.dampingBalanced },
+                { id: 'smooth', label: t.dampingSmooth },
               ].map((item) => (
                 <button
                   key={item.id}
@@ -325,11 +396,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       item.id as 'fast' | 'balanced' | 'smooth'
                     )
                   }
-                  className={`py-1.5 px-2 rounded-lg text-xs font-medium border ${
-                    dampingMode === item.id
-                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
-                      : 'bg-slate-900 text-slate-400 border-slate-800'
-                  }`}
+                  className="py-1.5 px-2 rounded-lg text-xs font-medium border"
+                  style={{
+                    backgroundColor:
+                      dampingMode === item.id
+                        ? `${theme.accentHex}22`
+                        : theme.bgSubtle,
+                    borderColor:
+                      dampingMode === item.id
+                        ? theme.accentHex
+                        : theme.borderPrimary,
+                    color:
+                      dampingMode === item.id
+                        ? theme.accentHex
+                        : theme.textSecondary,
+                  }}
                 >
                   {item.label}
                 </button>
@@ -339,45 +420,57 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         </div>
 
         {/* 6. Visual & Audio Aids Toggles */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-800/80">
-          <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+        <div
+          className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t"
+          style={{ borderColor: theme.borderPrimary }}
+        >
+          <label className="flex items-center gap-2 text-xs cursor-pointer">
             <input
               type="checkbox"
               checked={showPitchTrail}
               onChange={(e) => onChangeShowPitchTrail(e.target.checked)}
-              className="rounded accent-emerald-500 w-4 h-4"
+              className="rounded w-4 h-4"
             />
-            <span>显示表盘延音稳定度轨迹线</span>
+            <span>{t.trailToggleLabel}</span>
           </label>
 
-          <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+          <label className="flex items-center gap-2 text-xs cursor-pointer">
             <input
               type="checkbox"
               checked={enableLockChime}
               onChange={(e) => onChangeEnableLockChime(e.target.checked)}
-              className="rounded accent-emerald-500 w-4 h-4"
+              className="rounded w-4 h-4"
             />
-            <span>琴弦音准锁定后播放清脆提示音</span>
+            <span>{t.chimeToggleLabel}</span>
           </label>
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+        <div
+          className="flex items-center justify-between pt-3 border-t"
+          style={{ borderColor: theme.borderPrimary }}
+        >
           <button
             type="button"
             onClick={onResetDefaults}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-800 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium border transition-colors"
+            style={{
+              backgroundColor: theme.bgSubtle,
+              borderColor: theme.borderPrimary,
+              color: theme.textSecondary,
+            }}
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>恢复出厂默认</span>
+            <span>{t.resetDefaultsBtn}</span>
           </button>
 
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-colors"
+            className="px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-white transition-colors"
+            style={{ backgroundColor: theme.accentHex }}
           >
-            完成并应用
+            {t.doneBtn}
           </button>
         </div>
       </div>

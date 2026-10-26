@@ -1,3 +1,5 @@
+import { SupportedLang } from '../i18n/localeTheme';
+
 export type TemperamentId = 'equal' | 'pythagorean' | 'just' | 'meantone';
 export type NotationStyle = 'letter' | 'solfege' | 'numbered';
 export type TunerMode = 'tune-auto' | 'tune-manual' | 'sound-it';
@@ -13,43 +15,41 @@ export type ToneWaveform =
   | 'grand-piano'
   | 'tuning-fork';
 
+export type LocalizedText = Record<SupportedLang, string>;
+
 export interface NoteInfo {
   midi: number;
-  name: string;        // e.g. "A"
-  sharpName: string;   // e.g. "A#"
-  octave: number;      // e.g. 4
-  fullName: string;    // e.g. "A4"
-  solfege: string;     // e.g. "La"
-  numbered: string;    // e.g. "6"
-  frequency: number;   // Target frequency in Hz
+  name: string;
+  sharpName: string;
+  octave: number;
+  fullName: string;
+  solfege: string;
+  numbered: string;
+  frequency: number;
 }
 
 export interface StringSpec {
   stringNumber: number;
-  label: string;        // e.g. "1弦 E4" or "内弦 D4"
-  noteName: string;     // e.g. "E4"
+  label: LocalizedText;
+  noteName: string;
   midi: number;
-  description?: string;
+  description?: LocalizedText;
 }
 
 export interface TuningVariant {
   id: string;
-  name: string;
-  subtitle: string;
+  name: LocalizedText;
   defaultTimbre?: Exclude<ToneWaveform, 'auto-instrument'>;
   strings: StringSpec[];
 }
 
 export interface InstrumentPreset {
   id: string;
-  name: string;
+  name: LocalizedText;
   category: 'chromatic' | 'plucked' | 'bowed' | 'chinese';
-  categoryLabel: string;
-  iconName: string;
   defaultTimbre: Exclude<ToneWaveform, 'auto-instrument'>;
-  minFreqHz: number; // Used by adaptive bandpass noise filter
+  minFreqHz: number;
   maxFreqHz: number;
-  description: string;
   tunings: TuningVariant[];
 }
 
@@ -57,17 +57,61 @@ export const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A',
 export const SOLFEGE_NAMES = ['Do', 'Do#', 'Re', 'Re#', 'Mi', 'Fa', 'Fa#', 'Sol', 'Sol#', 'La', 'La#', 'Si'] as const;
 export const NUMBERED_NAMES = ['1', '#1', '2', '#2', '3', '4', '#4', '5', '#5', '6', '#6', '7'] as const;
 
-export const TIMBRE_OPTIONS: { id: ToneWaveform; name: string; badge: string }[] = [
-  { id: 'auto-instrument', name: '智能跟随当前乐器原声', badge: '物理建模推荐' },
-  { id: 'acoustic-guitar', name: '原声木吉他 (Acoustic Guitar)', badge: '箱体共鸣拨弦' },
-  { id: 'chinese-guzheng', name: '古筝桐木共鸣 (Guzheng)', badge: '义甲拨弦泛音' },
-  { id: 'chinese-erhu', name: '二胡蟒皮琴筒 (Erhu)', badge: '弓弦揉弦模拟' },
-  { id: 'chinese-pipa', name: '琵琶/中阮弹拨 (Pipa)', badge: '清脆珠玉面板' },
-  { id: 'bowed-violin', name: '提琴木质弓弦 (Violin/Cello)', badge: '琴桥共振峰' },
-  { id: 'ukulele-nylon', name: '尤克里里尼龙弦 (Ukulele)', badge: '温暖尼龙拨弦' },
-  { id: 'deep-bass', name: '贝斯浑厚低音 (Bass)', badge: '缠弦低频激励' },
-  { id: 'grand-piano', name: '三角钢琴击弦 (Grand Piano)', badge: '琴槌泛音包络' },
-  { id: 'tuning-fork', name: '实验室纯音叉 (Tuning Fork)', badge: '440Hz 纯正弦' },
+export const TIMBRE_OPTIONS: {
+  id: ToneWaveform;
+  name: LocalizedText;
+  badge: LocalizedText;
+}[] = [
+  {
+    id: 'auto-instrument',
+    name: { zh: '智能跟随当前乐器原声', en: 'Auto Match Instrument', ja: '楽器に合わせて自動選択' },
+    badge: { zh: '物理建模推荐', en: 'Recommended', ja: '物理モデリング推奨' },
+  },
+  {
+    id: 'acoustic-guitar',
+    name: { zh: '原声木吉他', en: 'Acoustic Guitar', ja: 'アコースティックギター' },
+    badge: { zh: '云杉箱体共鸣', en: 'Spruce Body', ja: '箱鳴り共鳴' },
+  },
+  {
+    id: 'chinese-guzheng',
+    name: { zh: '古筝桐木共鸣', en: 'Guzheng Zither', ja: '古筝（桐木共鳴）' },
+    badge: { zh: '义甲拨弦泛音', en: 'Plucked Zither', ja: '義甲撥弦音' },
+  },
+  {
+    id: 'chinese-erhu',
+    name: { zh: '二胡蟒皮琴筒', en: 'Erhu Bowed Fiddle', ja: '二胡（擦弦共鳴）' },
+    badge: { zh: '弓弦揉弦模拟', en: 'Bowed & Vibrato', ja: 'ビブラート擦弦' },
+  },
+  {
+    id: 'chinese-pipa',
+    name: { zh: '琵琶与中阮弹拨', en: 'Pipa & Ruan Lute', ja: '琵琶・中阮' },
+    badge: { zh: '珠玉清脆面板', en: 'Crisp Lute Attack', ja: '粒立ちの良い撥弦' },
+  },
+  {
+    id: 'bowed-violin',
+    name: { zh: '提琴木质弓弦', en: 'Violin & Cello', ja: 'バイオリン・チェロ' },
+    badge: { zh: '琴桥共振峰', en: 'Cremona Bridge', ja: '木製胴共鳴' },
+  },
+  {
+    id: 'ukulele-nylon',
+    name: { zh: '尤克里里尼龙弦', en: 'Ukulele Nylon', ja: 'ウクレレ（ナイロン弦）' },
+    badge: { zh: '相思木温暖拨弦', en: 'Warm Koa Nylon', ja: '温かみのある音色' },
+  },
+  {
+    id: 'deep-bass',
+    name: { zh: '贝斯浑厚低音', en: 'Acoustic & Electric Bass', ja: 'ベース（重低音）' },
+    badge: { zh: '缠弦低频激励', en: 'Deep Wound String', ja: 'ラウンドワウンド弦' },
+  },
+  {
+    id: 'grand-piano',
+    name: { zh: '三角钢琴击弦', en: 'Concert Grand Piano', ja: 'グランドピアノ' },
+    badge: { zh: '琴槌泛音包络', en: 'Hammer Harmonics', ja: 'ハンマー打弦音' },
+  },
+  {
+    id: 'tuning-fork',
+    name: { zh: '实验室纯音叉', en: 'Pure Tuning Fork', ja: '純音叉 (440Hz)' },
+    badge: { zh: '标准正弦波', en: 'Pure Sine Wave', ja: '純粋な正弦波' },
+  },
 ];
 
 const TEMPERAMENT_OFFSETS_FROM_C: Record<TemperamentId, number[]> = {
@@ -77,11 +121,47 @@ const TEMPERAMENT_OFFSETS_FROM_C: Record<TemperamentId, number[]> = {
   meantone: [0, -24.0, -6.8, 10.3, -13.7, 3.4, -20.5, -3.4, -27.4, -10.3, 6.8, -17.1],
 };
 
-export const TEMPERAMENTS: { id: TemperamentId; name: string; desc: string }[] = [
-  { id: 'equal', name: '十二平均律 (12-TET)', desc: '现代通用标准律制，适用于吉他、钢琴与大多数合奏场景' },
-  { id: 'pythagorean', name: '五度相生律 (Pythagorean)', desc: '纯五度谐振，适合二胡、古筝、琵琶等民乐及提琴独奏' },
-  { id: 'just', name: '纯律 (Just Intonation)', desc: '自然泛音整数比，和弦极度纯净，适合无伴奏合唱与室内乐' },
-  { id: 'meantone', name: '中庸全音律 (Meantone)', desc: '文艺复兴与早期巴洛克古典键盘/管弦乐常用律制' },
+export const TEMPERAMENTS: {
+  id: TemperamentId;
+  name: LocalizedText;
+  desc: LocalizedText;
+}[] = [
+  {
+    id: 'equal',
+    name: { zh: '十二平均律', en: 'Equal Temperament (12-TET)', ja: '十二平均律' },
+    desc: {
+      zh: '现代通用标准律制，适用于吉他、钢琴与大多数合奏场景',
+      en: 'Modern universal standard for guitar, piano, and ensemble playing',
+      ja: 'ギターやピアノ、アンサンブルに最適な現代標準音律',
+    },
+  },
+  {
+    id: 'pythagorean',
+    name: { zh: '五度相生律', en: 'Pythagorean Tuning', ja: 'ピタゴラス音律（五度相生律）' },
+    desc: {
+      zh: '纯五度谐振，适合二胡、古筝、琵琶等民乐及提琴独奏',
+      en: 'Pure 3:2 fifths, ideal for solo violin, cello, erhu, and guzheng',
+      ja: '純粋な完全五度共鳴、バイオリン独奏や二胡・古筝に最適',
+    },
+  },
+  {
+    id: 'just',
+    name: { zh: '纯律', en: 'Just Intonation', ja: '純正律' },
+    desc: {
+      zh: '自然泛音整数比，和弦极度纯净，适合无伴奏合唱与室内乐',
+      en: 'Pure harmonic ratios for beatless triads and chamber music',
+      ja: '自然倍音の整数比による澄み切った和音、合唱や室内楽向け',
+    },
+  },
+  {
+    id: 'meantone',
+    name: { zh: '中庸全音律', en: 'Quarter-Comma Meantone', ja: '中全音律（ミーントーン）' },
+    desc: {
+      zh: '文艺复兴与早期巴洛克古典键盘与古乐常用律制',
+      en: 'Historical temperament for Renaissance and Baroque music',
+      ja: 'ルネサンスや初期バロック音楽に適した古典音律',
+    },
+  },
 ];
 
 export function midiToFrequency(
@@ -134,11 +214,16 @@ export function getNoteInfo(
   };
 }
 
-export function formatNoteDisplay(note: NoteInfo, style: NotationStyle): { primary: string; secondary: string } {
+export function formatNoteDisplay(
+  note: NoteInfo,
+  style: NotationStyle,
+  lang: SupportedLang = 'zh'
+): { primary: string; secondary: string } {
+  const numPrefix = lang === 'zh' ? '简谱' : lang === 'ja' ? '数字譜' : 'Scale';
   if (style === 'solfege') {
     return {
       primary: `${note.solfege}${note.octave}`,
-      secondary: `${note.fullName} · 简谱 ${note.numbered}`,
+      secondary: `${note.fullName} · ${numPrefix} ${note.numbered}`,
     };
   }
   if (style === 'numbered') {
@@ -149,347 +234,339 @@ export function formatNoteDisplay(note: NoteInfo, style: NotationStyle): { prima
   }
   return {
     primary: note.fullName,
-    secondary: `${note.solfege} · 简谱 ${note.numbered}`,
+    secondary: `${note.solfege} · ${numPrefix} ${note.numbered}`,
+  };
+}
+
+function makeStr(
+  num: number,
+  noteName: string,
+  midi: number,
+  zhLbl: string,
+  enLbl: string,
+  jaLbl: string,
+  zhDesc?: string,
+  enDesc?: string,
+  jaDesc?: string
+): StringSpec {
+  return {
+    stringNumber: num,
+    noteName,
+    midi,
+    label: { zh: zhLbl, en: enLbl, ja: jaLbl },
+    description: zhDesc
+      ? { zh: zhDesc, en: enDesc || zhDesc, ja: jaDesc || zhDesc }
+      : undefined,
   };
 }
 
 export const INSTRUMENT_PRESETS: InstrumentPreset[] = [
   {
-    id: 'chromatic',
-    name: '半音阶通用',
-    category: 'chromatic',
-    categoryLabel: '全音域通用',
-    iconName: 'Compass',
-    defaultTimbre: 'grand-piano',
-    minFreqHz: 27.5,
-    maxFreqHz: 2200,
-    description: '全音域半音阶精密测音模式（C1 - B7），适用于钢琴、管乐、人声及任意乐器',
-    tunings: [
-      {
-        id: 'chromatic-standard',
-        name: '12半音阶全音域 (C1 ~ B7)',
-        subtitle: '自动识别全部半音，亦可快速点选常用基准音',
-        defaultTimbre: 'grand-piano',
-        strings: [
-          { stringNumber: 1, label: 'C3 低音Do', noteName: 'C3', midi: 48, description: '130.8 Hz' },
-          { stringNumber: 2, label: 'G3 低音Sol', noteName: 'G3', midi: 55, description: '196.0 Hz' },
-          { stringNumber: 3, label: 'C4 中央C', noteName: 'C4', midi: 60, description: '261.6 Hz' },
-          { stringNumber: 4, label: 'E4 中音Mi', noteName: 'E4', midi: 64, description: '329.6 Hz' },
-          { stringNumber: 5, label: 'G4 中音Sol', noteName: 'G4', midi: 67, description: '392.0 Hz' },
-          { stringNumber: 6, label: 'A4 标准音', noteName: 'A4', midi: 69, description: '440.0 Hz' },
-          { stringNumber: 7, label: 'C5 高音Do', noteName: 'C5', midi: 72, description: '523.3 Hz' },
-        ],
-      },
-    ],
-  },
-  {
     id: 'guitar',
-    name: '吉他 Guitar',
+    name: { zh: '吉他', en: 'Guitar', ja: 'ギター' },
     category: 'plucked',
-    categoryLabel: '西洋弹拨',
-    iconName: 'Guitar',
     defaultTimbre: 'acoustic-guitar',
     minFreqHz: 65,
     maxFreqHz: 420,
-    description: '民谣吉他 / 电吉他 / 古典吉他，内置拨弦瞬态防抖与原声木吉他箱体共鸣音色',
     tunings: [
       {
         id: 'guitar-standard',
-        name: '6弦标准调弦 (Standard EADGBE)',
-        subtitle: '6弦 E2 → 1弦 E4',
+        name: {
+          zh: '六弦标准定弦 (E2-A2-D3-G3-B3-E4)',
+          en: '6-String Standard (E2-A2-D3-G3-B3-E4)',
+          ja: '6弦レギュラー (E2-A2-D3-G3-B3-E4)',
+        },
         defaultTimbre: 'acoustic-guitar',
         strings: [
-          { stringNumber: 6, label: '6弦 E2', noteName: 'E2', midi: 40, description: '最粗低音弦' },
-          { stringNumber: 5, label: '5弦 A2', noteName: 'A2', midi: 45, description: '五弦' },
-          { stringNumber: 4, label: '4弦 D3', noteName: 'D3', midi: 50, description: '四弦' },
-          { stringNumber: 3, label: '3弦 G3', noteName: 'G3', midi: 55, description: '三弦' },
-          { stringNumber: 2, label: '2弦 B3', noteName: 'B3', midi: 59, description: '二弦' },
-          { stringNumber: 1, label: '1弦 E4', noteName: 'E4', midi: 64, description: '最细高音弦' },
+          makeStr(6, 'E2', 40, '6弦 E2', '6th E2', '6弦 E2', '六弦低音', 'Low E String', '6弦（最低音）'),
+          makeStr(5, 'A2', 45, '5弦 A2', '5th A2', '5弦 A2', '五弦', 'A String', '5弦'),
+          makeStr(4, 'D3', 50, '4弦 D3', '4th D3', '4弦 D3', '四弦', 'D String', '4弦'),
+          makeStr(3, 'G3', 55, '3弦 G3', '3rd G3', '3弦 G3', '三弦', 'G String', '3弦'),
+          makeStr(2, 'B3', 59, '2弦 B3', '2nd B3', '2弦 B3', '二弦', 'B String', '2弦'),
+          makeStr(1, 'E4', 64, '1弦 E4', '1st E4', '1弦 E4', '一弦高音', 'High E String', '1弦（最高音）'),
         ],
       },
       {
         id: 'guitar-drop-d',
-        name: 'Drop D 调弦 (DADGBE)',
-        subtitle: '6弦降全音至 D2，摇滚/金属/指弹常用',
+        name: {
+          zh: '六弦降D定弦 (D2-A2-D3-G3-B3-E4)',
+          en: 'Drop D Tuning (D2-A2-D3-G3-B3-E4)',
+          ja: 'ドロップD (D2-A2-D3-G3-B3-E4)',
+        },
         defaultTimbre: 'acoustic-guitar',
         strings: [
-          { stringNumber: 6, label: '6弦 D2', noteName: 'D2', midi: 38, description: '降全音低音弦' },
-          { stringNumber: 5, label: '5弦 A2', noteName: 'A2', midi: 45, description: '五弦' },
-          { stringNumber: 4, label: '4弦 D3', noteName: 'D3', midi: 50, description: '四弦' },
-          { stringNumber: 3, label: '3弦 G3', noteName: 'G3', midi: 55, description: '三弦' },
-          { stringNumber: 2, label: '2弦 B3', noteName: 'B3', midi: 59, description: '二弦' },
-          { stringNumber: 1, label: '1弦 E4', noteName: 'E4', midi: 64, description: '一弦' },
+          makeStr(6, 'D2', 38, '6弦 D2', '6th D2', '6弦 D2'),
+          makeStr(5, 'A2', 45, '5弦 A2', '5th A2', '5弦 A2'),
+          makeStr(4, 'D3', 50, '4弦 D3', '4th D3', '4弦 D3'),
+          makeStr(3, 'G3', 55, '3弦 G3', '3rd G3', '3弦 G3'),
+          makeStr(2, 'B3', 59, '2弦 B3', '2nd B3', '2弦 B3'),
+          makeStr(1, 'E4', 64, '1弦 E4', '1st E4', '1弦 E4'),
         ],
       },
       {
         id: 'guitar-half-down',
-        name: '降半音调弦 (Eb Standard)',
-        subtitle: '全弦降低半音 (D#2 G#2 C#3 F#3 A#3 D#4)',
+        name: {
+          zh: '全弦降半音 (D#2-G#2-C#3-F#3-A#3-D#4)',
+          en: 'Half-Step Down Eb (D#2-G#2-C#3-F#3-A#3-D#4)',
+          ja: '半音下げ (D#2-G#2-C#3-F#3-A#3-D#4)',
+        },
         defaultTimbre: 'acoustic-guitar',
         strings: [
-          { stringNumber: 6, label: '6弦 D#2', noteName: 'D#2', midi: 39, description: 'Eb2' },
-          { stringNumber: 5, label: '5弦 G#2', noteName: 'G#2', midi: 44, description: 'Ab2' },
-          { stringNumber: 4, label: '4弦 C#3', noteName: 'C#3', midi: 49, description: 'Db3' },
-          { stringNumber: 3, label: '3弦 F#3', noteName: 'F#3', midi: 54, description: 'Gb3' },
-          { stringNumber: 2, label: '2弦 A#3', noteName: 'A#3', midi: 58, description: 'Bb3' },
-          { stringNumber: 1, label: '1弦 D#4', noteName: 'D#4', midi: 63, description: 'Eb4' },
-        ],
-      },
-      {
-        id: 'guitar-dadgad',
-        name: 'DADGAD 凯尔特/指弹调弦',
-        subtitle: '指弹吉他经典开放调弦 (D2 A2 D3 G3 A3 D4)',
-        defaultTimbre: 'acoustic-guitar',
-        strings: [
-          { stringNumber: 6, label: '6弦 D2', noteName: 'D2', midi: 38, description: '六弦' },
-          { stringNumber: 5, label: '5弦 A2', noteName: 'A2', midi: 45, description: '五弦' },
-          { stringNumber: 4, label: '4弦 D3', noteName: 'D3', midi: 50, description: '四弦' },
-          { stringNumber: 3, label: '3弦 G3', noteName: 'G3', midi: 55, description: '三弦' },
-          { stringNumber: 2, label: '2弦 A3', noteName: 'A3', midi: 57, description: '二弦' },
-          { stringNumber: 1, label: '1弦 D4', noteName: 'D4', midi: 62, description: '一弦' },
+          makeStr(6, 'D#2', 39, '6弦 D#2', '6th D#2', '6弦 D#2'),
+          makeStr(5, 'G#2', 44, '5弦 G#2', '5th G#2', '5弦 G#2'),
+          makeStr(4, 'C#3', 49, '4弦 C#3', '4th C#3', '4弦 C#3'),
+          makeStr(3, 'F#3', 54, '3弦 F#3', '3rd F#3', '3弦 F#3'),
+          makeStr(2, 'A#3', 58, '2弦 A#3', '2nd A#3', '2弦 A#3'),
+          makeStr(1, 'D#4', 63, '1弦 D#4', '1st D#4', '1弦 D#4'),
         ],
       },
     ],
   },
   {
     id: 'ukulele',
-    name: '尤克里里 Ukulele',
+    name: { zh: '尤克里里', en: 'Ukulele', ja: 'ウクレレ' },
     category: 'plucked',
-    categoryLabel: '西洋弹拨',
-    iconName: 'Music2',
     defaultTimbre: 'ukulele-nylon',
     minFreqHz: 170,
     maxFreqHz: 560,
-    description: '支持标准高音 G (High-G)、低音 G (Low-G)，搭载夏威夷相思木尼龙弦物理建模音色',
     tunings: [
       {
         id: 'ukulele-standard',
-        name: '标准高音G (High-G: G4 C4 E4 A4)',
-        subtitle: '最常用的尤克里里C调标准定弦',
+        name: {
+          zh: '标准高音G定弦 (G4-C4-E4-A4)',
+          en: 'Standard High-G (G4-C4-E4-A4)',
+          ja: '標準 High-G (G4-C4-E4-A4)',
+        },
         defaultTimbre: 'ukulele-nylon',
         strings: [
-          { stringNumber: 4, label: '4弦 G4', noteName: 'G4', midi: 67, description: '高音G四弦' },
-          { stringNumber: 3, label: '3弦 C4', noteName: 'C4', midi: 60, description: '最粗三弦' },
-          { stringNumber: 2, label: '2弦 E4', noteName: 'E4', midi: 64, description: '二弦' },
-          { stringNumber: 1, label: '1弦 A4', noteName: 'A4', midi: 69, description: '高音一弦' },
+          makeStr(4, 'G4', 67, '4弦 G4', '4th G4', '4弦 G4'),
+          makeStr(3, 'C4', 60, '3弦 C4', '3rd C4', '3弦 C4'),
+          makeStr(2, 'E4', 64, '2弦 E4', '2nd E4', '2弦 E4'),
+          makeStr(1, 'A4', 69, '1弦 A4', '1st A4', '1弦 A4'),
         ],
       },
       {
         id: 'ukulele-low-g',
-        name: '低音G指弹 (Low-G: G3 C4 E4 A4)',
-        subtitle: '4弦更换为低八度G3，扩展低音音域',
+        name: {
+          zh: '低音G指弹定弦 (G3-C4-E4-A4)',
+          en: 'Low-G Fingerstyle (G3-C4-E4-A4)',
+          ja: 'Low-G チューニング (G3-C4-E4-A4)',
+        },
         defaultTimbre: 'ukulele-nylon',
         strings: [
-          { stringNumber: 4, label: '4弦 G3', noteName: 'G3', midi: 55, description: '低音G四弦' },
-          { stringNumber: 3, label: '3弦 C4', noteName: 'C4', midi: 60, description: '三弦' },
-          { stringNumber: 2, label: '2弦 E4', noteName: 'E4', midi: 64, description: '二弦' },
-          { stringNumber: 1, label: '1弦 A4', noteName: 'A4', midi: 69, description: '一弦' },
+          makeStr(4, 'G3', 55, '4弦 G3', '4th G3', '4弦 G3'),
+          makeStr(3, 'C4', 60, '3弦 C4', '3rd C4', '3弦 C4'),
+          makeStr(2, 'E4', 64, '2弦 E4', '2nd E4', '2弦 E4'),
+          makeStr(1, 'A4', 69, '1弦 A4', '1st A4', '1弦 A4'),
         ],
       },
     ],
   },
   {
     id: 'bass',
-    name: '贝斯 Bass',
+    name: { zh: '贝斯', en: 'Bass', ja: 'ベース' },
     category: 'plucked',
-    categoryLabel: '西洋弹拨',
-    iconName: 'Waves',
     defaultTimbre: 'deep-bass',
     minFreqHz: 27.5,
     maxFreqHz: 180,
-    description: '针对超低频基音与泛音优化，配备缠弦电贝斯/木贝斯浑厚低音合成',
     tunings: [
       {
         id: 'bass-4',
-        name: '4弦标准贝斯 (E1 A1 D2 G2)',
-        subtitle: '4弦 E1 (41.2Hz) → 1弦 G2 (98.0Hz)',
+        name: {
+          zh: '四弦标准贝斯 (E1-A1-D2-G2)',
+          en: '4-String Standard Bass (E1-A1-D2-G2)',
+          ja: '4弦標準ベース (E1-A1-D2-G2)',
+        },
         defaultTimbre: 'deep-bass',
         strings: [
-          { stringNumber: 4, label: '4弦 E1', noteName: 'E1', midi: 28, description: '41.2 Hz 超低音' },
-          { stringNumber: 3, label: '3弦 A1', noteName: 'A1', midi: 33, description: '55.0 Hz' },
-          { stringNumber: 2, label: '2弦 D2', noteName: 'D2', midi: 38, description: '73.4 Hz' },
-          { stringNumber: 1, label: '1弦 G2', noteName: 'G2', midi: 43, description: '98.0 Hz' },
+          makeStr(4, 'E1', 28, '4弦 E1', '4th E1', '4弦 E1'),
+          makeStr(3, 'A1', 33, '3弦 A1', '3rd A1', '3弦 A1'),
+          makeStr(2, 'D2', 38, '2弦 D2', '2nd D2', '2弦 D2'),
+          makeStr(1, 'G2', 43, '1弦 G2', '1st G2', '1弦 G2'),
         ],
       },
       {
         id: 'bass-5',
-        name: '5弦标准贝斯 (B0 E1 A1 D2 G2)',
-        subtitle: '含 5弦 B0 (30.9Hz)',
+        name: {
+          zh: '五弦标准贝斯 (B0-E1-A1-D2-G2)',
+          en: '5-String Bass (B0-E1-A1-D2-G2)',
+          ja: '5弦標準ベース (B0-E1-A1-D2-G2)',
+        },
         defaultTimbre: 'deep-bass',
         strings: [
-          { stringNumber: 5, label: '5弦 B0', noteName: 'B0', midi: 23, description: '30.9 Hz 极低音' },
-          { stringNumber: 4, label: '4弦 E1', noteName: 'E1', midi: 28, description: '41.2 Hz' },
-          { stringNumber: 3, label: '3弦 A1', noteName: 'A1', midi: 33, description: '55.0 Hz' },
-          { stringNumber: 2, label: '2弦 D2', noteName: 'D2', midi: 38, description: '73.4 Hz' },
-          { stringNumber: 1, label: '1弦 G2', noteName: 'G2', midi: 43, description: '98.0 Hz' },
+          makeStr(5, 'B0', 23, '5弦 B0', '5th B0', '5弦 B0'),
+          makeStr(4, 'E1', 28, '4弦 E1', '4th E1', '4弦 E1'),
+          makeStr(3, 'A1', 33, '3弦 A1', '3rd A1', '3弦 A1'),
+          makeStr(2, 'D2', 38, '2弦 D2', '2nd D2', '2弦 D2'),
+          makeStr(1, 'G2', 43, '1弦 G2', '1st G2', '1弦 G2'),
         ],
       },
     ],
   },
   {
     id: 'violin-family',
-    name: '提琴 Violin / Cello',
+    name: { zh: '提琴', en: 'Violin & Cello', ja: 'バイオリン・チェロ' },
     category: 'bowed',
-    categoryLabel: '西洋弓弦',
-    iconName: 'Music',
     defaultTimbre: 'bowed-violin',
     minFreqHz: 58,
     maxFreqHz: 880,
-    description: '支持小提琴、中提琴、大提琴纯五度标准定弦，内置克雷莫纳木质琴体弓弦共鸣音色',
     tunings: [
       {
         id: 'violin-standard',
-        name: '小提琴标准定弦 (G3 D4 A4 E5)',
-        subtitle: '4弦 G3 → 3弦 D4 → 2弦 A4 → 1弦 E5',
+        name: {
+          zh: '小提琴标准定弦 (G3-D4-A4-E5)',
+          en: 'Violin Standard (G3-D4-A4-E5)',
+          ja: 'バイオリン標準 (G3-D4-A4-E5)',
+        },
         defaultTimbre: 'bowed-violin',
         strings: [
-          { stringNumber: 4, label: '4弦 G3', noteName: 'G3', midi: 55, description: 'G弦 (最粗)' },
-          { stringNumber: 3, label: '3弦 D4', noteName: 'D4', midi: 62, description: 'D弦' },
-          { stringNumber: 2, label: '2弦 A4', noteName: 'A4', midi: 69, description: 'A弦 (标准音)' },
-          { stringNumber: 1, label: '1弦 E5', noteName: 'E5', midi: 76, description: 'E弦 (最细)' },
-        ],
-      },
-      {
-        id: 'viola-standard',
-        name: '中提琴标准定弦 (C3 G3 D4 A4)',
-        subtitle: '4弦 C3 → 3弦 G3 → 2弦 D4 → 1弦 A4',
-        defaultTimbre: 'bowed-violin',
-        strings: [
-          { stringNumber: 4, label: '4弦 C3', noteName: 'C3', midi: 48, description: 'C弦' },
-          { stringNumber: 3, label: '3弦 G3', noteName: 'G3', midi: 55, description: 'G弦' },
-          { stringNumber: 2, label: '2弦 D4', noteName: 'D4', midi: 62, description: 'D弦' },
-          { stringNumber: 1, label: '1弦 A4', noteName: 'A4', midi: 69, description: 'A弦' },
+          makeStr(4, 'G3', 55, '4弦 G3', '4th G3', '4弦 G3'),
+          makeStr(3, 'D4', 62, '3弦 D4', '3rd D4', '3弦 D4'),
+          makeStr(2, 'A4', 69, '2弦 A4', '2nd A4', '2弦 A4'),
+          makeStr(1, 'E5', 76, '1弦 E5', '1st E5', '1弦 E5'),
         ],
       },
       {
         id: 'cello-standard',
-        name: '大提琴标准定弦 (C2 G2 D3 A3)',
-        subtitle: '4弦 C2 → 3弦 G2 → 2弦 D3 → 1弦 A3',
+        name: {
+          zh: '大提琴标准定弦 (C2-G2-D3-A3)',
+          en: 'Cello Standard (C2-G2-D3-A3)',
+          ja: 'チェロ標準 (C2-G2-D3-A3)',
+        },
         defaultTimbre: 'bowed-violin',
         strings: [
-          { stringNumber: 4, label: '4弦 C2', noteName: 'C2', midi: 36, description: 'C弦 (65.4Hz)' },
-          { stringNumber: 3, label: '3弦 G2', noteName: 'G2', midi: 43, description: 'G弦 (98.0Hz)' },
-          { stringNumber: 2, label: '2弦 D3', noteName: 'D3', midi: 50, description: 'D弦 (146.8Hz)' },
-          { stringNumber: 1, label: '1弦 A3', noteName: 'A3', midi: 57, description: 'A弦 (220.0Hz)' },
+          makeStr(4, 'C2', 36, '4弦 C2', '4th C2', '4弦 C2'),
+          makeStr(3, 'G2', 43, '3弦 G2', '3rd G2', '3弦 G2'),
+          makeStr(2, 'D3', 50, '2弦 D3', '2nd D3', '2弦 D3'),
+          makeStr(1, 'A3', 57, '1弦 A3', '1st A3', '1弦 A3'),
         ],
       },
     ],
   },
   {
     id: 'guzheng',
-    name: '古筝 Guzheng',
+    name: { zh: '古筝', en: 'Guzheng', ja: '古筝' },
     category: 'chinese',
-    categoryLabel: '民族乐器',
-    iconName: 'Sparkles',
     defaultTimbre: 'chinese-guzheng',
     minFreqHz: 65,
     maxFreqHz: 1350,
-    description: '21弦古筝标准五声音阶定弦（D调 / G调），搭载桐木面板+义甲拨弦泛音物理合成与延音稳态识别',
     tunings: [
       {
-        id: 'guzheng-d-21',
-        name: '古筝 D调 21弦完整定弦 (1=D)',
-        subtitle: '21弦(倍低音1) D2 → 1弦(倍高音1) D6 · 含4根绿色A弦定位',
+        id: 'guzheng-d-core',
+        name: {
+          zh: '古筝D调中音与绿弦核心组',
+          en: 'Guzheng D-Major Core & Green Strings',
+          ja: '古筝 D調（緑弦・中音域コア）',
+        },
         defaultTimbre: 'chinese-guzheng',
         strings: [
-          { stringNumber: 21, label: '21弦 D2', noteName: 'D2', midi: 38, description: '倍低音 1 (最粗)' },
-          { stringNumber: 20, label: '20弦 E2', noteName: 'E2', midi: 40, description: '倍低音 2' },
-          { stringNumber: 19, label: '19弦 F#2', noteName: 'F#2', midi: 42, description: '倍低音 3' },
-          { stringNumber: 18, label: '18弦 A2(绿)', noteName: 'A2', midi: 45, description: '倍低音 5 · 绿弦' },
-          { stringNumber: 17, label: '17弦 B2', noteName: 'B2', midi: 47, description: '倍低音 6' },
-          { stringNumber: 16, label: '16弦 D3', noteName: 'D3', midi: 50, description: '低音 1' },
-          { stringNumber: 15, label: '15弦 E3', noteName: 'E3', midi: 52, description: '低音 2' },
-          { stringNumber: 14, label: '14弦 F#3', noteName: 'F#3', midi: 54, description: '低音 3' },
-          { stringNumber: 13, label: '13弦 A3(绿)', noteName: 'A3', midi: 57, description: '低音 5 · 绿弦' },
-          { stringNumber: 12, label: '12弦 B3', noteName: 'B3', midi: 59, description: '低音 6' },
-          { stringNumber: 11, label: '11弦 D4', noteName: 'D4', midi: 62, description: '中音 1' },
-          { stringNumber: 10, label: '10弦 E4', noteName: 'E4', midi: 64, description: '中音 2' },
-          { stringNumber: 9, label: '9弦 F#4', noteName: 'F#4', midi: 66, description: '中音 3' },
-          { stringNumber: 8, label: '8弦 A4(绿)', noteName: 'A4', midi: 69, description: '中音 5 · 标准绿弦' },
-          { stringNumber: 7, label: '7弦 B4', noteName: 'B4', midi: 71, description: '中音 6' },
-          { stringNumber: 6, label: '6弦 D5', noteName: 'D5', midi: 74, description: '高音 1' },
-          { stringNumber: 5, label: '5弦 E5', noteName: 'E5', midi: 76, description: '高音 2' },
-          { stringNumber: 4, label: '4弦 F#5', noteName: 'F#5', midi: 78, description: '高音 3' },
-          { stringNumber: 3, label: '3弦 A5(绿)', noteName: 'A5', midi: 81, description: '高音 5 · 绿弦' },
-          { stringNumber: 2, label: '2弦 B5', noteName: 'B5', midi: 83, description: '高音 6' },
-          { stringNumber: 1, label: '1弦 D6', noteName: 'D6', midi: 86, description: '倍高音 1 (最细)' },
+          makeStr(18, 'A2', 45, '18弦 A2(绿)', '18th A2(Grn)', '18弦 A2(緑)'),
+          makeStr(16, 'D3', 50, '16弦 D3', '16th D3', '16弦 D3'),
+          makeStr(13, 'A3', 57, '13弦 A3(绿)', '13th A3(Grn)', '13弦 A3(緑)'),
+          makeStr(11, 'D4', 62, '11弦 D4', '11th D4', '11弦 D4'),
+          makeStr(10, 'E4', 64, '10弦 E4', '10th E4', '10弦 E4'),
+          makeStr(9, 'F#4', 66, '9弦 F#4', '9th F#4', '9弦 F#4'),
+          makeStr(8, 'A4', 69, '8弦 A4(绿)', '8th A4(Grn)', '8弦 A4(緑)'),
+          makeStr(6, 'D5', 74, '6弦 D5', '6th D5', '6弦 D5'),
+          makeStr(3, 'A5', 81, '3弦 A5(绿)', '3rd A5(Grn)', '3弦 A5(緑)'),
         ],
       },
       {
-        id: 'guzheng-g-core',
-        name: '古筝 G调核心八度定弦 (1=G)',
-        subtitle: '将D调中的 F# 弦调低半音至 G (即 C4→G3 宫商角徵羽)',
+        id: 'guzheng-d-21',
+        name: {
+          zh: '古筝D调 21弦完整定弦 (21弦~1弦)',
+          en: 'Guzheng D-Major Full 21 Strings',
+          ja: '古筝 D調 全21弦セット',
+        },
         defaultTimbre: 'chinese-guzheng',
         strings: [
-          { stringNumber: 16, label: '16弦 D3', noteName: 'D3', midi: 50, description: '低音 5' },
-          { stringNumber: 15, label: '15弦 E3', noteName: 'E3', midi: 52, description: '低音 6' },
-          { stringNumber: 14, label: '14弦 G3', noteName: 'G3', midi: 55, description: '中音 1' },
-          { stringNumber: 13, label: '13弦 A3(绿)', noteName: 'A3', midi: 57, description: '中音 2' },
-          { stringNumber: 12, label: '12弦 B3', noteName: 'B3', midi: 59, description: '中音 3' },
-          { stringNumber: 11, label: '11弦 D4', noteName: 'D4', midi: 62, description: '中音 5' },
-          { stringNumber: 10, label: '10弦 E4', noteName: 'E4', midi: 64, description: '中音 6' },
-          { stringNumber: 9, label: '9弦 G4', noteName: 'G4', midi: 67, description: '高音 1' },
-          { stringNumber: 8, label: '8弦 A4(绿)', noteName: 'A4', midi: 69, description: '高音 2 · 标准音' },
+          makeStr(21, 'D2', 38, '21弦 D2', '21st D2', '21弦 D2'),
+          makeStr(20, 'E2', 40, '20弦 E2', '20th E2', '20弦 E2'),
+          makeStr(19, 'F#2', 42, '19弦 F#2', '19th F#2', '19弦 F#2'),
+          makeStr(18, 'A2', 45, '18弦 A2(绿)', '18th A2(Grn)', '18弦 A2(緑)'),
+          makeStr(17, 'B2', 47, '17弦 B2', '17th B2', '17弦 B2'),
+          makeStr(16, 'D3', 50, '16弦 D3', '16th D3', '16弦 D3'),
+          makeStr(15, 'E3', 52, '15弦 E3', '15th E3', '15弦 E3'),
+          makeStr(14, 'F#3', 54, '14弦 F#3', '14th F#3', '14弦 F#3'),
+          makeStr(13, 'A3', 57, '13弦 A3(绿)', '13th A3(Grn)', '13弦 A3(緑)'),
+          makeStr(12, 'B3', 59, '12弦 B3', '12th B3', '12弦 B3'),
+          makeStr(11, 'D4', 62, '11弦 D4', '11th D4', '11弦 D4'),
+          makeStr(10, 'E4', 64, '10弦 E4', '10th E4', '10弦 E4'),
+          makeStr(9, 'F#4', 66, '9弦 F#4', '9th F#4', '9弦 F#4'),
+          makeStr(8, 'A4', 69, '8弦 A4(绿)', '8th A4(Grn)', '8弦 A4(緑)'),
+          makeStr(7, 'B4', 71, '7弦 B4', '7th B4', '7弦 B4'),
+          makeStr(6, 'D5', 74, '6弦 D5', '6th D5', '6弦 D5'),
+          makeStr(5, 'E5', 76, '5弦 E5', '5th E5', '5弦 E5'),
+          makeStr(4, 'F#5', 78, '4弦 F#5', '4th F#5', '4弦 F#5'),
+          makeStr(3, 'A5', 81, '3弦 A5(绿)', '3rd A5(Grn)', '3弦 A5(緑)'),
+          makeStr(2, 'B5', 83, '2弦 B5', '2nd B5', '2弦 B5'),
+          makeStr(1, 'D6', 86, '1弦 D6', '1st D6', '1弦 D6'),
         ],
       },
     ],
   },
   {
     id: 'erhu-pipa',
-    name: '二胡 / 琵琶 / 阮',
+    name: { zh: '二胡与琵琶', en: 'Erhu & Pipa', ja: '二胡・琵琶' },
     category: 'chinese',
-    categoryLabel: '民族乐器',
-    iconName: 'Radio',
     defaultTimbre: 'chinese-erhu',
     minFreqHz: 85,
     maxFreqHz: 920,
-    description: '涵盖二胡标准里外弦（配备蟒皮琴筒弓弦音色）、琵琶四弦及中阮/柳琴（配备珠玉弹拨音色）',
     tunings: [
       {
         id: 'erhu-standard',
-        name: '二胡标准定弦 (里弦 D4 · 外弦 A4)',
-        subtitle: '适用于 D调(1 5弦)、G调(5 2弦)、F调(6 3弦)、C调(2 6弦)',
+        name: {
+          zh: '二胡标准定弦 (里弦D4 · 外弦A4)',
+          en: 'Erhu Standard (Inner D4 · Outer A4)',
+          ja: '二胡 標準調弦 (内弦D4 · 外弦A4)',
+        },
         defaultTimbre: 'chinese-erhu',
         strings: [
-          { stringNumber: 2, label: '里弦 D4', noteName: 'D4', midi: 62, description: '内弦 (293.7 Hz)' },
-          { stringNumber: 1, label: '外弦 A4', noteName: 'A4', midi: 69, description: '外弦 (440.0 Hz 标准音)' },
+          makeStr(2, 'D4', 62, '里弦 D4', 'Inner D4', '内弦 D4'),
+          makeStr(1, 'A4', 69, '外弦 A4', 'Outer A4', '外弦 A4'),
         ],
       },
       {
         id: 'pipa-standard',
-        name: '琵琶标准定弦 (缠弦A2 · 老弦D3 · 中弦E3 · 子弦A3)',
-        subtitle: '4弦 A2 → 3弦 D3 → 2弦 E3 → 1弦 A3',
+        name: {
+          zh: '琵琶标准定弦 (A2-D3-E3-A3)',
+          en: 'Pipa Standard (A2-D3-E3-A3)',
+          ja: '琵琶 標準調弦 (A2-D3-E3-A3)',
+        },
         defaultTimbre: 'chinese-pipa',
         strings: [
-          { stringNumber: 4, label: '4弦 缠弦 A2', noteName: 'A2', midi: 45, description: '110.0 Hz' },
-          { stringNumber: 3, label: '3弦 老弦 D3', noteName: 'D3', midi: 50, description: '146.8 Hz' },
-          { stringNumber: 2, label: '2弦 中弦 E3', noteName: 'E3', midi: 52, description: '164.8 Hz' },
-          { stringNumber: 1, label: '1弦 子弦 A3', noteName: 'A3', midi: 57, description: '220.0 Hz' },
+          makeStr(4, 'A2', 45, '4弦 缠弦 A2', '4th A2', '4弦 A2'),
+          makeStr(3, 'D3', 50, '3弦 老弦 D3', '3rd D3', '3弦 D3'),
+          makeStr(2, 'E3', 52, '2弦 中弦 E3', '2nd E3', '2弦 E3'),
+          makeStr(1, 'A3', 57, '1弦 子弦 A3', '1st A3', '1弦 A3'),
         ],
       },
+    ],
+  },
+  {
+    id: 'chromatic',
+    name: { zh: '半音阶通用', en: 'Chromatic', ja: 'クロマチック' },
+    category: 'chromatic',
+    defaultTimbre: 'grand-piano',
+    minFreqHz: 27.5,
+    maxFreqHz: 2200,
+    tunings: [
       {
-        id: 'zhongruan-standard',
-        name: '中阮标准定弦 (G2 D3 G3 D4)',
-        subtitle: '4弦 G2 → 3弦 D3 → 2弦 G3 → 1弦 D4',
-        defaultTimbre: 'chinese-pipa',
+        id: 'chromatic-standard',
+        name: {
+          zh: '十二半音阶基准音组 (C3 ~ C5)',
+          en: 'Chromatic Reference Notes (C3 ~ C5)',
+          ja: 'クロマチック基準音 (C3 ~ C5)',
+        },
+        defaultTimbre: 'grand-piano',
         strings: [
-          { stringNumber: 4, label: '4弦 G2', noteName: 'G2', midi: 43, description: '98.0 Hz' },
-          { stringNumber: 3, label: '3弦 D3', noteName: 'D3', midi: 50, description: '146.8 Hz' },
-          { stringNumber: 2, label: '2弦 G3', noteName: 'G3', midi: 55, description: '196.0 Hz' },
-          { stringNumber: 1, label: '1弦 D4', noteName: 'D4', midi: 62, description: '293.7 Hz' },
-        ],
-      },
-      {
-        id: 'liuqin-standard',
-        name: '柳琴标准定弦 (G3 D4 G4 D5)',
-        subtitle: '4弦 G3 → 3弦 D4 → 2弦 G4 → 1弦 D5',
-        defaultTimbre: 'chinese-pipa',
-        strings: [
-          { stringNumber: 4, label: '4弦 G3', noteName: 'G3', midi: 55, description: '196.0 Hz' },
-          { stringNumber: 3, label: '3弦 D4', noteName: 'D4', midi: 62, description: '293.7 Hz' },
-          { stringNumber: 2, label: '2弦 G4', noteName: 'G4', midi: 67, description: '392.0 Hz' },
-          { stringNumber: 1, label: '1弦 D5', noteName: 'D5', midi: 74, description: '587.3 Hz' },
-        ],
+          makeStr(1, 'C3', 48, '低音 C3', 'Low C3', '低音 C3'),
+          makeStr(2, 'G3', 55, '低音 G3', 'Low G3', '低音 G3'),
+          makeStr(3, 'C4', 60, '中央 C4', 'Middle C4', '中央 C4'),
+          makeStr(4, 'E4', '64' as unknown as number, '中音 E4', 'Mid E4', '中音 E4'),
+          makeStr(5, 'G4', 67, '中音 G4', 'Mid G4', '中音 G4'),
+          makeStr(6, 'A4', 69, '标准音 A4', 'Concert A4', '基準音 A4'),
+        ].map((s) => ({ ...s, midi: Number(s.midi) })),
       },
     ],
   },

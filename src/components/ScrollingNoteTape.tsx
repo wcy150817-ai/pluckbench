@@ -6,18 +6,21 @@ import {
   TemperamentId,
   midiToFrequency,
 } from '../data/instruments';
+import { ThemePalette, SupportedLang, UI_TEXT } from '../i18n/localeTheme';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface ScrollingNoteTapeProps {
-  currentFloatMidi: number; // Continuous floating-point MIDI (e.g. 69.12 for A4 + 12 cents)
-  targetMidi: number;       // Integer MIDI of target note
+  currentFloatMidi: number;
+  targetMidi: number;
   a4Hz: number;
   temperament: TemperamentId;
   notationStyle: NotationStyle;
-  instrumentMidis: Set<number>; // Highlight notes belonging to the selected instrument preset
+  instrumentMidis: Set<number>;
   onSelectMidi: (midi: number) => void;
   hasSignal: boolean;
   isSoundItMode: boolean;
+  theme: ThemePalette;
+  lang: SupportedLang;
 }
 
 const MIN_MIDI = 21; // A0 (27.5 Hz)
@@ -34,7 +37,10 @@ export const ScrollingNoteTape: React.FC<ScrollingNoteTapeProps> = ({
   onSelectMidi,
   hasSignal,
   isSoundItMode,
+  theme,
+  lang,
 }) => {
+  const t = UI_TEXT[lang];
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animatedMidiRef = useRef<number>(targetMidi);
 
@@ -51,7 +57,10 @@ export const ScrollingNoteTape: React.FC<ScrollingNoteTapeProps> = ({
         if (ctx) {
           const dpr = window.devicePixelRatio || 1;
           const rect = canvas.getBoundingClientRect();
-          if (canvas.width !== Math.round(rect.width * dpr) || canvas.height !== Math.round(rect.height * dpr)) {
+          if (
+            canvas.width !== Math.round(rect.width * dpr) ||
+            canvas.height !== Math.round(rect.height * dpr)
+          ) {
             canvas.width = Math.round(rect.width * dpr);
             canvas.height = Math.round(rect.height * dpr);
           }
@@ -65,33 +74,41 @@ export const ScrollingNoteTape: React.FC<ScrollingNoteTapeProps> = ({
 
           ctx.clearRect(0, 0, w, h);
 
-          // Subtle drum gradient background
+          // Subtle drum gradient background matching light or dark theme
           const bgGrad = ctx.createLinearGradient(0, 0, w, 0);
-          bgGrad.addColorStop(0, '#070a0f');
-          bgGrad.addColorStop(0.18, '#0f1623');
-          bgGrad.addColorStop(0.5, '#131c2e');
-          bgGrad.addColorStop(0.82, '#0f1623');
-          bgGrad.addColorStop(1, '#070a0f');
+          bgGrad.addColorStop(0, theme.bgPrimary);
+          bgGrad.addColorStop(0.2, theme.bgCard);
+          bgGrad.addColorStop(0.5, theme.bgSubtle);
+          bgGrad.addColorStop(0.8, theme.bgCard);
+          bgGrad.addColorStop(1, theme.bgPrimary);
           ctx.fillStyle = bgGrad;
           ctx.fillRect(0, 0, w, h);
 
           // Determine visible MIDI range
           const halfSpanSemitones = Math.ceil(w / 2 / PX_PER_SEMITONE) + 1;
-          const startMidi = Math.max(MIN_MIDI, Math.floor(centerMidi - halfSpanSemitones));
-          const endMidi = Math.min(MAX_MIDI, Math.ceil(centerMidi + halfSpanSemitones));
+          const startMidi = Math.max(
+            MIN_MIDI,
+            Math.floor(centerMidi - halfSpanSemitones)
+          );
+          const endMidi = Math.min(
+            MAX_MIDI,
+            Math.ceil(centerMidi + halfSpanSemitones)
+          );
 
           for (let m = startMidi; m <= endMidi; m++) {
             const x = centerX + (m - centerMidi) * PX_PER_SEMITONE;
 
-            // Draw sub-divisions (quarter-tone / 20-cent ticks between m and m+1)
+            // Sub-divisions
             for (let sub = 1; sub < 5; sub++) {
               const subX = x + (sub / 5) * PX_PER_SEMITONE;
-              ctx.strokeStyle = 'rgba(100, 116, 139, 0.28)';
+              ctx.strokeStyle = theme.isLight
+                ? 'rgba(100, 116, 139, 0.25)'
+                : 'rgba(100, 116, 139, 0.28)';
               ctx.lineWidth = 1;
               ctx.beginPath();
               ctx.moveTo(subX, 0);
-              ctx.lineTo(subX, 7);
-              ctx.moveTo(subX, h - 7);
+              ctx.lineTo(subX, 6);
+              ctx.moveTo(subX, h - 6);
               ctx.lineTo(subX, h);
               ctx.stroke();
             }
@@ -102,54 +119,50 @@ export const ScrollingNoteTape: React.FC<ScrollingNoteTapeProps> = ({
             const octave = Math.floor(m / 12) - 1;
             const isSharp = NOTE_NAMES[noteIdx].includes('#');
 
-            // Main semitone tick line
             ctx.strokeStyle = isTarget
-              ? '#10B981'
+              ? theme.accentHex
               : isPresetString
-              ? '#38BDF8'
+              ? theme.secondaryHex
               : 'rgba(148, 163, 184, 0.45)';
             ctx.lineWidth = isTarget ? 2 : 1.2;
             ctx.beginPath();
             ctx.moveTo(x, 0);
-            ctx.lineTo(x, 12);
-            ctx.moveTo(x, h - 12);
+            ctx.lineTo(x, 11);
+            ctx.moveTo(x, h - 11);
             ctx.lineTo(x, h);
             ctx.stroke();
 
-            // Preset string dot indicator
             if (isPresetString) {
-              ctx.fillStyle = isTarget ? '#10B981' : '#38BDF8';
+              ctx.fillStyle = isTarget ? theme.accentHex : theme.secondaryHex;
               ctx.beginPath();
-              ctx.arc(x, 15, 2.5, 0, Math.PI * 2);
+              ctx.arc(x, 14, 2.5, 0, Math.PI * 2);
               ctx.fill();
             }
 
-            // Note Label
             const primaryLabel =
               notationStyle === 'solfege'
                 ? `${SOLFEGE_NAMES[noteIdx]}${octave}`
                 : `${NOTE_NAMES[noteIdx]}${octave}`;
 
             ctx.font = isTarget
-              ? '700 14px "JetBrains Mono", monospace'
+              ? '700 13px "JetBrains Mono", monospace'
               : isSharp
-              ? '500 12px "JetBrains Mono", monospace'
-              : '600 13px "JetBrains Mono", monospace';
+              ? '500 11.5px "JetBrains Mono", monospace'
+              : '600 12.5px "JetBrains Mono", monospace';
             ctx.fillStyle = isTarget
-              ? '#34D399'
+              ? theme.accentHex
               : isPresetString
-              ? '#E0F2FE'
+              ? theme.textPrimary
               : isSharp
-              ? '#64748B'
-              : '#CBD5E1';
+              ? theme.textMuted
+              : theme.textSecondary;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(primaryLabel, x, h / 2 - 5);
+            ctx.fillText(primaryLabel, x, h / 2 - 4);
 
-            // Frequency label under each note (gStrings style)
             const freq = midiToFrequency(m, a4Hz, temperament);
-            ctx.font = '500 9.5px "JetBrains Mono", monospace';
-            ctx.fillStyle = isTarget ? '#6EE7B7' : '#64748B';
+            ctx.font = '500 9px "JetBrains Mono", monospace';
+            ctx.fillStyle = isTarget ? theme.accentHex : theme.textMuted;
             ctx.fillText(
               `${freq >= 100 ? freq.toFixed(1) : freq.toFixed(2)}Hz`,
               x,
@@ -157,12 +170,12 @@ export const ScrollingNoteTape: React.FC<ScrollingNoteTapeProps> = ({
             );
           }
 
-          // Center Hairline Cursor (Red/Emerald gStrings Vertical Hairline)
+          // Center Hairline Cursor
           const cursorColor = isSoundItMode
-            ? '#38BDF8'
-            : hasSignal && Math.abs(currentFloatMidi - targetMidi) <= 0.03
-            ? '#10B981'
-            : '#F43F5E';
+            ? theme.secondaryHex
+            : hasSignal && Math.abs(currentFloatMidi - targetMidi) <= 0.05
+            ? theme.accentHex
+            : theme.dangerHex;
 
           ctx.strokeStyle = cursorColor;
           ctx.lineWidth = 2;
@@ -171,7 +184,6 @@ export const ScrollingNoteTape: React.FC<ScrollingNoteTapeProps> = ({
           ctx.lineTo(centerX, h);
           ctx.stroke();
 
-          // Top & bottom small triangles on center cursor
           ctx.fillStyle = cursorColor;
           ctx.beginPath();
           ctx.moveTo(centerX - 5, 0);
@@ -205,6 +217,7 @@ export const ScrollingNoteTape: React.FC<ScrollingNoteTapeProps> = ({
     instrumentMidis,
     hasSignal,
     isSoundItMode,
+    theme,
   ]);
 
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -221,35 +234,51 @@ export const ScrollingNoteTape: React.FC<ScrollingNoteTapeProps> = ({
   };
 
   return (
-    <div className="relative flex items-center w-full rounded-xl bg-[#090d14] border border-slate-800/90 shadow-inner overflow-hidden select-none">
-      {/* Step -1 Semitone Button */}
+    <div
+      className="relative flex items-center w-full rounded-xl border shadow-inner overflow-hidden select-none transition-colors duration-300"
+      style={{
+        backgroundColor: theme.bgCard,
+        borderColor: theme.borderPrimary,
+      }}
+    >
       <button
         type="button"
         onClick={() => onSelectMidi(Math.max(MIN_MIDI, targetMidi - 1))}
-        title="降低半音 (-1 Semitone)"
-        className="z-10 flex items-center justify-center w-9 h-14 bg-slate-900/90 hover:bg-slate-800 active:bg-slate-700 text-slate-300 border-r border-slate-800 transition-colors"
+        aria-label="-1"
+        className="z-10 flex items-center justify-center w-8 sm:w-9 h-12 border-r transition-colors"
+        style={{
+          backgroundColor: theme.bgSubtle,
+          borderColor: theme.borderPrimary,
+          color: theme.textSecondary,
+        }}
       >
         <ChevronLeft className="w-4 h-4" />
       </button>
 
-      {/* Interactive Scrolling Drum Canvas */}
-      <div className="relative flex-1 h-14 cursor-pointer">
+      <div className="relative flex-1 h-12 cursor-pointer">
         <canvas
           ref={canvasRef}
           onClick={handleCanvasClick}
           className="w-full h-full block"
         />
-        <span className="pointer-events-none absolute right-2 top-1 text-[9px] text-slate-500 hidden sm:inline">
-          点击标尺可指定目标音
+        <span
+          className="pointer-events-none absolute right-2 top-1 text-[9px] hidden sm:inline"
+          style={{ color: theme.textMuted }}
+        >
+          {t.tapeHint}
         </span>
       </div>
 
-      {/* Step +1 Semitone Button */}
       <button
         type="button"
         onClick={() => onSelectMidi(Math.min(MAX_MIDI, targetMidi + 1))}
-        title="升高半音 (+1 Semitone)"
-        className="z-10 flex items-center justify-center w-9 h-14 bg-slate-900/90 hover:bg-slate-800 active:bg-slate-700 text-slate-300 border-l border-slate-800 transition-colors"
+        aria-label="+1"
+        className="z-10 flex items-center justify-center w-8 sm:w-9 h-12 border-l transition-colors"
+        style={{
+          backgroundColor: theme.bgSubtle,
+          borderColor: theme.borderPrimary,
+          color: theme.textSecondary,
+        }}
       >
         <ChevronRight className="w-4 h-4" />
       </button>
