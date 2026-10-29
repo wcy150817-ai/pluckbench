@@ -352,6 +352,27 @@ export const UI_TEXT = {
     chimeToggleLabel: '琴弦调准后播放确认提示音',
     resetDefaultsBtn: '恢复默认设置',
     doneBtn: '完成并应用',
+    // Microphone Permission Modal & Banner
+    micModalBadge: '录音 / 麦克风权限提示',
+    micModalTitle: '请开启麦克风（录音）权限以进行实时调音',
+    micModalDesc:
+      '为了通过设备麦克风实时检测琴弦振动频率（Hz）与音分偏差，请在点击下方按钮后，在浏览器弹出的录音/麦克风权限窗口中选择「允许」。',
+    micModalPoint1Title: '高精度实时拾音测频',
+    micModalPoint1Desc:
+      '自动识别吉他、尤克里里、古筝、贝斯与提琴琴弦基频，内置环境窄带抗噪滤波。',
+    micModalPoint2Title: '100% 浏览器本地处理 · 绝不录音上传',
+    micModalPoint2Desc:
+      '所有音频流仅在您的设备本地通过 Web Audio API 实时计算频率，绝不存储或上传任何声音数据。',
+    micModalAllowBtn: '立即授权并开启麦克风调音',
+    micModalSoundOnlyBtn: '先使用标准音耳调（暂不开麦克风）',
+    micModalLaterBtn: '稍后手动开启',
+    micModalErrorTitle: '未能获取麦克风（录音）权限',
+    micModalErrorSteps:
+      '1. 请点击浏览器地址栏左侧的「锁形图标 🔒」或「网站设置」图标；2. 将「麦克风 / 录音」权限更改为「允许」；3. 若在手机端打开，请确认手机系统设置已允许浏览器使用麦克风，然后点击下方重试。',
+    micModalRetryBtn: '重新请求麦克风权限',
+    micBannerPrompt:
+      '麦克风尚未开启：点击授权麦克风（录音）权限，即可开始实时拨弦测音。',
+    micBannerBtn: '开启麦克风权限',
   },
   en: {
     brandName: 'PluckBench',
@@ -436,6 +457,27 @@ export const UI_TEXT = {
     chimeToggleLabel: 'Play Confirmation Chime When Tuned',
     resetDefaultsBtn: 'Reset Defaults',
     doneBtn: 'Apply & Close',
+    // Microphone Permission Modal & Banner
+    micModalBadge: 'Microphone Permission Guide',
+    micModalTitle: 'Enable Microphone Access for Real-Time Tuning',
+    micModalDesc:
+      'To detect your instrument’s string frequency (Hz) and cent offset in real time, click the button below and select "Allow" when your browser requests microphone/recording access.',
+    micModalPoint1Title: 'Sub-Cent Real-Time Pitch Detection',
+    micModalPoint1Desc:
+      'Automatically locks onto guitar, ukulele, bass, violin, and zither fundamentals with narrow-band noise filtering.',
+    micModalPoint2Title: '100% Local Browser Processing · Zero Recording',
+    micModalPoint2Desc:
+      'All audio streams are analyzed locally on your device via Web Audio API. No audio is ever recorded, saved, or uploaded.',
+    micModalAllowBtn: 'Allow & Start Microphone Tuner',
+    micModalSoundOnlyBtn: 'Use Reference Tones Only (No Mic)',
+    micModalLaterBtn: 'Dismiss for Now',
+    micModalErrorTitle: 'Microphone Access Was Blocked or Unavailable',
+    micModalErrorSteps:
+      '1. Click the Lock 🔒 or Site Settings icon on the left side of your browser address bar. 2. Set "Microphone" permission to "Allow". 3. On mobile devices, ensure your browser has Microphone access enabled in System Settings, then tap Retry below.',
+    micModalRetryBtn: 'Retry Microphone Access',
+    micBannerPrompt:
+      'Microphone is currently off: Grant microphone access to start real-time string pitch detection.',
+    micBannerBtn: 'Enable Microphone',
   },
   ja: {
     brandName: '音律工房',
@@ -520,5 +562,26 @@ export const UI_TEXT = {
     chimeToggleLabel: '調律完了時に確認チャイムを鳴らす',
     resetDefaultsBtn: '初期設定に戻す',
     doneBtn: '完了',
+    // Microphone Permission Modal & Banner
+    micModalBadge: 'マイク（録音）権限のご案内',
+    micModalTitle: 'リアルタイム調律のためにマイク権限を許可してください',
+    micModalDesc:
+      '楽器の弦の振動周波数（Hz）とセント偏差をリアルタイムに検出するため、下のボタンを押した後、ブラウザのマイク（録音）権限ポップアップで「許可」を選択してください。',
+    micModalPoint1Title: '高精度リアルタイム周波数測定',
+    micModalPoint1Desc:
+      'ギター・ウクレレ・古筝・ベース・バイオリンの基音を自動認識し、周囲の雑音をフィルタリングします。',
+    micModalPoint2Title: '100% ブラウザ内ローカル処理・録音なし',
+    micModalPoint2Desc:
+      'すべての音声信号はお使いの端末内の Web Audio API でのみ解析され、録音やサーバーへの送信は一切行われません。',
+    micModalAllowBtn: 'マイクを許可してチューナーを開始',
+    micModalSoundOnlyBtn: '基準音モードで耳調律する（マイクなし）',
+    micModalLaterBtn: 'あとで手動で開始',
+    micModalErrorTitle: 'マイク（録音）へのアクセスが拒否されました',
+    micModalErrorSteps:
+      '1. ブラウザのアドレスバー左側の「鍵アイコン 🔒」または「サイト設定」をタップします。2.「マイク」の権限を「許可」に変更します。3. スマホの場合はOS設定でブラウザのマイク権限をONにしてから、下の再試行ボタンを押してください。',
+    micModalRetryBtn: 'マイク権限を再試行する',
+    micBannerPrompt:
+      'マイクがオフです：マイク（録音）権限を許可すると、リアルタイム調律が開始されます。',
+    micBannerBtn: 'マイクを有効化',
   },
 } as const;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ThemePalette, SupportedLang } from '../i18n/localeTheme';
+import { ThemePalette, SupportedLang, UI_TEXT } from '../i18n/localeTheme';
 import { Mic, MicOff, ShieldAlert, CheckCircle2, RotateCcw } from 'lucide-react';
 
 const DB_TEXT: Record<
@@ -263,14 +263,19 @@ export const DecibelMeterTool: React.FC<{
 
       {errorMsg && (
         <div
-          className="p-3 rounded-xl border text-xs"
+          className="p-3.5 rounded-xl border text-xs space-y-1.5"
           style={{
             backgroundColor: `${theme.dangerHex}20`,
             borderColor: theme.dangerHex,
             color: theme.dangerHex,
           }}
         >
-          {errorMsg}
+          <div className="font-bold">
+            {txt.micErr} — {UI_TEXT[lang].micModalErrorTitle}
+          </div>
+          <div style={{ color: theme.textSecondary }}>
+            {UI_TEXT[lang].micModalErrorSteps}
+          </div>
         </div>
       )}
 

@@ -29,6 +29,7 @@ import { GStringsDialMeter } from './components/GStringsDialMeter';
 import { ScrollingNoteTape } from './components/ScrollingNoteTape';
 import { InstrumentStringsPanel } from './components/InstrumentStringsPanel';
 import { SettingsModal } from './components/SettingsModal';
+import { MicPermissionModal } from './components/MicPermissionModal';
 import { MetronomeTool } from './components/MetronomeTool';
 import { ChordLibraryTool } from './components/ChordLibraryTool';
 import { EarTrainerTool } from './components/EarTrainerTool';
@@ -169,6 +170,20 @@ export const App: React.FC = () => {
   const [isMicListening, setIsMicListening] = useState<boolean>(false);
   const [micError, setMicError] = useState<string | null>(null);
   const [isSimulating, setIsSimulating] = useState<boolean>(false);
+  const [isMicModalOpen, setIsMicModalOpen] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    const p = window.location.pathname.toLowerCase();
+    if (
+      p.includes('metronome') ||
+      p.includes('chord') ||
+      p.includes('ear-trainer') ||
+      p.includes('decibel')
+    ) {
+      return false;
+    }
+    return true;
+  });
+  const hasPromptedMicRef = useRef<boolean>(isMicModalOpen);
 
   // Audio & DSP Filter Chain Refs
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -510,6 +525,7 @@ export const App: React.FC = () => {
       mediaStreamRef.current = stream;
       pitchProcessorRef.current.reset();
       setIsMicListening(true);
+      setIsMicModalOpen(false);
 
       const buffer = new Float32Array(analyser.fftSize);
       const analyzeLoop = () => {
@@ -548,9 +564,13 @@ export const App: React.FC = () => {
 
       rafLoopRef.current = requestAnimationFrame(analyzeLoop);
     } catch (err) {
-      const message = err instanceof Error ? err.message : '';
+      const message =
+        err instanceof Error && err.message
+          ? err.message
+          : 'NotAllowedError: Microphone permission denied';
       setMicError(message);
       setIsMicListening(false);
+      setIsMicModalOpen(true);
     }
   }, [processDetectedPitch, tunerMode]);
 
@@ -559,8 +579,11 @@ export const App: React.FC = () => {
       if (isMicListening) stopMicrophone();
       setIsSimulating(false);
       toneGenRef.current.stopContinuous();
+    } else if (!hasPromptedMicRef.current && !isMicListening && !isSimulating) {
+      hasPromptedMicRef.current = true;
+      setIsMicModalOpen(true);
     }
-  }, [activeTool, isMicListening, stopMicrophone]);
+  }, [activeTool, isMicListening, isSimulating, stopMicrophone]);
 
   // Interactive Simulation Mode
   useEffect(() => {
@@ -1092,23 +1115,66 @@ export const App: React.FC = () => {
 
             {micError && (
               <div
-                className="rounded-xl border px-3.5 py-2 text-xs flex items-center justify-between gap-2"
+                className="rounded-xl border px-3.5 py-2.5 text-xs flex flex-wrap items-center justify-between gap-2"
                 style={{
                   backgroundColor: `${theme.dangerHex}20`,
                   borderColor: theme.dangerHex,
                   color: theme.dangerHex,
                 }}
               >
-                <span>{micError}</span>
-                <button
-                  type="button"
-                  onClick={() => setMicError(null)}
-                  className="shrink-0 font-semibold"
-                >
-                  ✕
-                </button>
+                <div className="space-y-0.5">
+                  <div className="font-bold">{t.micModalErrorTitle}</div>
+                  <div className="opacity-90">{t.micModalErrorSteps}</div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => startMicrophone()}
+                    className="px-3 py-1 rounded-lg font-bold text-white"
+                    style={{ backgroundColor: theme.dangerHex }}
+                  >
+                    {t.micModalRetryBtn}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMicError(null)}
+                    className="px-1.5 font-semibold"
+                  >
+                    ✕
+                  </button>
+                </div>
               </div>
             )}
+
+            {!isMicListening &&
+              !isSimulating &&
+              tunerMode !== 'sound-it' &&
+              !micError && (
+                <div
+                  className="rounded-xl border px-3.5 py-2 text-xs flex flex-wrap items-center justify-between gap-2"
+                  style={{
+                    backgroundColor: `${theme.accentHex}16`,
+                    borderColor: `${theme.accentHex}66`,
+                    color: theme.textPrimary,
+                  }}
+                >
+                  <div className="flex items-center gap-2">
+                    <Mic
+                      className="w-4 h-4 shrink-0 animate-pulse"
+                      style={{ color: theme.accentHex }}
+                    />
+                    <span>{t.micBannerPrompt}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsMicModalOpen(true)}
+                    className="px-3 py-1 rounded-lg font-bold text-white shrink-0 transition-opacity hover:opacity-95"
+                    style={{ backgroundColor: theme.accentHex }}
+                  >
+                    {t.micBannerBtn}
+                  </button>
+                </div>
+              )}
 
             {/*
               Responsive Layout:
@@ -1314,6 +1380,28 @@ export const App: React.FC = () => {
 
       {/* SEO Structured Guide, Tuning Reference Table, FAQ & Compliance Footer */}
       <SeoKnowledgeFooter theme={theme} lang={lang} />
+
+      {/* Microphone / Recording Permission Prompt Modal (Localized to Page Language) */}
+      <MicPermissionModal
+        isOpen={isMicModalOpen}
+        hasError={Boolean(micError)}
+        errorDetail={micError}
+        theme={theme}
+        lang={lang}
+        region={region}
+        onChangeRegion={(reg) => setRegion(reg)}
+        onAllowMic={() => {
+          startMicrophone();
+        }}
+        onUseReferenceTone={() => {
+          setMicError(null);
+          setIsMicModalOpen(false);
+          setTunerMode('sound-it');
+        }}
+        onClose={() => {
+          setIsMicModalOpen(false);
+        }}
+      />
 
       {/* Pro Settings Modal */}
       <SettingsModal
