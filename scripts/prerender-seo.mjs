@@ -637,7 +637,17 @@ function buildPreRenderedBodyHtml(page) {
           </div>
         </header>
 
-        <main class="max-w-7xl mx-auto px-4 py-6 space-y-8">
+        <div class="max-w-7xl mx-auto px-4 py-8 min-h-[78vh] flex items-center justify-center">
+          <div class="w-full max-w-2xl p-8 rounded-3xl border border-slate-800 bg-slate-900/80 text-center space-y-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono">
+              Web Audio DSP Workbench Ready
+            </div>
+            <div class="text-2xl font-extrabold text-slate-100">PluckBench Pro</div>
+            <div class="text-xs text-slate-400">${page.tuningSummary}</div>
+          </div>
+        </div>
+
+        <main class="max-w-7xl mx-auto px-4 py-6 space-y-8 opacity-90">
           <section class="p-6 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-4">
             <h2 class="text-lg font-bold text-slate-100">
               Studio-Grade ${kwCap} for ${page.instrumentName}

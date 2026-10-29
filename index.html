@@ -82,6 +82,32 @@
     </script>
   </head>
   <body class="bg-[#070a0f] text-slate-100 antialiased selection:bg-emerald-500/30 selection:text-emerald-200 overflow-x-hidden">
+    <script>
+      window.addEventListener(
+        'error',
+        function (e) {
+          var t = e && e.target;
+          if (t && (t.tagName === 'SCRIPT' || t.tagName === 'LINK')) {
+            if ('serviceWorker' in navigator && !sessionStorage.getItem('pb_sw_reset')) {
+              sessionStorage.setItem('pb_sw_reset', '1');
+              navigator.serviceWorker.getRegistrations().then(function (regs) {
+                Promise.all(regs.map(function (r) { return r.unregister(); }))
+                  .then(function () {
+                    return window.caches ? caches.keys() : [];
+                  })
+                  .then(function (keys) {
+                    return Promise.all(keys.map(function (k) { return caches.delete(k); }));
+                  })
+                  .finally(function () {
+                    window.location.reload();
+                  });
+              });
+            }
+          }
+        },
+        true
+      );
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
