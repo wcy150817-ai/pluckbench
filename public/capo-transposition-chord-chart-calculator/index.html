@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Guitar &amp; Ukulele Capo Transposition Chart &amp; Interactive Key Change Chord Calculator (2026)</title>
+  <meta name="description" content="Transpose guitar and ukulele chord progressions across Capo Frets 1 to 11. Convert open CAGED chord shapes into sounding concert keys and exact string Hz." />
+  <link rel="canonical" href="https://www.pluckbench.com/capo-transposition-chord-chart-calculator" />
+  <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Guitar &amp; Ukulele Capo Transposition Chart &amp; Interactive Key Change Chord Calculator (2026)" />
+  <meta property="og:description" content="Interactive guitar and ukulele capo chord transposition calculator, CAGED key change chart, and capo spring pressure intonation guide." />
+  <meta property="og:url" content="https://www.pluckbench.com/capo-transposition-chord-chart-calculator" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Article",
+        "headline": "Guitar & Ukulele Capo Transposition Chart & Interactive Key Change Chord Calculator (2026)",
+        "description": "Music theory guide and interactive chord transposition calculator for 6-string guitar and 4-string ukulele across Capo Frets 1 through 11, including CAGED voicings and open-string Hertz shifts.",
+        "datePublished": "2026-10-29",
+        "dateModified": "2026-10-29",
+        "author": {
+          "@type": "Organization",
+          "name": "PluckBench Acoustic Engineering Desk",
+          "url": "https://www.pluckbench.com/"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "PluckBench",
+          "url": "https://www.pluckbench.com/"
+        },
+        "mainEntityOfPage": "https://www.pluckbench.com/capo-transposition-chord-chart-calculator"
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "PluckBench Guitar & Ukulele Capo Chord Transposition Calculator",
+        "url": "https://www.pluckbench.com/capo-transposition-chord-chart-calculator",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Web, iOS, Android, macOS, Windows",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How does a capo change the key of a guitar or ukulele chord progression?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Each fret on a guitar or ukulele raises the pitch of all strings by exactly one semitone (100 cents, or one half-step). Placing a capo on Fret N raises the sounding concert pitch of any open chord shape you play by N semitones. For example, playing a G Major shape with a capo on Fret 2 produces an A Major concert chord (+2 semitones)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Why does my guitar go sharp (+10 to +25 cents) right after clamping on a spring capo?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Excessive spring tension or clamping the capo directly in the center of the fret space bends the strings downward toward the fingerboard wood, increasing mechanical tension like a mini pitch bend. Place the capo just behind the metal fret wire and re-check open strings with an online guitar tuner."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I replace difficult F and Bb barre chords using a capo and the CAGED system?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "To play in the concert key of F Major without full index-finger barre chords, clamp the capo on Fret 5 and play open C-G-Am-F shapes (which sound as F-C-Dm-Bb), or clamp the capo on Fret 3 and play open D-A-Bm-G shapes."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I use a guitar capo on a soprano, concert, or tenor ukulele?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "While the semitone transposition math is identical on a GCEA ukulele, full-size steel-string guitar capos have a curved fretboard radius and heavy spring force that can crush soft nylon ukulele strings sharp. A flat-pad ukulele capo or adjustable micrometer tension capo keeps G4-C4-E4-A4 intonation accurate."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #070a0f;
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      line-height: 1.65;
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+    a { color: #34d399; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 16px; width: 100%; }
+    .site-header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid #1e293b;
+      padding: 14px 0;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(8px);
+    }
+    .header-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+    .brand { font-weight: 800; font-size: 1.15rem; color: #f8fafc; display: flex; align-items: center; gap: 8px; }
+    .brand-badge { background: #10b981; color: #052e16; font-size: 0.7rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; }
+    .top-nav { display: flex; flex-wrap: wrap; gap: 6px; }
+    .top-nav a {
+      font-size: 0.76rem;
+      color: #cbd5e1;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 5px 10px;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+    .top-nav a:hover { border-color: #10b981; color: #34d399; }
+    .disclosure {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid #1e293b;
+      border-left: 3px solid #10b981;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin: 20px 0 16px;
+    }
+    h1 { font-size: clamp(1.5rem, 3.2vw, 2.2rem); line-height: 1.25; color: #f8fafc; margin: 12px 0 14px; font-weight: 800; }
+    h2 { font-size: clamp(1.2rem, 2.3vw, 1.55rem); color: #f8fafc; margin: 32px 0 12px; font-weight: 700; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }
+    h3 { font-size: 1.08rem; color: #e2e8f0; margin: 20px 0 8px; font-weight: 700; }
+    p, li { color: #cbd5e1; font-size: 0.96rem; }
+    .card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .calc-box {
+      background: linear-gradient(145deg, #0f172a 0%, #091526 100%);
+      border: 1px solid #10b981;
+      border-radius: 16px;
+      padding: 22px;
+      margin: 24px 0;
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.08);
+    }
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .field label { display: block; font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 6px; }
+    .field select, .field input {
+      width: 100%;
+      background: #070a0f;
+      border: 1px solid #334155;
+      color: #f8fafc;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+    }
+    .btn-calc {
+      background: #10b981;
+      color: #052e16;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      width: 100%;
+      transition: opacity 0.2s;
+    }
+    .btn-calc:hover { opacity: 0.92; }
+    .result-panel {
+      margin-top: 18px;
+      background: #070a0f;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .kpi {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 12px;
+      border-radius: 10px;
+    }
+    .kpi-label { font-size: 0.74rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em; }
+    .kpi-val { font-size: 1.2rem; font-weight: 800; color: #34d399; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin-top: 4px; }
+    .lp-table-wrap { overflow-x: auto; max-width: 100%; margin: 14px 0; border: 1px solid #1e293b; border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.86rem; min-width: 540px; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #1e293b; }
+    th { background: #090d16; color: #94a3b8; font-weight: 700; }
+    td { color: #e2e8f0; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #34d399; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin: 18px 0; }
+    .tool-links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 14px; }
+    .tool-link-card {
+      display: block;
+      background: #090d16;
+      border: 1px solid #1e293b;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: #f1f5f9;
+      text-decoration: none;
+    }
+    .tool-link-card:hover { border-color: #10b981; text-decoration: none; }
+    .site-footer {
+      border-top: 1px solid #1e293b;
+      margin-top: 48px;
+      padding: 28px 0 40px;
+      color: #64748b;
+      font-size: 0.82rem;
+    }
+    @media (max-width: 640px) {
+      .card, .calc-box { padding: 16px; }
+      table { font-size: 0.78rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="brand">
+        <span>PluckBench</span>
+        <span class="brand-badge">PRO DSP</span>
+      </a>
+      <nav class="top-nav" aria-label="Main Musical Tools Navigation">
+        <a href="/">Tuner Home</a>
+        <a href="/guitar-chords">Guitar Chords</a>
+        <a href="/guitar-tuner">Guitar Tuner</a>
+        <a href="/ukulele-tuner">Ukulele Tuner</a>
+        <a href="/bass-tuner">Bass Tuner</a>
+        <a href="/violin-tuner">Violin Tuner</a>
+        <a href="/guzheng-tuner">Guzheng Tuner</a>
+        <a href="/online-metronome">Metronome</a>
+        <a href="/decibel-meter">dB Meter</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="disclosure">
+      <strong>Reader Disclosure:</strong> PluckBench builds free browser-based Web Audio chord libraries and instrument tuners. Some outbound links to music instruction books or musician accessory stores are affiliate links (marked as sponsored), which may earn a small commission at no additional cost to you. All transposition matrices and frequency formulas follow standard 12-TET acoustic physics.
+    </div>
+
+    <h1>Guitar &amp; Ukulele Capo Transposition Chart &amp; Interactive Key Change Chord Calculator (2026)</h1>
+    <p>
+      A capo (short for the Italian <em>capotasto</em>, meaning "head of the fretboard") acts as a movable nut that shortens the vibrating scale length of every string simultaneously. While singers use a capo to shift a song's key into their comfortable vocal range without relearning complex barre fingerings, studio guitarists and ukulele players also use capos to unlock bright upper-register voicings that complement a second guitarist or piano. Pair the interactive transposition calculator below with our <a href="/guitar-chords">Interactive Guitar &amp; Ukulele Chord Library</a>, <a href="/guitar-tuner">Online Guitar Tuner</a>, and <a href="/ukulele-tuner">Online Ukulele Tuner</a> to convert any chord progression across Frets 1 through 11 and verify your post-capo open-string Hertz frequencies.
+    </p>
+
+    <section class="calc-box" id="capo-calc" aria-labelledby="calc-heading">
+      <h2 id="calc-heading" style="margin-top:0;border-bottom:none;padding-bottom:0;">Interactive Guitar &amp; Ukulele Capo Chord Transposition Calculator</h2>
+      <p style="font-size:0.88rem;color:#94a3b8;margin-top:4px;">
+        Choose your instrument (`6-String Guitar` or `4-String GCEA Ukulele`), select the open chord shapes you want to play (`C - G - Am - F`, `G - D - Em - C`, etc.), and pick your Capo Fret (`Fret 1` to `Fret 11`) to compute the actual sounding Concert Key, transposed chord names, and new open-string fundamental frequencies in Hz.
+      </p>
+      <div class="calc-grid">
+        <div class="field">
+          <label for="inst-select">1. Instrument</label>
+          <select id="inst-select">
+            <option value="guitar" selected>6-String Guitar (E2 - A2 - D3 - G3 - B3 - E4)</option>
+            <option value="ukulele">4-String Ukulele (G4 - C4 - E4 - A4)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="prog-select">2. Open Chord Shapes Played (Relative to Capo)</label>
+          <select id="prog-select">
+            <option value="C" selected>C Major Shapes: C - G - Am - F (I - V - vi - IV)</option>
+            <option value="G">G Major Shapes: G - D - Em - C (I - V - vi - IV)</option>
+            <option value="D">D Major Shapes: D - A - Bm - G (I - V - vi - IV)</option>
+            <option value="A">A Major Shapes: A - E - F#m - D (I - V - vi - IV)</option>
+            <option value="E">E Major Shapes: E - B - C#m - A (I - V - vi - IV)</option>
+            <option value="Am">A Minor Shapes: Am - F - C - G (i - VI - III - VII)</option>
+            <option value="Dm">D Minor Shapes: Dm - Bb - F - C (i - VI - III - VII)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="capo-select">3. Capo Fret Position</label>
+          <select id="capo-select">
+            <option value="1">Capo Fret 1 (+1 Semitone / +100 Cents)</option>
+            <option value="2" selected>Capo Fret 2 (+2 Semitones / +1 Whole Step)</option>
+            <option value="3">Capo Fret 3 (+3 Semitones / Minor 3rd Up)</option>
+            <option value="4">Capo Fret 4 (+4 Semitones / Major 3rd Up)</option>
+            <option value="5">Capo Fret 5 (+5 Semitones / Perfect 4th Up)</option>
+            <option value="6">Capo Fret 6 (+6 Semitones / Tritone Up)</option>
+            <option value="7">Capo Fret 7 (+7 Semitones / Perfect 5th Up)</option>
+            <option value="8">Capo Fret 8 (+8 Semitones / Minor 6th Up)</option>
+            <option value="9">Capo Fret 9 (+9 Semitones / Major 6th Up)</option>
+            <option value="10">Capo Fret 10 (+10 Semitones / Minor 7th Up)</option>
+            <option value="11">Capo Fret 11 (+11 Semitones / Major 7th Up)</option>
+          </select>
+        </div>
+      </div>
+      <button type="button" id="calc-btn" class="btn-calc">Transpose Chord Progression &amp; Calculate Capo String Frequencies</button>
+
+      <div class="result-panel" id="calc-result" aria-live="polite">
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="kpi-label">Sounding Concert Key</div>
+            <div class="kpi-val" id="res-concert-key">D Major (+2 Semitones)</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Sounding Progression</div>
+            <div class="kpi-val" id="res-concert-prog" style="font-size:1.05rem;">D - A - Bm - G</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Lowest Capo String Hz</div>
+            <div class="kpi-val" id="res-low-hz">92.50 Hz (F#2)</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Highest Capo String Hz</div>
+            <div class="kpi-val" id="res-high-hz">369.99 Hz (F#4)</div>
+          </div>
+        </div>
+        <div class="lp-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Roman Numeral</th>
+                <th>Chord Shape You Finger</th>
+                <th>Capo Fret Offset</th>
+                <th>Actual Sounding Concert Chord</th>
+                <th>Root Note Frequency Shift</th>
+              </tr>
+            </thead>
+            <tbody id="res-table-body">
+              <tr><td>Chord 1 (Tonic)</td><td class="mono">CShape</td><td>Fret 2 (+200 cents)</td><td class="mono">D</td><td>&times; 1.1225 (+2 semitones)</td></tr>
+              <tr><td>Chord 2</td><td class="mono">GShape</td><td>Fret 2 (+200 cents)</td><td class="mono">A</td><td>&times; 1.1225 (+2 semitones)</td></tr>
+              <tr><td>Chord 3</td><td class="mono">AmShape</td><td>Fret 2 (+200 cents)</td><td class="mono">Bm</td><td>&times; 1.1225 (+2 semitones)</td></tr>
+              <tr><td>Chord 4</td><td class="mono">FShape</td><td>Fret 2 (+200 cents)</td><td class="mono">G</td><td>&times; 1.1225 (+2 semitones)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p id="res-advice" style="font-size:0.86rem;color:#cbd5e1;margin:10px 0 0;">
+          <strong>Capo Intonation Check (6-String Guitar at Fret 2):</strong> Your six unfretted capo strings now sound as <code>F#2 (92.50 Hz) - B2 (123.47 Hz) - E3 (164.81 Hz) - A3 (220.00 Hz) - C#4 (277.18 Hz) - F#4 (369.99 Hz)</code>. Verify each string on the PluckBench Chromatic Tuner after clamping the capo to eliminate spring pull-sharp.
+        </p>
+      </div>
+    </section>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Chord Voicing Guides &amp; Musician Accessories</h3>
+      <p style="font-size:0.88rem;">
+        Want printable CAGED chord charts, songwriter progression handbooks, or studio accessories and musician gifts? Check out these curated catalogs:
+      </p>
+      <div class="cta-row">
+        <a href="https://bbux.me/b9xCEBDSZ" rel="sponsored noopener" target="_blank" style="display:inline-block;background:#059669;color:#ffffff !important;padding:12px 20px;border-radius:10px;font-weight:700;text-decoration:none;max-width:100%;box-sizing:border-box;">Explore Guitar Chord &amp; CAGED Theory eBooks &rarr;</a>
+        <a href="https://bbux.me/T9xC6WZH9" rel="sponsored noopener" target="_blank" style="display:inline-block;background:#2563eb;color:#ffffff !important;padding:12px 20px;border-radius:10px;font-weight:700;text-decoration:none;max-width:100%;box-sizing:border-box;">Shop Musician Accessories &amp; Studio Gifts at Music Gifts Depot &rarr;</a>
+      </div>
+    </div>
+    <h2>Complete Capo Transposition Matrix (Frets 1 to 11 Across C, G, D, A &amp; E Open Shapes)</h2>
+    <p>
+      In 12-Tone Equal Temperament (12-TET), every fret represents a chromatic pitch step of <strong>100 cents</strong> ($f_n = f_0 \times 2^{n/12}$). When you clamp a capo onto Fret $n$, treat the capo bar as the new zero-fret nut: the chord shape your left hand forms is the <strong>Capo Shape</strong>, while the actual pitch heard by the audience, bass player, or keyboardist is the <strong>Concert Pitch Chord</strong> located $n$ semitones higher along the 12-note chromatic circle (<code>C - C#/Db - D - D#/Eb - E - F - F#/Gb - G - G#/Ab - A - A#/Bb - B</code>). Use the complete CAGED master transposition table below alongside our <a href="/guitar-chords">Interactive Guitar Chord Library</a>:
+    </p>
+    <div class="lp-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Capo Fret</th>
+            <th>Pitch Shift</th>
+            <th>C Shape Sounds As</th>
+            <th>G Shape Sounds As</th>
+            <th>D Shape Sounds As</th>
+            <th>A Shape Sounds As</th>
+            <th>E Shape Sounds As</th>
+            <th>Am Shape Sounds As</th>
+            <th>Em Shape Sounds As</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Open (No Capo)</strong></td><td class="mono">+0 cents (1.000&times;)</td><td class="mono">C</td><td class="mono">G</td><td class="mono">D</td><td class="mono">A</td><td class="mono">E</td><td class="mono">Am</td><td class="mono">Em</td></tr>
+          <tr><td><strong>Fret 1</strong></td><td class="mono">+100 cents (1.059&times;)</td><td class="mono">C# / Db</td><td class="mono">G# / Ab</td><td class="mono">D# / Eb</td><td class="mono">A# / Bb</td><td class="mono">F</td><td class="mono">A#m / Bbm</td><td class="mono">Fm</td></tr>
+          <tr><td><strong>Fret 2</strong></td><td class="mono">+200 cents (1.122&times;)</td><td class="mono">D</td><td class="mono">A</td><td class="mono">E</td><td class="mono">B</td><td class="mono">F# / Gb</td><td class="mono">Bm</td><td class="mono">F#m</td></tr>
+          <tr><td><strong>Fret 3</strong></td><td class="mono">+300 cents (1.189&times;)</td><td class="mono">D# / Eb</td><td class="mono">A# / Bb</td><td class="mono">F</td><td class="mono">C</td><td class="mono">G</td><td class="mono">Cm</td><td class="mono">Gm</td></tr>
+          <tr><td><strong>Fret 4</strong></td><td class="mono">+400 cents (1.260&times;)</td><td class="mono">E</td><td class="mono">B</td><td class="mono">F# / Gb</td><td class="mono">C# / Db</td><td class="mono">G# / Ab</td><td class="mono">C#m</td><td class="mono">G#m</td></tr>
+          <tr><td><strong>Fret 5</strong></td><td class="mono">+500 cents (1.335&times;)</td><td class="mono">F</td><td class="mono">C</td><td class="mono">G</td><td class="mono">D</td><td class="mono">A</td><td class="mono">Dm</td><td class="mono">Am</td></tr>
+          <tr><td><strong>Fret 6</strong></td><td class="mono">+600 cents (1.414&times;)</td><td class="mono">F# / Gb</td><td class="mono">C# / Db</td><td class="mono">G# / Ab</td><td class="mono">D# / Eb</td><td class="mono">A# / Bb</td><td class="mono">D#m / Ebm</td><td class="mono">A#m / Bbm</td></tr>
+          <tr><td><strong>Fret 7</strong></td><td class="mono">+700 cents (1.498&times;)</td><td class="mono">G</td><td class="mono">D</td><td class="mono">A</td><td class="mono">E</td><td class="mono">B</td><td class="mono">Em</td><td class="mono">Bm</td></tr>
+          <tr><td><strong>Fret 8</strong></td><td class="mono">+800 cents (1.587&times;)</td><td class="mono">G# / Ab</td><td class="mono">D# / Eb</td><td class="mono">A# / Bb</td><td class="mono">F</td><td class="mono">C</td><td class="mono">Fm</td><td class="mono">Cm</td></tr>
+          <tr><td><strong>Fret 9</strong></td><td class="mono">+900 cents (1.682&times;)</td><td class="mono">A</td><td class="mono">E</td><td class="mono">B</td><td class="mono">F# / Gb</td><td class="mono">C# / Db</td><td class="mono">F#m</td><td class="mono">C#m</td></tr>
+          <tr><td><strong>Fret 10</strong></td><td class="mono">+1000 cents (1.782&times;)</td><td class="mono">A# / Bb</td><td class="mono">F</td><td class="mono">C</td><td class="mono">G</td><td class="mono">D</td><td class="mono">Gm</td><td class="mono">Dm</td></tr>
+          <tr><td><strong>Fret 11</strong></td><td class="mono">+1100 cents (1.888&times;)</td><td class="mono">B</td><td class="mono">F# / Gb</td><td class="mono">C# / Db</td><td class="mono">G# / Ab</td><td class="mono">D# / Eb</td><td class="mono">G#m</td><td class="mono">D#m</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>CAGED System Dual-Guitar Voicing &amp; Replacing Difficult Barre Chords</h2>
+    <p>
+      Beyond accommodating a vocalist's tessitura, a capo unlocks the acoustic power of the <strong>CAGED Fretboard System</strong>. Every major key on a 6-string guitar can be played using one of five open chord families—<strong>C, A, G, E, or D</strong>. When two acoustic guitars strum the exact same open G-D-Em-C shapes in the same octave register (`82.41 Hz to 329.63 Hz`), their fundamental frequencies and low-mid body formants (`180 Hz to 350 Hz`) overlap and mask one another in a recording mix.
+    </p>
+    <p>
+      Instead, if Guitar 1 plays open <code>G - D - Em - C</code> without a capo (Concert Key of G Major), Guitar 2 can clamp a capo at <strong>Fret 7</strong> and play open <strong>C-shape chords</strong> (`C - G - Am - F` relative to the capo). Because $C + 7 \text{ semitones} = G$, $G + 7 = D$, $Am + 7 = Em$, and $F + 7 = C$, both guitars play the exact same harmonic progression in G Major—but Guitar 2's voicings sit a perfect fifth higher (`123.47 Hz to 493.88 Hz`), creating a shimmering 12-string-style stereo tapestry without requiring a single barre chord!
+    </p>
+    <ul>
+      <li><strong>Eliminating Flat-Key Barre Chords (Eb, Bb, Ab, Fm):</strong> Keys built on flat roots normally force guitarists and ukulele players to hold exhausting full-index-finger barres across every measure. For Concert <strong>Bb Major</strong> (`Bb - F - Gm - Eb`), clamp the capo on <strong>Fret 3</strong> and play effortless open <code>G - D - Em - C</code> shapes. For Concert <strong>Eb Major</strong> (`Eb - Bb - Cm - Ab`), clamp the capo on <strong>Fret 3</strong> and play open <code>C - G - Am - F</code> shapes.</li>
+      <li><strong>Ukulele Re-Entrant GCEA Transposition (`G4 - C4 - E4 - A4`):</strong> On soprano, concert, and tenor ukuleles tuned to `G4 (392.00 Hz) - C4 (261.63 Hz) - E4 (329.63 Hz) - A4 (440.00 Hz)`, songs in D Major or E Major often involve cramped 2nd- and 4th-fret barre shapes. Clamping a lightweight ukulele capo at <strong>Fret 2</strong> transforms easy open `C - G - Am - F` ukulele fingerings (one-finger C and Am, two-finger F, three-finger G) into vibrant Concert <strong>D Major (`D - A - Bm - G`)</strong>; moving the capo to <strong>Fret 4</strong> yields Concert <strong>E Major (`E - B - C#m - A`)</strong>.</li>
+    </ul>
+
+    <h2>Acoustic Physics of Capo Intonation: Why Spring Capos Pull Strings Sharp</h2>
+    <p>
+      Many players clamp a spring-loaded trigger capo onto Fret 3 or Fret 5, strum an open chord, and immediately notice sour, out-of-tune intervals—especially on the thicker wound 6th, 5th, and 4th strings (`E2, A2, D3`) or the unwound G3 string. Three mechanical variables cause capo sharp-pull:
+    </p>
+    <ol>
+      <li><strong>Excessive Downward Elastomer Pressure:</strong> A non-adjustable steel spring capo designed for a thick vintage neck exerts far more clamping force than necessary to seat the strings against the fret crown. Any vertical deflection behind the fret wire stretches the string over the fret crown, increasing tension $\Delta T$ and raising pitch by <strong>+10 to +28 cents</strong>. Using a micrometer screw-tension or yoke-style capo allows you to apply the minimum force required for a clean note without bending the string sharp.</li>
+      <li><strong>Capo Placement Relative to the Fret Wire:</strong> Never clamp a capo in the dead center between two frets. Position the rubber pad <strong>2 mm to 4 mm directly behind the target metal fret wire</strong> (on the nut side of the fret) so the fret wire itself defines the vibrating termination point rather than the soft silicone pad, which would otherwise dampen high-frequency sustain and pull the string downward.</li>
+      <li><strong>Radial Lateral Pull During Clamping:</strong> Trigger capos hinged on one side can push the 6th or 1st string sideways across the fretboard as the jaw closes. Always squeeze the capo completely open, lower it perpendicular to the fingerboard, release slowly, and then pluck each open string into our <a href="/guitar-tuner">Online Guitar Tuner</a> or <a href="/ukulele-tuner">Online Ukulele Tuner</a> (in Chromatic mode) to fine-tune any +5 to +10 cent offset.</li>
+    </ol>
+
+    <section class="card" aria-labelledby="faq-heading">
+      <h2 id="faq-heading" style="margin-top:0;">Frequently Asked Questions: Guitar &amp; Ukulele Capo Transposition</h2>
+      <h3>How does a capo change the key of a guitar or ukulele chord progression?</h3>
+      <p>
+        Each fret on a guitar or ukulele raises the pitch of all strings by exactly one semitone (100 cents, or one half-step). Placing a capo on Fret N raises the sounding concert pitch of any open chord shape you play by N semitones. For example, playing a G Major shape with a capo on Fret 2 produces an A Major concert chord (+2 semitones).
+      </p>
+      <h3>Why does my guitar go sharp (+10 to +25 cents) right after clamping on a spring capo?</h3>
+      <p>
+        Excessive spring tension or clamping the capo directly in the center of the fret space bends the strings downward toward the fingerboard wood, increasing mechanical tension like a mini pitch bend. Place the capo just behind the metal fret wire and re-check open strings with an online guitar tuner.
+      </p>
+      <h3>How do I replace difficult F and Bb barre chords using a capo and the CAGED system?</h3>
+      <p>
+        To play in the concert key of F Major without full index-finger barre chords, clamp the capo on Fret 5 and play open C-G-Am-F shapes (which sound as F-C-Dm-Bb), or clamp the capo on Fret 3 and play open D-A-Bm-G shapes.
+      </p>
+      <h3>Can I use a guitar capo on a soprano, concert, or tenor ukulele?</h3>
+      <p>
+        While the semitone transposition math is identical on a GCEA ukulele, full-size steel-string guitar capos have a curved fretboard radius and heavy spring force that can crush soft nylon ukulele strings sharp. A flat-pad ukulele capo or adjustable micrometer tension capo keeps G4-C4-E4-A4 intonation accurate.
+      </p>
+    </section>
+
+    <section class="card" aria-labelledby="related-heading">
+      <h2 id="related-heading" style="margin-top:0;">Related PluckBench Chord Libraries, Tuners &amp; Calculators</h2>
+      <div class="tool-links-grid">
+        <a class="tool-link-card" href="/guitar-chords">
+          <strong>Interactive Guitar &amp; Ukulele Chords</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">SVG fretboard diagrams, fingerings, and Karplus-Strong acoustic chord strum preview.</div>
+        </a>
+        <a class="tool-link-card" href="/guitar-tuner">
+          <strong>Online Guitar Tuner</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Verify post-capo intonation with ±1.5 cent sustain pitch lock.</div>
+        </a>
+        <a class="tool-link-card" href="/ukulele-tuner">
+          <strong>Online Ukulele Tuner (GCEA)</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">High-G re-entrant, Low-G, and Baritone ukulele microphone calibration.</div>
+        </a>
+        <a class="tool-link-card" href="/drop-d-alternate-guitar-tuning-chart">
+          <strong>Drop D &amp; Alternate Tuning Calculator</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Exact Hz frequencies and string tension delta for Drop D, Drop C, DADGAD &amp; Open G.</div>
+        </a>
+        <a class="tool-link-card" href="/bpm-to-ms-delay-time-calculator">
+          <strong>BPM to Milliseconds Delay Calculator</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Convert tempo into dotted 1/8 delay ms, LFO Hz, and vocal reverb pre-delay.</div>
+        </a>
+        <a class="tool-link-card" href="/guzheng-21-string-modulation-chart">
+          <strong>21-String Guzheng Modulation Chart</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Pentatonic key change and Yanzhu bridge positioning guide.</div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p style="margin:0 0 8px;color:#94a3b8;">
+        &copy; 2026 PluckBench Pro &mdash; Precision Browser-Based Web Audio Instrument Tuners, Rhythm Metronome &amp; Acoustic Engineering Calculators.
+      </p>
+      <p style="margin:0;font-size:0.78rem;">
+        <a href="/">Tuner Home</a> &middot;
+        <a href="/guitar-chords">Guitar Chords</a> &middot;
+        <a href="/guitar-tuner">Guitar Tuner</a> &middot;
+        <a href="/ukulele-tuner">Ukulele Tuner</a> &middot;
+        <a href="/bass-tuner">Bass Tuner</a> &middot;
+        <a href="/violin-tuner">Violin Tuner</a> &middot;
+        <a href="/guzheng-tuner">Guzheng Tuner</a> &middot;
+        <a href="/online-metronome">Online Metronome</a> &middot;
+        <a href="/decibel-meter">Decibel Meter</a>
+      </p>
+    </div>
+  </footer>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var NOTES = ["C", "C#/Db", "D", "Eb", "E", "F", "F#/Gb", "G", "Ab", "A", "Bb", "B"];
+    var NOTE_SINGLE = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"];
+
+    var PROGRESSIONS = {
+      C: {
+        label: "C Major",
+        isMinor: false,
+        numerals: ["I (Tonic)", "V (Dominant)", "vi (Rel. Minor)", "IV (Subdominant)"],
+        chords: [
+          { rootIdx: 0, suffix: "", name: "C" },
+          { rootIdx: 7, suffix: "", name: "G" },
+          { rootIdx: 9, suffix: "m", name: "Am" },
+          { rootIdx: 5, suffix: "", name: "F" }
+        ]
+      },
+      G: {
+        label: "G Major",
+        isMinor: false,
+        numerals: ["I (Tonic)", "V (Dominant)", "vi (Rel. Minor)", "IV (Subdominant)"],
+        chords: [
+          { rootIdx: 7, suffix: "", name: "G" },
+          { rootIdx: 2, suffix: "", name: "D" },
+          { rootIdx: 4, suffix: "m", name: "Em" },
+          { rootIdx: 0, suffix: "", name: "C" }
+        ]
+      },
+      D: {
+        label: "D Major",
+        isMinor: false,
+        numerals: ["I (Tonic)", "V (Dominant)", "vi (Rel. Minor)", "IV (Subdominant)"],
+        chords: [
+          { rootIdx: 2, suffix: "", name: "D" },
+          { rootIdx: 9, suffix: "", name: "A" },
+          { rootIdx: 11, suffix: "m", name: "Bm" },
+          { rootIdx: 7, suffix: "", name: "G" }
+        ]
+      },
+      A: {
+        label: "A Major",
+        isMinor: false,
+        numerals: ["I (Tonic)", "V (Dominant)", "vi (Rel. Minor)", "IV (Subdominant)"],
+        chords: [
+          { rootIdx: 9, suffix: "", name: "A" },
+          { rootIdx: 4, suffix: "", name: "E" },
+          { rootIdx: 6, suffix: "m", name: "F#m" },
+          { rootIdx: 2, suffix: "", name: "D" }
+        ]
+      },
+      E: {
+        label: "E Major",
+        isMinor: false,
+        numerals: ["I (Tonic)", "V (Dominant)", "vi (Rel. Minor)", "IV (Subdominant)"],
+        chords: [
+          { rootIdx: 4, suffix: "", name: "E" },
+          { rootIdx: 11, suffix: "", name: "B" },
+          { rootIdx: 1, suffix: "m", name: "C#m" },
+          { rootIdx: 9, suffix: "", name: "A" }
+        ]
+      },
+      Am: {
+        label: "A Minor",
+        isMinor: true,
+        numerals: ["i (Minor Tonic)", "VI (Major Submediant)", "III (Rel. Major)", "VII (Subtonic)"],
+        chords: [
+          { rootIdx: 9, suffix: "m", name: "Am" },
+          { rootIdx: 5, suffix: "", name: "F" },
+          { rootIdx: 0, suffix: "", name: "C" },
+          { rootIdx: 7, suffix: "", name: "G" }
+        ]
+      },
+      Dm: {
+        label: "D Minor",
+        isMinor: true,
+        numerals: ["i (Minor Tonic)", "VI (Major Submediant)", "III (Rel. Major)", "VII (Subtonic)"],
+        chords: [
+          { rootIdx: 2, suffix: "m", name: "Dm" },
+          { rootIdx: 10, suffix: "", name: "Bb" },
+          { rootIdx: 5, suffix: "", name: "F" },
+          { rootIdx: 0, suffix: "", name: "C" }
+        ]
+      }
+    };
+
+    var instEl = document.getElementById("inst-select");
+    var progEl = document.getElementById("prog-select");
+    var capoEl = document.getElementById("capo-select");
+    var btnEl = document.getElementById("calc-btn");
+
+    function formatNoteOctave(midi) {
+      var n = NOTE_SINGLE[midi % 12];
+      var oct = Math.floor(midi / 12) - 1;
+      return n + oct;
+    }
+
+    function midiToHz(midi) {
+      return 440.0 * Math.pow(2, (midi - 69) / 12);
+    }
+
+    function compute() {
+      var inst = instEl.value;
+      var progKey = progEl.value;
+      var capo = parseInt(capoEl.value, 10) || 2;
+      var prog = PROGRESSIONS[progKey] || PROGRESSIONS.C;
+
+      var mult = Math.pow(2, capo / 12);
+      var transposedNames = [];
+      var rowsHtml = "";
+
+      for (var i = 0; i < prog.chords.length; i++) {
+        var ch = prog.chords[i];
+        var newIdx = (ch.rootIdx + capo) % 12;
+        var newChordName = NOTE_SINGLE[newIdx] + ch.suffix;
+        transposedNames.push(newChordName);
+
+        rowsHtml += "<tr>" +
+          "<td>" + prog.numerals[i] + "</td>" +
+          "<td class=\"mono\">" + ch.name + " Shape</td>" +
+          "<td>Fret " + capo + " (+" + (capo * 100) + " cents)</td>" +
+          "<td class=\"mono\"><strong>" + newChordName + "</strong></td>" +
+          "<td>&times; " + mult.toFixed(4) + " (+" + capo + " semitones)</td>" +
+          "</tr>";
+      }
+
+      var concertKeyRoot = NOTES[(prog.chords[0].rootIdx + capo) % 12];
+      var concertKeyLabel = concertKeyRoot + (prog.isMinor ? " Minor" : " Major") + " (+" + capo + " ST)";
+
+      var baseMidis = inst === "ukulele" ? [67, 60, 64, 69] : [40, 45, 50, 55, 59, 64];
+      var shiftedMidis = [];
+      var stringListText = [];
+      for (var j = 0; j < baseMidis.length; j++) {
+        var m = baseMidis[j] + capo;
+        shiftedMidis.push(m);
+        stringListText.push(formatNoteOctave(m) + " (" + midiToHz(m).toFixed(2) + " Hz)");
+      }
+
+      var lowestMidi = inst === "ukulele" ? shiftedMidis[1] : shiftedMidis[0];
+      var highestMidi = shiftedMidis[shiftedMidis.length - 1];
+
+      document.getElementById("res-concert-key").textContent = concertKeyLabel;
+      document.getElementById("res-concert-prog").textContent = transposedNames.join(" - ");
+      document.getElementById("res-low-hz").textContent = midiToHz(lowestMidi).toFixed(2) + " Hz (" + formatNoteOctave(lowestMidi) + ")";
+      document.getElementById("res-high-hz").textContent = midiToHz(highestMidi).toFixed(2) + " Hz (" + formatNoteOctave(highestMidi) + ")";
+      document.getElementById("res-table-body").innerHTML = rowsHtml;
+
+      var instTitle = inst === "ukulele" ? "4-String GCEA Ukulele" : "6-String Guitar";
+      document.getElementById("res-advice").innerHTML =
+        "<strong>Capo Intonation Check (" + instTitle + " at Fret " + capo + "):</strong> Your unfretted capo strings now vibrate at <code>" +
+        stringListText.join(" - ") +
+        "</code>. Verify each string on the PluckBench Chromatic Tuner after clamping the capo to eliminate spring pull-sharp.";
+    }
+
+    instEl.addEventListener("change", compute);
+    progEl.addEventListener("change", compute);
+    capoEl.addEventListener("change", compute);
+    btnEl.addEventListener("click", compute);
+    compute();
+  });
+  </script>
+</body>
+</html>

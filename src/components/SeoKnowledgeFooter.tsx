@@ -536,6 +536,38 @@ export const SeoKnowledgeFooter: React.FC<{
                 ja: 'オンライン環境騒音計・スペクトラム分析',
               },
             },
+            {
+              href: '/drop-d-alternate-guitar-tuning-chart',
+              label: {
+                zh: 'Drop D 与特殊调弦频率/琴颈张力计算器',
+                en: 'Drop D, Open G & DADGAD Tuning Frequency & Tension Calculator',
+                ja: 'ドロップD・変則チューニング周波数＆張力計算機',
+              },
+            },
+            {
+              href: '/bpm-to-ms-delay-time-calculator',
+              label: {
+                zh: 'BPM 转毫秒 (ms) 延迟时间与混响预延迟计算器',
+                en: 'BPM to Milliseconds (ms) Delay & Pre-Delay Calculator',
+                ja: 'BPM→ミリ秒 (ms) ディレイ＆プリディレイ計算機',
+              },
+            },
+            {
+              href: '/capo-transposition-chord-chart-calculator',
+              label: {
+                zh: '吉他与尤克里里变调夹 (Capo) 转调和弦计算器',
+                en: 'Guitar & Ukulele Capo Transposition Chord Calculator',
+                ja: 'ギター＆ウクレレ カポタスト移調コード計算機',
+              },
+            },
+            {
+              href: '/guzheng-21-string-modulation-chart',
+              label: {
+                zh: '21弦古筝 D/G/C/F/A 调转调雁柱移动指南与频率表',
+                en: '21-String Guzheng Modulation & Yanzhu Bridge Position Chart',
+                ja: '21弦古筝 転調＆柱（雁柱）移動周波数チャート',
+              },
+            },
           ].map((link) => (
             <a
               key={link.href}

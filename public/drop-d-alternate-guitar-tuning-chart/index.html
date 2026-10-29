@@ -1,0 +1,777 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Drop D, Open G, DADGAD &amp; Half-Step Down Guitar &amp; Bass Tuning Frequency Chart &amp; Tension Calculator (2026)</title>
+  <meta name="description" content="Calculate exact string frequencies in Hz, neck tension drop in lbs, and ideal string gauges for Drop D, Drop C, Eb Half-Step Down, Open G, DADGAD, and Drop A Bass tunings." />
+  <link rel="canonical" href="https://www.pluckbench.com/drop-d-alternate-guitar-tuning-chart" />
+  <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Drop D, Open G, DADGAD &amp; Half-Step Down Guitar &amp; Bass Tuning Frequency Chart &amp; Tension Calculator (2026)" />
+  <meta property="og:description" content="Interactive alternate guitar and bass tuning frequency chart and Mersenne's Law string tension calculator for Drop D, Drop C, Eb, DADGAD, Open G, and 5-string bass." />
+  <meta property="og:url" content="https://www.pluckbench.com/drop-d-alternate-guitar-tuning-chart" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Article",
+        "headline": "Drop D, Open G, DADGAD & Half-Step Down Guitar & Bass Tuning Frequency Chart & Tension Calculator (2026)",
+        "description": "Technical acoustics reference and interactive tension calculator for alternate guitar and bass tunings including Drop D, Drop C, Eb Standard, DADGAD, Open G, and Drop A Bass.",
+        "datePublished": "2026-10-29",
+        "dateModified": "2026-10-29",
+        "author": {
+          "@type": "Organization",
+          "name": "PluckBench Acoustic Engineering Desk",
+          "url": "https://www.pluckbench.com/"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "PluckBench",
+          "url": "https://www.pluckbench.com/"
+        },
+        "mainEntityOfPage": "https://www.pluckbench.com/drop-d-alternate-guitar-tuning-chart"
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "PluckBench Alternate Guitar & Bass Tuning Frequency & Tension Calculator",
+        "url": "https://www.pluckbench.com/drop-d-alternate-guitar-tuning-chart",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Web, iOS, Android, macOS, Windows",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What are the exact frequencies in Hz for Drop D guitar tuning?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "At standard A4 = 440.00 Hz concert pitch, Drop D guitar tuning lowers the 6th string by two semitones from E2 (82.41 Hz) to D2 (73.42 Hz), while the remaining five strings stay at A2 (110.00 Hz), D3 (146.83 Hz), G3 (196.00 Hz), B3 (246.94 Hz), and E4 (329.63 Hz)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How much string tension is lost when dropping the 6th string from E2 to D2?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "According to Mersenne's Law, string tension is proportional to the square of frequency. Lowering a string by a whole step (two semitones) multiplies its frequency by 0.8909, reducing tension on that string by 20.63%. A .046 low E string at 17.5 lbs in standard tuning drops to approximately 13.9 lbs in Drop D."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Why do 5-string bass tuners struggle to lock onto Low B0 (30.87 Hz) or Drop A0 (27.50 Hz)?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Standard laptop and smartphone microphones attenuate frequencies below 60 Hz, causing the 2nd harmonic (61.74 Hz for B0 or 55.00 Hz for A0) and 3rd harmonic to dominate the acoustic spectrum. Using a dedicated sub-bass autocorrelation tuner with an 8192-sample window reconstructs the missing fundamental from its harmonic series."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What string gauge prevents fret buzz in Drop C guitar tuning on a 25.5-inch scale?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Drop C lowers the 6th string four semitones to C2 (65.41 Hz) and the upper five strings two semitones (CGCFAD). On a 25.5-inch scale guitar, a hybrid .011-.054 or .012-.056 string set restores standard 16 to 18 lbs per-string tension and prevents fret rattle and sharp attack pitch drift."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #070a0f;
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      line-height: 1.65;
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+    a { color: #34d399; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 16px; width: 100%; }
+    .site-header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid #1e293b;
+      padding: 14px 0;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(8px);
+    }
+    .header-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+    .brand { font-weight: 800; font-size: 1.15rem; color: #f8fafc; display: flex; align-items: center; gap: 8px; }
+    .brand-badge { background: #10b981; color: #052e16; font-size: 0.7rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; }
+    .top-nav { display: flex; flex-wrap: wrap; gap: 6px; }
+    .top-nav a {
+      font-size: 0.76rem;
+      color: #cbd5e1;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 5px 10px;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+    .top-nav a:hover { border-color: #10b981; color: #34d399; }
+    .disclosure {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid #1e293b;
+      border-left: 3px solid #10b981;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin: 20px 0 16px;
+    }
+    h1 { font-size: clamp(1.5rem, 3.2vw, 2.2rem); line-height: 1.25; color: #f8fafc; margin: 12px 0 14px; font-weight: 800; }
+    h2 { font-size: clamp(1.2rem, 2.3vw, 1.55rem); color: #f8fafc; margin: 32px 0 12px; font-weight: 700; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }
+    h3 { font-size: 1.08rem; color: #e2e8f0; margin: 20px 0 8px; font-weight: 700; }
+    p, li { color: #cbd5e1; font-size: 0.96rem; }
+    .card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .calc-box {
+      background: linear-gradient(145deg, #0f172a 0%, #091526 100%);
+      border: 1px solid #10b981;
+      border-radius: 16px;
+      padding: 22px;
+      margin: 24px 0;
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.08);
+    }
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .field label { display: block; font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 6px; }
+    .field select, .field input {
+      width: 100%;
+      background: #070a0f;
+      border: 1px solid #334155;
+      color: #f8fafc;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+    }
+    .btn-calc {
+      background: #10b981;
+      color: #052e16;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      width: 100%;
+      transition: opacity 0.2s;
+    }
+    .btn-calc:hover { opacity: 0.92; }
+    .result-panel {
+      margin-top: 18px;
+      background: #070a0f;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .kpi {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 12px;
+      border-radius: 10px;
+    }
+    .kpi-label { font-size: 0.74rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em; }
+    .kpi-val { font-size: 1.2rem; font-weight: 800; color: #34d399; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin-top: 4px; }
+    .lp-table-wrap { overflow-x: auto; max-width: 100%; margin: 14px 0; border: 1px solid #1e293b; border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.86rem; min-width: 540px; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #1e293b; }
+    th { background: #090d16; color: #94a3b8; font-weight: 700; }
+    td { color: #e2e8f0; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #34d399; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin: 18px 0; }
+    .tool-links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 14px; }
+    .tool-link-card {
+      display: block;
+      background: #090d16;
+      border: 1px solid #1e293b;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: #f1f5f9;
+      text-decoration: none;
+    }
+    .tool-link-card:hover { border-color: #10b981; text-decoration: none; }
+    .site-footer {
+      border-top: 1px solid #1e293b;
+      margin-top: 48px;
+      padding: 28px 0 40px;
+      color: #64748b;
+      font-size: 0.82rem;
+    }
+    @media (max-width: 640px) {
+      .card, .calc-box { padding: 16px; }
+      table { font-size: 0.78rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="brand">
+        <span>PluckBench</span>
+        <span class="brand-badge">PRO DSP</span>
+      </a>
+      <nav class="top-nav" aria-label="Main Musical Tools Navigation">
+        <a href="/">Tuner Home</a>
+        <a href="/guitar-tuner">Guitar Tuner</a>
+        <a href="/bass-tuner">Bass Tuner</a>
+        <a href="/ukulele-tuner">Ukulele Tuner</a>
+        <a href="/violin-tuner">Violin Tuner</a>
+        <a href="/guzheng-tuner">Guzheng Tuner</a>
+        <a href="/online-metronome">Metronome</a>
+        <a href="/guitar-chords">Guitar Chords</a>
+        <a href="/decibel-meter">dB Meter</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="disclosure">
+      <strong>Reader Disclosure:</strong> PluckBench builds free browser-based Web Audio measurement and tuning utilities. Some outbound links to music instruction libraries or instrument hardware retailers are affiliate links (marked as sponsored), which may earn a small commission at no additional cost to you. All acoustic frequency formulas and string tension calculations are derived directly from physical acoustics principles.
+    </div>
+
+    <h1>Drop D, Open G, DADGAD &amp; Half-Step Down Guitar &amp; Bass Tuning Frequency Chart &amp; Tension Calculator (2026)</h1>
+    <p>
+      Retuning a 6-string guitar or 4/5-string electric bass away from E440 standard pitch changes far more than fretboard chord shapes. Every semitone you lower a wound or plain steel string reduces its mechanical pull against the truss rod according to Mersenne's Law, alters the harmonic overtone envelope seen by microphone pitch trackers, and shifts saddle intonation compensation points. Whether you are calibrating a quick 6th-string <strong>Drop D</strong> (<code>D2 = 73.42 Hz</code>) on our <a href="/guitar-tuner">Online Guitar Tuner</a> or locking in a sub-bass 5-string <strong>B0</strong> (<code>30.87 Hz</code>) or <strong>Drop A0</strong> (<code>27.50 Hz</code>) on our <a href="/bass-tuner">Online 4 &amp; 5-String Bass Tuner</a>, knowing the exact target Hertz values and string tension delta keeps your instrument stable and buzz-free.
+    </p>
+
+    <section class="calc-box" id="alt-tuning-calc" aria-labelledby="calc-heading">
+      <h2 id="calc-heading" style="margin-top:0;border-bottom:none;padding-bottom:0;">Interactive Alternate Tuning Frequency &amp; String Tension Calculator</h2>
+      <p style="font-size:0.88rem;color:#94a3b8;margin-top:4px;">
+        Select your instrument, scale length, target tuning preset, and current string gauge set to compute per-string target frequencies (Hz at A4 = 440 Hz), individual string tension in pounds (lbs), total neck load change, and recommended gauge compensation.
+      </p>
+      <div class="calc-grid">
+        <div class="field">
+          <label for="inst-select">1. Instrument Type</label>
+          <select id="inst-select">
+            <option value="guitar6" selected>6-String Guitar (Acoustic / Electric)</option>
+            <option value="bass4">4-String Bass Guitar</option>
+            <option value="bass5">5-String Bass Guitar</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="scale-select">2. Scale Length (Inches)</label>
+          <select id="scale-select">
+            <option value="25.5" selected>25.5" Fender / Strat / Tele Scale</option>
+            <option value="24.75">24.75" Gibson / Les Paul Scale</option>
+            <option value="26.5">26.5" Extended 7-String / Drop Scale</option>
+            <option value="27.0">27.0" Baritone Guitar Scale</option>
+            <option value="34.0">34.0" Standard Long-Scale Bass</option>
+            <option value="35.0">35.0" Extra-Long 5-String Bass</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="tuning-select">3. Target Alternate Tuning</label>
+          <select id="tuning-select">
+            <option value="drop_d" selected>Drop D (D2 - A2 - D3 - G3 - B3 - E4)</option>
+            <option value="eb_half">Half-Step Down Eb (Eb2 - Ab2 - Db3 - Gb3 - Bb3 - Eb4)</option>
+            <option value="d_standard">Full-Step Down D Standard (D2 - G2 - C3 - F3 - A3 - D4)</option>
+            <option value="drop_c">Drop C (C2 - G2 - C3 - F3 - A3 - D4)</option>
+            <option value="dadgad">DADGAD Celtic / Folk (D2 - A2 - D3 - G3 - A3 - D4)</option>
+            <option value="open_g">Open G Slide / Blues (D2 - G2 - D3 - G3 - B3 - D4)</option>
+            <option value="bass_drop_d">4-String Bass Drop D (D1 - A1 - D2 - G2)</option>
+            <option value="bass5_std">5-String Bass Standard Low B (B0 - E1 - A1 - D2 - G2)</option>
+            <option value="bass5_drop_a">5-String Bass Drop A (A0 - E1 - A1 - D2 - G2)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="gauge-select">4. String Gauge Pack</label>
+          <select id="gauge-select">
+            <option value="009">.009 - .042 Super Light Electric</option>
+            <option value="010" selected>.010 - .046 Regular Light Electric</option>
+            <option value="01052">.010 - .052 Skinny Top Heavy Bottom</option>
+            <option value="01154">.011 - .054 Medium / Drop Tuning Set</option>
+            <option value="01256">.012 - .056 Heavy Drop / Acoustic Light</option>
+            <option value="bass45105">.045 - .105 Standard 4-String Bass</option>
+            <option value="bass45130">.045 - .130 Standard 5-String Bass</option>
+            <option value="bass50135">.050 - .135 Heavy Drop 5-String Bass</option>
+          </select>
+        </div>
+      </div>
+      <button type="button" id="calc-btn" class="btn-calc">Calculate String Frequencies (Hz) &amp; Neck Tension Delta</button>
+
+      <div class="result-panel" id="calc-result" aria-live="polite">
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="kpi-label">Lowest Fundamental</div>
+            <div class="kpi-val" id="res-low-hz">73.42 Hz (D2)</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Total Neck Tension</div>
+            <div class="kpi-val" id="res-total-lbs">100.4 lbs</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Tension Delta vs Standard</div>
+            <div class="kpi-val" id="res-delta-pct">-3.6% (-3.7 lbs)</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Setup &amp; Gauge Verdict</div>
+            <div class="kpi-val" id="res-verdict" style="font-size:0.95rem;">Use .048-.050 6th String</div>
+          </div>
+        </div>
+        <div class="lp-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>String #</th>
+                <th>Target Note</th>
+                <th>Exact Frequency (Hz)</th>
+                <th>Gauge (in)</th>
+                <th>Est. Tension (lbs)</th>
+                <th>Pitch Shift vs Standard</th>
+              </tr>
+            </thead>
+            <tbody id="res-table-body">
+              <tr><td>6 (Low)</td><td class="mono">D2</td><td class="mono">73.42 Hz</td><td>.046"</td><td>13.9 lbs</td><td>-200 cents (-1 Whole Step)</td></tr>
+              <tr><td>5</td><td class="mono">A2</td><td class="mono">110.00 Hz</td><td>.036"</td><td>19.5 lbs</td><td>0 cents (Standard)</td></tr>
+              <tr><td>4</td><td class="mono">D3</td><td class="mono">146.83 Hz</td><td>.026"</td><td>18.4 lbs</td><td>0 cents (Standard)</td></tr>
+              <tr><td>3</td><td class="mono">G3</td><td class="mono">196.00 Hz</td><td>.017"</td><td>16.6 lbs</td><td>0 cents (Standard)</td></tr>
+              <tr><td>2</td><td class="mono">B3</td><td class="mono">246.94 Hz</td><td>.013"</td><td>15.4 lbs</td><td>0 cents (Standard)</td></tr>
+              <tr><td>1 (High)</td><td class="mono">E4</td><td class="mono">329.63 Hz</td><td>.010"</td><td>16.2 lbs</td><td>0 cents (Standard)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p id="res-advice" style="font-size:0.86rem;color:#cbd5e1;margin:10px 0 0;">
+          <strong>Luthier Setup Note:</strong> Dropping only the 6th string from E2 (82.41 Hz) to D2 (73.42 Hz) reduces 6th-string tension by 20.6%. On a .010-.046 set, swapping the .046 low string for a .050 or .052 restores balanced pick resistance without requiring a truss rod adjustment.
+        </p>
+      </div>
+    </section>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Recommended Fretboard &amp; Instrument Resources</h3>
+      <p style="font-size:0.88rem;">
+        Mastering alternate tunings requires both accurate fretboard visualization and a properly intonated instrument with stable neck geometry. Explore structured chord/scale reference books or inspect modern roasted-maple headless and fixed-bridge electric guitars engineered for rapid alternate tuning stability:
+      </p>
+      <div class="cta-row">
+        <a href="https://bbux.me/b9xCEBDSZ" rel="sponsored noopener" target="_blank" style="display:inline-block;background:#059669;color:#ffffff !important;padding:12px 20px;border-radius:10px;font-weight:700;text-decoration:none;max-width:100%;box-sizing:border-box;">Browse Guitar eBooks &amp; Alternate Tuning Fretboard Guides &rarr;</a>
+        <a href="https://bbux.me/BarMtMwIw" rel="sponsored noopener" target="_blank" style="display:inline-block;background:#2563eb;color:#ffffff !important;padding:12px 20px;border-radius:10px;font-weight:700;text-decoration:none;max-width:100%;box-sizing:border-box;">Explore EART-GUITAR Stainless-Fret Electric Guitars &rarr;</a>
+      </div>
+    </div>
+    <h2>Complete 6-String Guitar &amp; 4/5-String Bass Alternate Tuning Frequency Chart (A4 = 440.00 Hz)</h2>
+    <p>
+      Under the international 12-Tone Equal Temperament (12-TET) standard anchored at <code>A4 = 440.00 Hz</code>, every semitone shift multiplies or divides the fundamental frequency by the twelfth root of two ($2^{1/12} \approx 1.059463$). When calibrating alternate tunings by microphone on our <a href="/guitar-tuner">Online Guitar Tuner</a> or <a href="/bass-tuner">Online Bass Tuner</a>, checking both the scientific pitch notation (note name plus octave number) and the exact Hertz readout guarantees you never tune a string an octave too high or lock onto a second-harmonic overtone.
+    </p>
+    <div class="lp-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tuning Name</th>
+            <th>String Notes (Low to High)</th>
+            <th>Exact Fundamental Frequencies (Hz)</th>
+            <th>Primary Musical Applications &amp; Interval Structure</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>E Standard (6-String Guitar)</strong></td>
+            <td class="mono">E2 - A2 - D3 - G3 - B3 - E4</td>
+            <td class="mono">82.41 - 110.00 - 146.83 - 196.00 - 246.94 - 329.63</td>
+            <td>Universal concert reference; perfect 4ths with a major 3rd between G3 and B3.</td>
+          </tr>
+          <tr>
+            <td><strong>Drop D Guitar</strong></td>
+            <td class="mono">D2 - A2 - D3 - G3 - B3 - E4</td>
+            <td class="mono">73.42 - 110.00 - 146.83 - 196.00 - 246.94 - 329.63</td>
+            <td>Lowers 6th string by 200 cents; creates a low D2-A2-D3 power chord across the bottom 3 strings.</td>
+          </tr>
+          <tr>
+            <td><strong>Eb / Half-Step Down</strong></td>
+            <td class="mono">Eb2 - Ab2 - Db3 - Gb3 - Bb3 - Eb4</td>
+            <td class="mono">77.78 - 103.83 - 138.59 - 185.00 - 233.08 - 311.13</td>
+            <td>Lowers all 6 strings by 100 cents; eases vocal strain and reduces bending stiffness by ~10.9%.</td>
+          </tr>
+          <tr>
+            <td><strong>D Standard (Full-Step Down)</strong></td>
+            <td class="mono">D2 - G2 - C3 - F3 - A3 - D4</td>
+            <td class="mono">73.42 - 98.00 - 130.81 - 174.61 - 220.00 - 293.66</td>
+            <td>Lowers all 6 strings by 200 cents; preserves standard chord shapes one whole step lower.</td>
+          </tr>
+          <tr>
+            <td><strong>Drop C Guitar</strong></td>
+            <td class="mono">C2 - G2 - C3 - F3 - A3 - D4</td>
+            <td class="mono">65.41 - 98.00 - 130.81 - 174.61 - 220.00 - 293.66</td>
+            <td>D Standard with the 6th string dropped an extra whole step to C2 (65.41 Hz); requires heavier gauges.</td>
+          </tr>
+          <tr>
+            <td><strong>DADGAD (Celtic / Modal)</strong></td>
+            <td class="mono">D2 - A2 - D3 - G3 - A3 - D4</td>
+            <td class="mono">73.42 - 110.00 - 146.83 - 196.00 - 220.00 - 293.66</td>
+            <td>Dsus4 open voicing with neither a major nor minor 3rd; ideal for fingerstyle drone melodies.</td>
+          </tr>
+          <tr>
+            <td><strong>Open G (Blues / Slide)</strong></td>
+            <td class="mono">D2 - G2 - D3 - G3 - B3 - D4</td>
+            <td class="mono">73.42 - 98.00 - 146.83 - 196.00 - 246.94 - 293.66</td>
+            <td>Strumming open strings sounds a full G Major triad; root note sits on the 5th string (G2 = 98.00 Hz).</td>
+          </tr>
+          <tr>
+            <td><strong>Open D (Vestopol)</strong></td>
+            <td class="mono">D2 - A2 - D3 - F#3 - A3 - D4</td>
+            <td class="mono">73.42 - 110.00 - 146.83 - 185.00 - 220.00 - 293.66</td>
+            <td>Rich resonant D Major triad across all six strings; lowers 6th, 3rd, 2nd, and 1st strings.</td>
+          </tr>
+          <tr>
+            <td><strong>4-String Bass Standard</strong></td>
+            <td class="mono">E1 - A1 - D2 - G2</td>
+            <td class="mono">41.20 - 55.00 - 73.42 - 98.00</td>
+            <td>Exactly one octave (1200 cents) below the lowest four strings of a standard 6-string guitar.</td>
+          </tr>
+          <tr>
+            <td><strong>4-String Bass Drop D</strong></td>
+            <td class="mono">D1 - A1 - D2 - G2</td>
+            <td class="mono">36.71 - 55.00 - 73.42 - 98.00</td>
+            <td>Extends 4-string bass range down to D1 (36.71 Hz) to match guitarists playing in Drop D.</td>
+          </tr>
+          <tr>
+            <td><strong>5-String Bass Standard (Low B)</strong></td>
+            <td class="mono">B0 - E1 - A1 - D2 - G2</td>
+            <td class="mono">30.87 - 41.20 - 55.00 - 73.42 - 98.00</td>
+            <td>Adds a sub-bass 5th string tuned a perfect 4th below E1 at B0 = 30.87 Hz.</td>
+          </tr>
+          <tr>
+            <td><strong>5-String Bass Drop A</strong></td>
+            <td class="mono">A0 - E1 - A1 - D2 - G2</td>
+            <td class="mono">27.50 - 41.20 - 55.00 - 73.42 - 98.00</td>
+            <td>Matches the lowest key on an 88-key grand piano (A0 = 27.50 Hz); benefits from a 35" scale length.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>The Physics of String Tension: Mersenne's Law &amp; Scale Length Compensation</h2>
+    <p>
+      Why does a guitar that plays effortlessly in E Standard suddenly buzz against the 3rd and 5th frets or drift sharp when picked hard in Drop C? The answer lies in <strong>Mersenne's Law of vibrating strings</strong>, which governs the mathematical relationship between fundamental pitch ($f$), vibrating scale length ($L$), linear mass density ($\mu$, determined by core wire plus wrap wire diameter), and mechanical string tension ($T$):
+    </p>
+    <div class="card" style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:0.9rem;color:#34d399;text-align:center;">
+      T (lbs) = [ 4 &times; L<sup>2</sup> &times; f<sup>2</sup> &times; &mu; ] / g &nbsp;&nbsp;|&nbsp;&nbsp; Tension Ratio = (f<sub>target</sub> / f<sub>standard</sub>)<sup>2</sup>
+    </div>
+    <p>
+      Because tension scales with the <strong>square of the frequency ($f^2$)</strong> and the <strong>square of the scale length ($L^2$)</strong>, small changes in pitch or neck geometry create substantial mechanical shifts:
+    </p>
+    <ul>
+      <li><strong>1 Semitone Down (-100 cents, e.g., E2 to Eb2):</strong> Frequency multiplies by $2^{-1/12} = 0.94387$. Squaring that factor yields $0.8909$, meaning string tension drops by <strong>10.91%</strong>.</li>
+      <li><strong>2 Semitones Down (-200 cents, e.g., E2 to D2 in Drop D):</strong> Frequency multiplies by $2^{-2/12} = 0.89090$. Squaring yields $0.7937$, meaning string tension drops by <strong>20.63%</strong>. A <code>.046</code> low E string that exerts <code>17.5 lbs</code> at E2 (82.41 Hz) drops to <code>13.9 lbs</code> at D2 (73.42 Hz).</li>
+      <li><strong>4 Semitones Down (-400 cents, e.g., E2 to C2 in Drop C):</strong> Frequency multiplies by $2^{-4/12} = 0.79370$. Squaring yields $0.6300$, meaning tension plunges by <strong>37.00%</strong>! Left on a standard <code>.046</code> string, tension falls to nearly <code>11.0 lbs</code>, causing wide elliptical string excursion, severe fret rattle, and a +35 to +50 cent sharp pitch transient every time you strike the string with a plectrum.</li>
+      <li><strong>Fender 25.5" vs Gibson 24.75" Scale Length:</strong> At the exact same pitch and string gauge, a 25.5" scale length requires $(25.5 / 24.75)^2 = 1.0615$, or <strong>6.15% more tension</strong> than a 24.75" scale. Conversely, shorter-scale 24.75" guitars lose tension faster in drop tunings and typically require stepping up one full string gauge size (for example, moving from <code>.010-.046</code> to <code>.011-.052</code> for D Standard or Drop C).</li>
+    </ul>
+
+    <h2>Sub-Bass Harmonic Reconstruction: Why B0 (30.87 Hz) &amp; E1 (41.20 Hz) Confuse Standard Tuners</h2>
+    <p>
+      Bassists who use 4-string Drop D (<code>D1 = 36.71 Hz</code>) or 5-string low B (<code>B0 = 30.87 Hz</code>) and Drop A (<code>A0 = 27.50 Hz</code>) frequently encounter a frustrating phenomenon on generic clip-on or browser tuners: the display rapidly flickers between octave notes or fails to register at all. Three acoustic and digital signal processing constraints explain why:
+    </p>
+    <h3>1. Acoustic Microphone Roll-Off Below 60 Hz</h3>
+    <p>
+      Small MEMS microphones built into smartphones, tablets, and laptops feature a physical diaphragm high-pass roll-off below <code>60 Hz to 80 Hz</code> to prevent wind plosives from saturating the preamplifier. When you pluck a 5-string bass low B0 string at <code>30.87 Hz</code>, the microphone captures far more acoustic energy at the <strong>2nd harmonic (<code>B1 = 61.74 Hz</code>)</strong>, the <strong>3rd harmonic (<code>F#2 = 92.60 Hz</code>)</strong>, and the <strong>4th harmonic (<code>B2 = 123.47 Hz</code>)</strong> than at the 30.87 Hz fundamental itself.
+    </p>
+    <h3>2. FFT Window Duration vs Autocorrelation</h3>
+    <p>
+      At a 48,000 Hz audio sampling rate, a single wave cycle of <code>B0 (30.87 Hz)</code> spans <code>32.39 milliseconds</code> (1,555 audio samples). A basic tuner using a short 1024-sample or 2048-sample buffer cannot even fit two complete periods of the waveform, making sub-cent pitch detection mathematically impossible. Our dedicated <a href="/bass-tuner">Online 4 &amp; 5-String Bass Tuner</a> expands the McLeod Pitch Method (MPM) autocorrelation window and tracks the common greatest divisor across the harmonic series ($f_0, 2f_0, 3f_0, 4f_0$), locking onto 30.87 Hz with ±1.5 cent stability.
+    </p>
+    <h3>3. Pickup Selection &amp; 12th-Fret Natural Harmonic Workflow</h3>
+    <p>
+      When tuning an electric bass or baritone guitar in low drop tunings, switch to the <strong>neck pickup</strong>, roll the tone capacitor down by 30% to attenuate high-order metallic fret clank, and pluck cleanly with the fleshy pad of your thumb halfway between the neck pickup and the end of the fingerboard. If you are tuning unplugged in a noisy rehearsal space, lightly touch the string directly above the <strong>12th fret wire</strong> to chime the 2nd harmonic (which sounds exactly one octave higher at <code>61.74 Hz</code> for B0 or <code>73.42 Hz</code> for D1) while locking the target string in the tuner interface.
+    </p>
+
+    <h2>Step-by-Step Intonation &amp; Truss Rod Checklist When Switching Tunings</h2>
+    <p>
+      Before committing a guitar or bass to a permanent alternate tuning such as D Standard, Drop C, DADGAD, or Open G, work through this four-step calibration sequence:
+    </p>
+    <ol>
+      <li><strong>Select Compensated String Gauges First:</strong> Use the interactive calculator above to keep individual wound string tension between <code>15.5 lbs and 19.5 lbs</code> on guitar (or <code>36 lbs to 44 lbs</code> on bass). If you only drop the 6th string (Drop D or Drop C), choose a hybrid "Skinny Top / Heavy Bottom" set so the treble strings remain supple for solo bends while the 6th string stays taut.</li>
+      <li><strong>Tune in Multi-Pass Cycles:</strong> On floating tremolo bridges (Stratocaster 2-point tremolos or Floyd Rose locking systems) and even fixed-bridge acoustics, lowering the 6th string reduces total neck pull, causing strings 1 through 5 to go slightly <strong>sharp</strong> (+5 to +15 cents). Always perform two full tuning passes from 6th string to 1st string on the <a href="/guitar-tuner">Online Guitar Tuner</a>.</li>
+      <li><strong>Check Neck Relief After 24 Hours:</strong> If total neck tension changes by more than <code>±8 lbs</code>, allow the maple or mahogany neck 12 to 24 hours to settle. Hold down the 6th string at the 1st fret and the body-joint fret (15th or 17th fret) and measure clearance at the 8th fret (`0.008" to 0.010"` or `0.20mm to 0.25mm` is ideal). Tighten the truss rod clockwise in 1/8-turn increments if the neck has excessive bow, or loosen counter-clockwise if lowering tension caused a flat back-bow.</li>
+      <li><strong>Recalibrate Bridge Saddle Intonation at the 12th Fret:</strong> Thicker string gauges and lower tensions shift the acoustic stiffness point at the bridge. Compare the 12th-fret natural harmonic against the fretted 12th-fret note using sustain pitch lock: if the fretted note reads sharp relative to the harmonic, move the bridge saddle <strong>away from the neck</strong> (lengthening the string); if flat, move the saddle toward the neck.</li>
+    </ol>
+
+    <section class="card" aria-labelledby="faq-heading">
+      <h2 id="faq-heading" style="margin-top:0;">Frequently Asked Questions: Alternate Guitar &amp; Bass Tunings</h2>
+      <h3>What are the exact frequencies in Hz for Drop D guitar tuning?</h3>
+      <p>
+        At standard A4 = 440.00 Hz concert pitch, Drop D guitar tuning lowers the 6th string by two semitones from E2 (82.41 Hz) to D2 (73.42 Hz), while the remaining five strings stay at A2 (110.00 Hz), D3 (146.83 Hz), G3 (196.00 Hz), B3 (246.94 Hz), and E4 (329.63 Hz).
+      </p>
+      <h3>How much string tension is lost when dropping the 6th string from E2 to D2?</h3>
+      <p>
+        According to Mersenne's Law, string tension is proportional to the square of frequency. Lowering a string by a whole step (two semitones) multiplies its frequency by 0.8909, reducing tension on that string by 20.63%. A .046 low E string at 17.5 lbs in standard tuning drops to approximately 13.9 lbs in Drop D.
+      </p>
+      <h3>Why do 5-string bass tuners struggle to lock onto Low B0 (30.87 Hz) or Drop A0 (27.50 Hz)?</h3>
+      <p>
+        Standard laptop and smartphone microphones attenuate frequencies below 60 Hz, causing the 2nd harmonic (61.74 Hz for B0 or 55.00 Hz for A0) and 3rd harmonic to dominate the acoustic spectrum. Using a dedicated sub-bass autocorrelation tuner with an 8192-sample window reconstructs the missing fundamental from its harmonic series.
+      </p>
+      <h3>What string gauge prevents fret buzz in Drop C guitar tuning on a 25.5-inch scale?</h3>
+      <p>
+        Drop C lowers the 6th string four semitones to C2 (65.41 Hz) and the upper five strings two semitones (CGCFAD). On a 25.5-inch scale guitar, a hybrid .011-.054 or .012-.056 string set restores standard 16 to 18 lbs per-string tension and prevents fret rattle and sharp attack pitch drift.
+      </p>
+    </section>
+
+    <section class="card" aria-labelledby="related-heading">
+      <h2 id="related-heading" style="margin-top:0;">Related PluckBench Tuners &amp; Acoustic Calculators</h2>
+      <div class="tool-links-grid">
+        <a class="tool-link-card" href="/guitar-tuner">
+          <strong>Online Guitar Tuner</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Calibrate Standard E, Drop D &amp; Half-Step Down via microphone with sustain lock.</div>
+        </a>
+        <a class="tool-link-card" href="/bass-tuner">
+          <strong>Online 4 &amp; 5-String Bass Tuner</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Sub-bass harmonic lock for B0 (30.87 Hz), E1 (41.20 Hz) &amp; Drop D1.</div>
+        </a>
+        <a class="tool-link-card" href="/guitar-chords">
+          <strong>Interactive Guitar Chord Library</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Inspect SVG fretboard fingerings and listen to Karplus-Strong acoustic strums.</div>
+        </a>
+        <a class="tool-link-card" href="/capo-transposition-chord-chart-calculator">
+          <strong>Capo Transposition &amp; Key Calculator</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Convert open chord progressions across Frets 1–11 with concert pitch frequencies.</div>
+        </a>
+        <a class="tool-link-card" href="/bpm-to-ms-delay-time-calculator">
+          <strong>BPM to Milliseconds Delay Calculator</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Calculate dotted 1/8 delay times, reverb pre-delay, and LFO Hz from tempo.</div>
+        </a>
+        <a class="tool-link-card" href="/guzheng-21-string-modulation-chart">
+          <strong>21-String Guzheng Modulation Chart</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Yanzhu bridge shift guide for D, G, C, F &amp; A pentatonic scales.</div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p style="margin:0 0 8px;color:#94a3b8;">
+        &copy; 2026 PluckBench Pro &mdash; Precision Browser-Based Web Audio Instrument Tuners, Rhythm Metronome &amp; Acoustic Engineering Calculators.
+      </p>
+      <p style="margin:0;font-size:0.78rem;">
+        <a href="/">Tuner Home</a> &middot;
+        <a href="/guitar-tuner">Guitar Tuner</a> &middot;
+        <a href="/bass-tuner">Bass Tuner</a> &middot;
+        <a href="/ukulele-tuner">Ukulele Tuner</a> &middot;
+        <a href="/violin-tuner">Violin Tuner</a> &middot;
+        <a href="/guzheng-tuner">Guzheng Tuner</a> &middot;
+        <a href="/online-metronome">Online Metronome</a> &middot;
+        <a href="/guitar-chords">Guitar Chords</a> &middot;
+        <a href="/decibel-meter">Decibel Meter</a>
+      </p>
+    </div>
+  </footer>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var TUNINGS = {
+      drop_d: {
+        name: "Drop D Guitar",
+        type: "guitar6",
+        notes: ["D2", "A2", "D3", "G3", "B3", "E4"],
+        freqs: [73.42, 110.00, 146.83, 196.00, 246.94, 329.63],
+        stdFreqs: [82.41, 110.00, 146.83, 196.00, 246.94, 329.63],
+        shifts: ["-200 cents (-1 Whole Step)", "0 cents (Standard)", "0 cents (Standard)", "0 cents (Standard)", "0 cents (Standard)", "0 cents (Standard)"],
+        rec: "Use .010-.052 or swap 6th string to .048-.050",
+        advice: "Dropping only the 6th string from E2 (82.41 Hz) to D2 (73.42 Hz) reduces 6th-string tension by 20.6%. Swapping the low string to a .050 or .052 restores balanced pick attack without requiring a truss rod tweak."
+      },
+      eb_half: {
+        name: "Half-Step Down (Eb Standard)",
+        type: "guitar6",
+        notes: ["Eb2", "Ab2", "Db3", "Gb3", "Bb3", "Eb4"],
+        freqs: [77.78, 103.83, 138.59, 185.00, 233.08, 311.13],
+        stdFreqs: [82.41, 110.00, 146.83, 196.00, 246.94, 329.63],
+        shifts: ["-100 cents (-1 Semitone)", "-100 cents (-1 Semitone)", "-100 cents (-1 Semitone)", "-100 cents (-1 Semitone)", "-100 cents (-1 Semitone)", "-100 cents (-1 Semitone)"],
+        rec: "Use .010-.046 (25.5\") or .011-.048 (24.75\")",
+        advice: "Lowering all six strings by 100 cents reduces total neck tension by 10.91%. On a 24.75\" Gibson scale, stepping up one gauge size (.010 to .011) keeps string feel identical to E Standard."
+      },
+      d_standard: {
+        name: "D Standard (Full-Step Down)",
+        type: "guitar6",
+        notes: ["D2", "G2", "C3", "F3", "A3", "D4"],
+        freqs: [73.42, 98.00, 130.81, 174.61, 220.00, 293.66],
+        stdFreqs: [82.41, 110.00, 146.83, 196.00, 246.94, 329.63],
+        shifts: ["-200 cents (-1 Whole Step)", "-200 cents (-1 Whole Step)", "-200 cents (-1 Whole Step)", "-200 cents (-1 Whole Step)", "-200 cents (-1 Whole Step)", "-200 cents (-1 Whole Step)"],
+        rec: "Use .011-.054 Medium Set + Slight Truss Loosen",
+        advice: "Lowering all six strings by a full whole step reduces neck pull by 20.63%. Upgrade to .011-.054 strings and check 8th-fret neck relief if you hear low-fret buzz."
+      },
+      drop_c: {
+        name: "Drop C Guitar (CGCFAD)",
+        type: "guitar6",
+        notes: ["C2", "G2", "C3", "F3", "A3", "D4"],
+        freqs: [65.41, 98.00, 130.81, 174.61, 220.00, 293.66],
+        stdFreqs: [82.41, 110.00, 146.83, 196.00, 246.94, 329.63],
+        shifts: ["-400 cents (-2 Whole Steps)", "-200 cents (-1 Whole Step)", "-200 cents (-1 Whole Step)", "-200 cents (-1 Whole Step)", "-200 cents (-1 Whole Step)", "-200 cents (-1 Whole Step)"],
+        rec: "Use .011-.056 or .012-.056 Heavy Drop Set",
+        advice: "C2 (65.41 Hz) loses 37.0% of its standard E2 tension! A minimum .054 to .056 wound 6th string and a 12th-fret bridge saddle intonation check are essential to prevent sharp pick-attack drift."
+      },
+      dadgad: {
+        name: "DADGAD Celtic Modal",
+        type: "guitar6",
+        notes: ["D2", "A2", "D3", "G3", "A3", "D4"],
+        freqs: [73.42, 110.00, 146.83, 196.00, 220.00, 293.66],
+        stdFreqs: [82.41, 110.00, 146.83, 196.00, 246.94, 329.63],
+        shifts: ["-200 cents", "0 cents", "0 cents", "0 cents", "-200 cents", "-200 cents"],
+        rec: "Use .012-.054 Acoustic Light / Medium Hybrid",
+        advice: "DADGAD lowers the 6th, 2nd, and 1st strings by a whole step while keeping A2, D3, and G3 at standard pitch. Total neck tension drops by roughly 10.2%, making it safe for most acoustic guitars without a full setup."
+      },
+      open_g: {
+        name: "Open G Slide / Blues (DGDGBD)",
+        type: "guitar6",
+        notes: ["D2", "G2", "D3", "G3", "B3", "D4"],
+        freqs: [73.42, 98.00, 146.83, 196.00, 246.94, 293.66],
+        stdFreqs: [82.41, 110.00, 146.83, 196.00, 246.94, 329.63],
+        shifts: ["-200 cents", "-200 cents", "0 cents", "0 cents", "0 cents", "-200 cents"],
+        rec: "Use .011-.052 Set (Ideal for Bottleneck Slide)",
+        advice: "Open G lowers strings 6, 5, and 1 by a whole step to form a resonant G Major triad across all six strings. Slightly higher string tension (.011+) prevents a glass or brass slide from clanking against the frets."
+      },
+      bass_drop_d: {
+        name: "4-String Bass Drop D",
+        type: "bass4",
+        notes: ["D1", "A1", "D2", "G2"],
+        freqs: [36.71, 55.00, 73.42, 98.00],
+        stdFreqs: [41.20, 55.00, 73.42, 98.00],
+        shifts: ["-200 cents (-1 Whole Step)", "0 cents (Standard)", "0 cents (Standard)", "0 cents (Standard)"],
+        rec: "Use .045-.105 or .050-.110 Bass Set",
+        advice: "Dropping the 4th bass string from E1 (41.20 Hz) to D1 (36.71 Hz) lowers its tension by 20.6%. A .105 or .110 low string keeps fundamental definition tight on a 34-inch scale."
+      },
+      bass5_std: {
+        name: "5-String Bass Standard (Low B0)",
+        type: "bass5",
+        notes: ["B0", "E1", "A1", "D2", "G2"],
+        freqs: [30.87, 41.20, 55.00, 73.42, 98.00],
+        stdFreqs: [30.87, 41.20, 55.00, 73.42, 98.00],
+        shifts: ["0 cents (Low B0)", "0 cents (Standard)", "0 cents (Standard)", "0 cents (Standard)", "0 cents (Standard)"],
+        rec: "Use .045-.130 Taper-Core 5-String Set",
+        advice: "At 30.87 Hz, the 5th string B0 requires a .125 to .130 gauge and benefits from a 35-inch scale length (+5.97% tension over 34-inch). Use the neck pickup on PluckBench Bass Tuner for instant harmonic lock."
+      },
+      bass5_drop_a: {
+        name: "5-String Bass Drop A (A0)",
+        type: "bass5",
+        notes: ["A0", "E1", "A1", "D2", "G2"],
+        freqs: [27.50, 41.20, 55.00, 73.42, 98.00],
+        stdFreqs: [30.87, 41.20, 55.00, 73.42, 98.00],
+        shifts: ["-200 cents (Sub-Bass A0)", "0 cents (Standard)", "0 cents (Standard)", "0 cents (Standard)", "0 cents (Standard)"],
+        rec: "Use .135-.145 Low 5th String + 35\" Scale",
+        advice: "A0 (27.50 Hz) matches the lowest note on a concert grand piano. Pluck the 12th-fret harmonic (A1 = 55.00 Hz) if calibrating through a small mobile microphone."
+      }
+    };
+
+    var GAUGES = {
+      "009": { gauges: [".042\"", ".032\"", ".024\"", ".016\"", ".011\"", ".009\""], baseLbs: [14.8, 15.8, 15.7, 14.7, 11.0, 13.1] },
+      "010": { gauges: [".046\"", ".036\"", ".026\"", ".017\"", ".013\"", ".010\""], baseLbs: [17.5, 19.5, 18.4, 16.6, 15.4, 16.2] },
+      "01052": { gauges: [".052\"", ".042\"", ".030\"", ".017\"", ".013\"", ".010\""], baseLbs: [22.1, 25.8, 23.9, 16.6, 15.4, 16.2] },
+      "01154": { gauges: [".054\"", ".042\"", ".032\"", ".018\"", ".014\"", ".011\""], baseLbs: [23.8, 25.8, 26.8, 18.6, 17.8, 19.6] },
+      "01256": { gauges: [".056\"", ".044\"", ".034\"", ".022w\"", ".016\"", ".012\""], baseLbs: [25.6, 28.2, 29.8, 23.2, 23.3, 23.3] },
+      "bass45105": { gauges: [".105\"", ".085\"", ".065\"", ".045\""], baseLbs: [40.2, 44.0, 46.8, 42.9] },
+      "bass45130": { gauges: [".130\"", ".105\"", ".085\"", ".065\"", ".045\""], baseLbs: [36.5, 40.2, 44.0, 46.8, 42.9] },
+      "bass50135": { gauges: [".135\"", ".110\"", ".090\"", ".070\"", ".050\""], baseLbs: [39.6, 44.1, 49.3, 54.1, 52.8] }
+    };
+
+    var instEl = document.getElementById("inst-select");
+    var scaleEl = document.getElementById("scale-select");
+    var tuningEl = document.getElementById("tuning-select");
+    var gaugeEl = document.getElementById("gauge-select");
+    var btnEl = document.getElementById("calc-btn");
+
+    function compute() {
+      var tKey = tuningEl.value;
+      var t = TUNINGS[tKey] || TUNINGS.drop_d;
+      var scale = parseFloat(scaleEl.value) || 25.5;
+      var gKey = gaugeEl.value;
+      var gPack = GAUGES[gKey] || GAUGES["010"];
+
+      var nStrings = t.freqs.length;
+      if (nStrings === 4 && gPack.gauges.length !== 4) {
+        gPack = GAUGES.bass45105;
+      } else if (nStrings === 5 && gPack.gauges.length !== 5) {
+        gPack = GAUGES.bass45130;
+      } else if (nStrings === 6 && gPack.gauges.length !== 6) {
+        gPack = GAUGES["010"];
+      }
+
+      var refScale = nStrings === 6 ? 25.5 : 34.0;
+      var scaleFactor = (scale / refScale) * (scale / refScale);
+
+      var totalLbs = 0;
+      var stdTotalLbs = 0;
+      var rowsHtml = "";
+
+      for (var i = 0; i < nStrings; i++) {
+        var strNum = nStrings - i;
+        var freq = t.freqs[i];
+        var stdFreq = t.stdFreqs[i];
+        var pitchFactor = (freq / stdFreq) * (freq / stdFreq);
+        var stdStrLbs = gPack.baseLbs[i] * scaleFactor;
+        var strLbs = stdStrLbs * pitchFactor;
+        totalLbs += strLbs;
+        stdTotalLbs += stdStrLbs;
+
+        var label = i === 0 ? strNum + " (Low)" : (i === nStrings - 1 ? strNum + " (High)" : String(strNum));
+        rowsHtml += "<tr>" +
+          "<td>" + label + "</td>" +
+          "<td class=\"mono\">" + t.notes[i] + "</td>" +
+          "<td class=\"mono\">" + freq.toFixed(2) + " Hz</td>" +
+          "<td>" + gPack.gauges[i] + "</td>" +
+          "<td>" + strLbs.toFixed(1) + " lbs</td>" +
+          "<td>" + t.shifts[i] + "</td>" +
+          "</tr>";
+      }
+
+      var deltaLbs = totalLbs - stdTotalLbs;
+      var deltaPct = stdTotalLbs > 0 ? (deltaLbs / stdTotalLbs) * 100 : 0;
+      var sign = deltaLbs >= 0 ? "+" : "";
+
+      document.getElementById("res-low-hz").textContent = t.freqs[0].toFixed(2) + " Hz (" + t.notes[0] + ")";
+      document.getElementById("res-total-lbs").textContent = totalLbs.toFixed(1) + " lbs (" + scale.toFixed(2) + "\")";
+      document.getElementById("res-delta-pct").textContent = sign + deltaPct.toFixed(1) + "% (" + sign + deltaLbs.toFixed(1) + " lbs)";
+      document.getElementById("res-verdict").textContent = t.rec;
+      document.getElementById("res-table-body").innerHTML = rowsHtml;
+      document.getElementById("res-advice").innerHTML = "<strong>Luthier Setup Note (" + t.name + " at " + scale + "\" scale):</strong> " + t.advice;
+    }
+
+    instEl.addEventListener("change", function () {
+      if (instEl.value === "bass4") {
+        scaleEl.value = "34.0";
+        tuningEl.value = "bass_drop_d";
+        gaugeEl.value = "bass45105";
+      } else if (instEl.value === "bass5") {
+        scaleEl.value = "35.0";
+        tuningEl.value = "bass5_std";
+        gaugeEl.value = "bass45130";
+      } else {
+        scaleEl.value = "25.5";
+        tuningEl.value = "drop_d";
+        gaugeEl.value = "010";
+      }
+      compute();
+    });
+    scaleEl.addEventListener("change", compute);
+    tuningEl.addEventListener("change", compute);
+    gaugeEl.addEventListener("change", compute);
+    btnEl.addEventListener("click", compute);
+    compute();
+  });
+  </script>
+</body>
+</html>

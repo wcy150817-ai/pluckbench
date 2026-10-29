@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>BPM to Milliseconds (ms) Delay Time, Pre-Delay &amp; LFO Hz Calculator for Music Producers &amp; Metronome Practice (2026)</title>
+  <meta name="description" content="Convert any tempo (30-260 BPM) into exact milliseconds (ms) and LFO Hz for 1/4, 1/8, 1/16, dotted, and triplet delay subdivisions plus vocal reverb pre-delay." />
+  <link rel="canonical" href="https://www.pluckbench.com/bpm-to-ms-delay-time-calculator" />
+  <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="BPM to Milliseconds (ms) Delay Time, Pre-Delay &amp; LFO Hz Calculator for Music Producers &amp; Metronome Practice (2026)" />
+  <meta property="og:description" content="Calculate exact delay times in milliseconds (ms), LFO rates in Hz, dotted eighth guitar delay settings, and reverb pre-delay times from song BPM." />
+  <meta property="og:url" content="https://www.pluckbench.com/bpm-to-ms-delay-time-calculator" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Article",
+        "headline": "BPM to Milliseconds (ms) Delay Time, Pre-Delay & LFO Hz Calculator for Music Producers & Metronome Practice (2026)",
+        "description": "Studio audio engineering guide and interactive calculator converting Beats Per Minute (BPM) into milliseconds (ms) and Hertz (Hz) for delay pedals, DAW plugins, LFO modulation, and reverb pre-delay.",
+        "datePublished": "2026-10-29",
+        "dateModified": "2026-10-29",
+        "author": {
+          "@type": "Organization",
+          "name": "PluckBench Acoustic Engineering Desk",
+          "url": "https://www.pluckbench.com/"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "PluckBench",
+          "url": "https://www.pluckbench.com/"
+        },
+        "mainEntityOfPage": "https://www.pluckbench.com/bpm-to-ms-delay-time-calculator"
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "PluckBench BPM to Milliseconds (ms) Delay Time & LFO Hz Calculator",
+        "url": "https://www.pluckbench.com/bpm-to-ms-delay-time-calculator",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Web, iOS, Android, macOS, Windows",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is the mathematical formula to convert BPM to milliseconds (ms)?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Because one minute contains 60,000 milliseconds, the duration of one quarter-note beat in milliseconds is 60,000 divided by the tempo in BPM. For example, at 120 BPM, one quarter note equals 60,000 / 120 = 500 milliseconds, an eighth note equals 250 ms, and a sixteenth note equals 125 ms."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do you calculate dotted eighth-note delay time in milliseconds?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "A dot adds half of a note's value to itself (multiplying duration by 1.5). Since a standard eighth note is half of a quarter note (30,000 / BPM), a dotted eighth note equals 45,000 / BPM, or 0.75 times the quarter-note duration. At 120 BPM, a dotted eighth delay is 375 milliseconds."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do you convert BPM to Hertz (Hz) for synthesizer LFOs, phasers, and tremolo pedals?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Frequency in Hertz (cycles per second) is the reciprocal of period in seconds: Hz = 1,000 / ms, or equivalently BPM / 60 for a quarter-note cycle. At 120 BPM, a quarter-note LFO runs at 2.00 Hz, an eighth-note LFO runs at 4.00 Hz, and a dotted-eighth LFO runs at 2.67 Hz."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is the ideal reverb pre-delay time in milliseconds for vocals and snare drums?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Audio engineers typically sync reverb pre-delay to a 1/64 note (3,750 / BPM) or 1/32 note (7,500 / BPM) so the dry vocal consonant or snare transient clears the Haas fusion window (15 to 35 ms) before the wet reverb tail blooms in rhythm with the track."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #070a0f;
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      line-height: 1.65;
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+    a { color: #34d399; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 16px; width: 100%; }
+    .site-header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid #1e293b;
+      padding: 14px 0;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(8px);
+    }
+    .header-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+    .brand { font-weight: 800; font-size: 1.15rem; color: #f8fafc; display: flex; align-items: center; gap: 8px; }
+    .brand-badge { background: #10b981; color: #052e16; font-size: 0.7rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; }
+    .top-nav { display: flex; flex-wrap: wrap; gap: 6px; }
+    .top-nav a {
+      font-size: 0.76rem;
+      color: #cbd5e1;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 5px 10px;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+    .top-nav a:hover { border-color: #10b981; color: #34d399; }
+    .disclosure {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid #1e293b;
+      border-left: 3px solid #10b981;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin: 20px 0 16px;
+    }
+    h1 { font-size: clamp(1.5rem, 3.2vw, 2.2rem); line-height: 1.25; color: #f8fafc; margin: 12px 0 14px; font-weight: 800; }
+    h2 { font-size: clamp(1.2rem, 2.3vw, 1.55rem); color: #f8fafc; margin: 32px 0 12px; font-weight: 700; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }
+    h3 { font-size: 1.08rem; color: #e2e8f0; margin: 20px 0 8px; font-weight: 700; }
+    p, li { color: #cbd5e1; font-size: 0.96rem; }
+    .card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .calc-box {
+      background: linear-gradient(145deg, #0f172a 0%, #091526 100%);
+      border: 1px solid #10b981;
+      border-radius: 16px;
+      padding: 22px;
+      margin: 24px 0;
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.08);
+    }
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .field label { display: block; font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 6px; }
+    .field select, .field input {
+      width: 100%;
+      background: #070a0f;
+      border: 1px solid #334155;
+      color: #f8fafc;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+    }
+    .btn-calc {
+      background: #10b981;
+      color: #052e16;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      width: 100%;
+      transition: opacity 0.2s;
+    }
+    .btn-calc:hover { opacity: 0.92; }
+    .result-panel {
+      margin-top: 18px;
+      background: #070a0f;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .kpi {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 12px;
+      border-radius: 10px;
+    }
+    .kpi-label { font-size: 0.74rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em; }
+    .kpi-val { font-size: 1.2rem; font-weight: 800; color: #34d399; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin-top: 4px; }
+    .lp-table-wrap { overflow-x: auto; max-width: 100%; margin: 14px 0; border: 1px solid #1e293b; border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.86rem; min-width: 540px; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #1e293b; }
+    th { background: #090d16; color: #94a3b8; font-weight: 700; }
+    td { color: #e2e8f0; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #34d399; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin: 18px 0; }
+    .tool-links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 14px; }
+    .tool-link-card {
+      display: block;
+      background: #090d16;
+      border: 1px solid #1e293b;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: #f1f5f9;
+      text-decoration: none;
+    }
+    .tool-link-card:hover { border-color: #10b981; text-decoration: none; }
+    .site-footer {
+      border-top: 1px solid #1e293b;
+      margin-top: 48px;
+      padding: 28px 0 40px;
+      color: #64748b;
+      font-size: 0.82rem;
+    }
+    @media (max-width: 640px) {
+      .card, .calc-box { padding: 16px; }
+      table { font-size: 0.78rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="brand">
+        <span>PluckBench</span>
+        <span class="brand-badge">PRO DSP</span>
+      </a>
+      <nav class="top-nav" aria-label="Main Musical Tools Navigation">
+        <a href="/">Tuner Home</a>
+        <a href="/online-metronome">Metronome</a>
+        <a href="/guitar-tuner">Guitar Tuner</a>
+        <a href="/bass-tuner">Bass Tuner</a>
+        <a href="/ukulele-tuner">Ukulele Tuner</a>
+        <a href="/violin-tuner">Violin Tuner</a>
+        <a href="/guzheng-tuner">Guzheng Tuner</a>
+        <a href="/guitar-chords">Guitar Chords</a>
+        <a href="/decibel-meter">dB Meter</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="disclosure">
+      <strong>Reader Disclosure:</strong> PluckBench builds free browser-based Web Audio measurement and rhythm practice utilities. Some outbound links to music production marketplaces or instructional guides are affiliate links (marked as sponsored), which may earn a small commission at no additional cost to you. All timing equations and DSP formulas are derived from standard audio engineering mathematics.
+    </div>
+
+    <h1>BPM to Milliseconds (ms) Delay Time, Pre-Delay &amp; LFO Hz Calculator for Music Producers &amp; Metronome Practice (2026)</h1>
+    <p>
+      Whether you are dialing in an analog bucket-brigade guitar delay pedal that lacks a MIDI sync input, setting vocal plate reverb pre-delay and decay times in a DAW mix session, or practicing sixteenth-note subdivision accuracy against our zero-drift <a href="/online-metronome">Online Metronome</a>, converting <strong>Beats Per Minute (BPM)</strong> into exact <strong>milliseconds (ms)</strong> and <strong>Hertz (Hz)</strong> is foundational studio math. When delay repeats, compressor release envelopes, and modulation LFOs align mathematically with the song's tempo grid, echoes sit transparently inside the groove instead of cluttering the stereo field.
+    </p>
+
+    <section class="calc-box" id="bpm-ms-calc" aria-labelledby="calc-heading">
+      <h2 id="calc-heading" style="margin-top:0;border-bottom:none;padding-bottom:0;">Interactive BPM to Milliseconds (ms), LFO Hz &amp; Reverb Pre-Delay Calculator</h2>
+      <p style="font-size:0.88rem;color:#94a3b8;margin-top:4px;">
+        Enter your track tempo (`30` to `260 BPM`), select your meter (`4/4`, `3/4`, `6/8`, `5/4`), and choose your acoustic reverb environment (`Vocal Plate`, `Small Room`, `Concert Hall`) to calculate straight, dotted ($\times 1.5$), and triplet ($\times 0.6667$) note durations in milliseconds and LFO cycles per second (Hz).
+      </p>
+      <div class="calc-grid">
+        <div class="field">
+          <label for="bpm-input">1. Tempo (BPM: 30 – 260)</label>
+          <input type="number" id="bpm-input" min="30" max="260" step="0.5" value="120" />
+        </div>
+        <div class="field">
+          <label for="meter-select">2. Time Signature (Meter)</label>
+          <select id="meter-select">
+            <option value="4" selected>4/4 Common Time (4 Quarter Beats/Bar)</option>
+            <option value="3">3/4 Waltz / Triple Meter (3 Quarter Beats/Bar)</option>
+            <option value="3_68">6/8 Compound Duple (6 Eighth Beats = 3 Quarters/Bar)</option>
+            <option value="5">5/4 Asymmetric Meter (5 Quarter Beats/Bar)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="reverb-select">3. Reverb Acoustic Preset</label>
+          <select id="reverb-select">
+            <option value="plate" selected>Vocal Plate (1/64 Pre-Delay + 1 Bar Decay)</option>
+            <option value="room">Small Studio Room (1/128 Pre-Delay + 1/2 Bar Decay)</option>
+            <option value="hall">Concert Hall (1/32 Pre-Delay + 2 Bar Decay)</option>
+          </select>
+        </div>
+      </div>
+      <button type="button" id="calc-btn" class="btn-calc">Calculate Delay Times (ms), LFO Frequencies (Hz) &amp; Reverb Tail</button>
+
+      <div class="result-panel" id="calc-result" aria-live="polite">
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="kpi-label">1/4 Note Delay (ms)</div>
+            <div class="kpi-val" id="res-quarter-ms">500.0 ms</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Dotted 1/8 Delay (U2 / Edge)</div>
+            <div class="kpi-val" id="res-dot8-ms">375.0 ms</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Reverb Pre-Delay</div>
+            <div class="kpi-val" id="res-predelay">31.3 ms (1/64)</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Synced Reverb Decay Tail</div>
+            <div class="kpi-val" id="res-reverb-decay">1968.8 ms</div>
+          </div>
+        </div>
+        <div class="lp-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Note Subdivision</th>
+                <th>Straight Time (ms)</th>
+                <th>Dotted (&times;1.5) (ms)</th>
+                <th>Triplet (&times;2/3) (ms)</th>
+                <th>Straight LFO Rate (Hz)</th>
+                <th>Dotted LFO Rate (Hz)</th>
+              </tr>
+            </thead>
+            <tbody id="res-table-body">
+              <tr><td><strong>1/1 Bar (Measure)</strong></td><td class="mono">2000.0 ms</td><td class="mono">3000.0 ms</td><td class="mono">1333.3 ms</td><td class="mono">0.500 Hz</td><td class="mono">0.333 Hz</td></tr>
+              <tr><td><strong>1/2 Note (Half)</strong></td><td class="mono">1000.0 ms</td><td class="mono">1500.0 ms</td><td class="mono">666.7 ms</td><td class="mono">1.000 Hz</td><td class="mono">0.667 Hz</td></tr>
+              <tr><td><strong>1/4 Note (Quarter Beat)</strong></td><td class="mono">500.0 ms</td><td class="mono">750.0 ms</td><td class="mono">333.3 ms</td><td class="mono">2.000 Hz</td><td class="mono">1.333 Hz</td></tr>
+              <tr><td><strong>1/8 Note (Eighth)</strong></td><td class="mono">250.0 ms</td><td class="mono">375.0 ms</td><td class="mono">166.7 ms</td><td class="mono">4.000 Hz</td><td class="mono">2.667 Hz</td></tr>
+              <tr><td><strong>1/16 Note (Sixteenth)</strong></td><td class="mono">125.0 ms</td><td class="mono">187.5 ms</td><td class="mono">83.3 ms</td><td class="mono">8.000 Hz</td><td class="mono">5.333 Hz</td></tr>
+              <tr><td><strong>1/32 Note (Slapback / Pre-Delay)</strong></td><td class="mono">62.5 ms</td><td class="mono">93.8 ms</td><td class="mono">41.7 ms</td><td class="mono">16.000 Hz</td><td class="mono">10.667 Hz</td></tr>
+              <tr><td><strong>1/64 Note (Tight Pre-Delay)</strong></td><td class="mono">31.3 ms</td><td class="mono">46.9 ms</td><td class="mono">20.8 ms</td><td class="mono">32.000 Hz</td><td class="mono">21.333 Hz</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p id="res-advice" style="font-size:0.86rem;color:#cbd5e1;margin:10px 0 0;">
+          <strong>Studio Mix Recommendation (120 BPM, 4/4 Vocal Plate):</strong> Set your vocal plate Pre-Delay to <strong>31.3 ms</strong> (1/64 note) so initial consonant transients cut through the mix cleanly, and set the Decay Time (RT60) to <strong>1968.8 ms</strong> so the 1-bar reverb tail resolves exactly on the next downbeat.
+        </p>
+      </div>
+    </section>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Studio Mixing, Mastering &amp; Rhythm Practice Resources</h3>
+      <p style="font-size:0.88rem;">
+        Need a seasoned mix or mastering engineer to polish your vocal spatial chains and stem bus compression, or structured rhythm guitar method books to lock in your sixteenth-note timing? Explore these vetted resources:
+      </p>
+      <div class="cta-row">
+        <a href="https://bbux.me/TSd22z52" rel="sponsored noopener" target="_blank" style="display:inline-block;background:#059669;color:#ffffff !important;padding:12px 20px;border-radius:10px;font-weight:700;text-decoration:none;max-width:100%;box-sizing:border-box;">Hire Vetted Audio Mixing &amp; Production Pros on Fiverr &rarr;</a>
+        <a href="https://bbux.me/b9xCEBDSZ" rel="sponsored noopener" target="_blank" style="display:inline-block;background:#2563eb;color:#ffffff !important;padding:12px 20px;border-radius:10px;font-weight:700;text-decoration:none;max-width:100%;box-sizing:border-box;">Download Guitar Rhythm, Timing &amp; Pedalboard eBooks &rarr;</a>
+      </div>
+    </div>
+    <h2>The Mathematical Formulas Behind BPM, Milliseconds (ms), and LFO Hertz (Hz)</h2>
+    <p>
+      Every digital audio workstation (Pro Tools, Logic Pro, Ableton Live, Reaper, Cubase), hardware tape echo, and analog pedalboard operates on the inverse relationship between musical tempo (measured in quarter-note Beats Per Minute) and physical time (measured in milliseconds or cycles per second). Because one standard clock minute contains 60 seconds—or <strong>60,000 milliseconds</strong>—you can derive any note value directly from a single fundamental equation:
+    </p>
+    <div class="card" style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:0.9rem;color:#34d399;text-align:center;">
+      T<sub>1/4 Note</sub> (ms) = 60,000 / BPM &nbsp;&nbsp;|&nbsp;&nbsp; f<sub>LFO</sub> (Hz) = 1,000 / T (ms) = BPM / 60
+    </div>
+    <p>
+      Once the quarter-note pulse ($T_{1/4}$) is known, every standard binary subdivision, dotted rhythmic value, and triplet grouping follows exact mathematical multipliers:
+    </p>
+    <ul>
+      <li><strong>Straight Binary Subdivisions:</strong> Each successive note division halves the millisecond duration and doubles the LFO frequency. A half note ($1/2$) is $2 \times T_{1/4}$ ($120,000 / \text{BPM}$); an eighth note ($1/8$) is $0.5 \times T_{1/4}$ ($30,000 / \text{BPM}$); a sixteenth note ($1/16$) is $0.25 \times T_{1/4}$ ($15,000 / \text{BPM}$); a thirty-second note ($1/32$) is $0.125 \times T_{1/4}$ ($7,500 / \text{BPM}$); and a sixty-fourth note ($1/64$) is $0.0625 \times T_{1/4}$ ($3,750 / \text{BPM}$).</li>
+      <li><strong>Dotted Subdivisions ($\times 1.5$ Multiplier):</strong> In musical notation, placing a dot after a note lengthens its duration by 50% ($1 + 0.5 = 1.5\times$). Consequently, a <strong>Dotted Quarter Note</strong> equals $1.5 \times (60,000 / \text{BPM}) = 90,000 / \text{BPM}$, and the famous <strong>Dotted Eighth Note</strong> equals $1.5 \times (30,000 / \text{BPM}) = 45,000 / \text{BPM}$ (exactly three-quarters of a quarter beat, or three sixteenth notes).</li>
+      <li><strong>Triplet Subdivisions ($\times 2/3 \approx 0.6667$ Multiplier):</strong> A triplet fits three evenly spaced notes into the time span normally occupied by two notes of the same denomination. Therefore, multiply the straight note duration by $2/3$ ($0.6667$). An <strong>Eighth-Note Triplet</strong> divides a single quarter beat into three equal parts: $(30,000 / \text{BPM}) \times (2/3) = 20,000 / \text{BPM}$.</li>
+    </ul>
+
+    <h2>Master Studio Reference Table: BPM to Delay Milliseconds (70 BPM to 180 BPM)</h2>
+    <p>
+      When working quickly on stage or adjusting an analog delay knob between songs, consult the reference chart below or tap the song tempo directly on our <a href="/online-metronome">Online Metronome with Tap BPM</a>:
+    </p>
+    <div class="lp-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tempo (BPM)</th>
+            <th>1/4 Note (ms)</th>
+            <th>Dotted 1/8 (ms)</th>
+            <th>1/8 Note (ms)</th>
+            <th>1/8 Triplet (ms)</th>
+            <th>1/16 Note (ms)</th>
+            <th>1/64 Pre-Delay (ms)</th>
+            <th>1/4 LFO (Hz)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>70 BPM</strong></td><td class="mono">857.1 ms</td><td class="mono">642.9 ms</td><td class="mono">428.6 ms</td><td class="mono">285.7 ms</td><td class="mono">214.3 ms</td><td class="mono">53.6 ms</td><td class="mono">1.17 Hz</td></tr>
+          <tr><td><strong>80 BPM</strong></td><td class="mono">750.0 ms</td><td class="mono">562.5 ms</td><td class="mono">375.0 ms</td><td class="mono">250.0 ms</td><td class="mono">187.5 ms</td><td class="mono">46.9 ms</td><td class="mono">1.33 Hz</td></tr>
+          <tr><td><strong>90 BPM</strong></td><td class="mono">666.7 ms</td><td class="mono">500.0 ms</td><td class="mono">333.3 ms</td><td class="mono">222.2 ms</td><td class="mono">166.7 ms</td><td class="mono">41.7 ms</td><td class="mono">1.50 Hz</td></tr>
+          <tr><td><strong>100 BPM</strong></td><td class="mono">600.0 ms</td><td class="mono">450.0 ms</td><td class="mono">300.0 ms</td><td class="mono">200.0 ms</td><td class="mono">150.0 ms</td><td class="mono">37.5 ms</td><td class="mono">1.67 Hz</td></tr>
+          <tr><td><strong>110 BPM</strong></td><td class="mono">545.5 ms</td><td class="mono">409.1 ms</td><td class="mono">272.7 ms</td><td class="mono">181.8 ms</td><td class="mono">136.4 ms</td><td class="mono">34.1 ms</td><td class="mono">1.83 Hz</td></tr>
+          <tr><td><strong>120 BPM</strong></td><td class="mono">500.0 ms</td><td class="mono">375.0 ms</td><td class="mono">250.0 ms</td><td class="mono">166.7 ms</td><td class="mono">125.0 ms</td><td class="mono">31.3 ms</td><td class="mono">2.00 Hz</td></tr>
+          <tr><td><strong>128 BPM</strong></td><td class="mono">468.8 ms</td><td class="mono">351.6 ms</td><td class="mono">234.4 ms</td><td class="mono">156.3 ms</td><td class="mono">117.2 ms</td><td class="mono">29.3 ms</td><td class="mono">2.13 Hz</td></tr>
+          <tr><td><strong>140 BPM</strong></td><td class="mono">428.6 ms</td><td class="mono">321.4 ms</td><td class="mono">214.3 ms</td><td class="mono">142.9 ms</td><td class="mono">107.1 ms</td><td class="mono">26.8 ms</td><td class="mono">2.33 Hz</td></tr>
+          <tr><td><strong>150 BPM</strong></td><td class="mono">400.0 ms</td><td class="mono">300.0 ms</td><td class="mono">200.0 ms</td><td class="mono">133.3 ms</td><td class="mono">100.0 ms</td><td class="mono">25.0 ms</td><td class="mono">2.50 Hz</td></tr>
+          <tr><td><strong>160 BPM</strong></td><td class="mono">375.0 ms</td><td class="mono">281.3 ms</td><td class="mono">187.5 ms</td><td class="mono">125.0 ms</td><td class="mono">93.8 ms</td><td class="mono">23.4 ms</td><td class="mono">2.67 Hz</td></tr>
+          <tr><td><strong>174 BPM</strong></td><td class="mono">344.8 ms</td><td class="mono">258.6 ms</td><td class="mono">172.4 ms</td><td class="mono">114.9 ms</td><td class="mono">86.2 ms</td><td class="mono">21.6 ms</td><td class="mono">2.90 Hz</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>How Audio Engineers &amp; Guitarists Use Tempo-Synced Milliseconds in Production</h2>
+    <h3>1. The Dotted Eighth-Note Guitar Delay Trick (3/16 Subdivision)</h3>
+    <p>
+      Popularized by guitarists such as The Edge (U2), David Gilmour (Pink Floyd), and modern worship and post-rock players, setting a delay pedal to a <strong>dotted eighth note</strong> ($45,000 / \text{BPM}$) while picking steady eighth notes creates an interlocking rhythmic cascade. Because the first delay repeat arrives exactly 3/16ths of a beat after the dry pick attack, every echo lands squarely on the off-beat sixteenth notes between your picked strokes, generating a fast sixteenth-note rhythmic ostinato from a simple eighth-note right-hand pattern.
+    </p>
+    <h3>2. Haas Effect Doubling vs Rockabilly Slapback Echo (15 ms to 140 ms)</h3>
+    <p>
+      Psychoacoustic research by Helmut Haas demonstrates that when a delayed copy of a sound reaches the human ear within <strong>1 ms to 35 ms</strong> of the direct sound, the brain fuses the two arrivals into a single perceived image rather than hearing a discrete echo—a phenomenon known as the <strong>Haas Fusion Window</strong>. Panning a dry electric guitar left and a <code>18 ms to 28 ms</code> (roughly a 1/64 or 1/128 note) delayed duplicate right creates wide stereo thickening. Once delay time crosses <strong>65 ms to 135 ms</strong> (typically a 1/32 or 1/16 note at medium tempos), the ear perceives a distinct, tight single bounce—the classic 1950s Sun Studio slapback echo used on lead vocals and country telecaster solos.
+    </p>
+    <h3>3. Syncing Reverb Pre-Delay &amp; RT60 Decay Tail to the Bar Grid</h3>
+    <p>
+      Placing a lush plate or hall reverb directly on a lead vocal with <code>0 ms</code> of pre-delay smears the initial consonants ("t", "k", "p", "s") and pushes the singer backward into the virtual room. By setting <strong>Reverb Pre-Delay</strong> to a tempo-synced <code>1/64 note</code> (for example, <code>31.3 ms</code> at 120 BPM) or <code>1/32 note</code> (<code>62.5 ms</code> at 120 BPM), you open a brief acoustic gap between the dry vocal front and the onset of early reflections. To prevent the reverb tail from muddying the next chord change, subtract your Pre-Delay from a full 1-bar or 1/2-bar duration:
+    </p>
+    <div class="card" style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:0.88rem;color:#34d399;text-align:center;">
+      RT60 Decay Time (ms) = T<sub>1 Bar</sub> (ms) &minus; Pre-Delay (ms)
+    </div>
+    <h3>4. Bus Compressor Release Times &amp; LFO Modulation Rates</h3>
+    <p>
+      On a stereo mix bus or drum parallel compressor (such as an SSL G-Bus or VCA compressor), setting the <strong>Release Time</strong> to a <code>1/16 note</code> or <code>1/8 note</code> millisecond value allows gain reduction to recover completely just before the next kick or snare hit arrives, making the compressor "breathe" in rhythm with the song. Similarly, when programming analog chorus, phaser, rotary speaker, or tremolo units calibrated in Hertz, setting the LFO rate to the <code>1/4 note</code> ($\text{BPM} / 60$) or <code>Dotted 1/8 note</code> ($\text{BPM} / 45$) ensures every filter sweep peaks in lockstep with the bar lines.
+    </p>
+
+    <section class="card" aria-labelledby="faq-heading">
+      <h2 id="faq-heading" style="margin-top:0;">Frequently Asked Questions: BPM to Milliseconds &amp; LFO Hz</h2>
+      <h3>What is the mathematical formula to convert BPM to milliseconds (ms)?</h3>
+      <p>
+        Because one minute contains 60,000 milliseconds, the duration of one quarter-note beat in milliseconds is 60,000 divided by the tempo in BPM. For example, at 120 BPM, one quarter note equals 60,000 / 120 = 500 milliseconds, an eighth note equals 250 ms, and a sixteenth note equals 125 ms.
+      </p>
+      <h3>How do you calculate dotted eighth-note delay time in milliseconds?</h3>
+      <p>
+        A dot adds half of a note's value to itself (multiplying duration by 1.5). Since a standard eighth note is half of a quarter note (30,000 / BPM), a dotted eighth note equals 45,000 / BPM, or 0.75 times the quarter-note duration. At 120 BPM, a dotted eighth delay is 375 milliseconds.
+      </p>
+      <h3>How do you convert BPM to Hertz (Hz) for synthesizer LFOs, phasers, and tremolo pedals?</h3>
+      <p>
+        Frequency in Hertz (cycles per second) is the reciprocal of period in seconds: Hz = 1,000 / ms, or equivalently BPM / 60 for a quarter-note cycle. At 120 BPM, a quarter-note LFO runs at 2.00 Hz, an eighth-note LFO runs at 4.00 Hz, and a dotted-eighth LFO runs at 2.67 Hz.
+      </p>
+      <h3>What is the ideal reverb pre-delay time in milliseconds for vocals and snare drums?</h3>
+      <p>
+        Audio engineers typically sync reverb pre-delay to a 1/64 note (3,750 / BPM) or 1/32 note (7,500 / BPM) so the dry vocal consonant or snare transient clears the Haas fusion window (15 to 35 ms) before the wet reverb tail blooms in rhythm with the track.
+      </p>
+    </section>
+
+    <section class="card" aria-labelledby="related-heading">
+      <h2 id="related-heading" style="margin-top:0;">Related PluckBench Metronome, Tuners &amp; Calculators</h2>
+      <div class="tool-links-grid">
+        <a class="tool-link-card" href="/online-metronome">
+          <strong>Zero-Drift Online Metronome</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Hardware Web Audio tempo clock (30–260 BPM) with Tap BPM and downbeat accents.</div>
+        </a>
+        <a class="tool-link-card" href="/">
+          <strong>PluckBench Chromatic Tuner Home</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Multi-instrument sustain pitch lock tuner and reference tone generator.</div>
+        </a>
+        <a class="tool-link-card" href="/drop-d-alternate-guitar-tuning-chart">
+          <strong>Drop D &amp; Alternate Tuning Calculator</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Exact Hz frequencies and Mersenne's Law string tension for Drop D, Drop C &amp; Bass.</div>
+        </a>
+        <a class="tool-link-card" href="/capo-transposition-chord-chart-calculator">
+          <strong>Capo Transposition &amp; Key Calculator</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Transpose guitar and ukulele chord progressions across Frets 1–11.</div>
+        </a>
+        <a class="tool-link-card" href="/guzheng-21-string-modulation-chart">
+          <strong>21-String Guzheng Modulation Chart</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Yanzhu movable bridge shifts for D, G, C, F, and A pentatonic keys.</div>
+        </a>
+        <a class="tool-link-card" href="/decibel-meter">
+          <strong>Online Acoustic Decibel Meter</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Real-time studio monitor SPL and rehearsal room noise floor analyzer.</div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p style="margin:0 0 8px;color:#94a3b8;">
+        &copy; 2026 PluckBench Pro &mdash; Precision Browser-Based Web Audio Instrument Tuners, Rhythm Metronome &amp; Acoustic Engineering Calculators.
+      </p>
+      <p style="margin:0;font-size:0.78rem;">
+        <a href="/">Tuner Home</a> &middot;
+        <a href="/online-metronome">Online Metronome</a> &middot;
+        <a href="/guitar-tuner">Guitar Tuner</a> &middot;
+        <a href="/bass-tuner">Bass Tuner</a> &middot;
+        <a href="/ukulele-tuner">Ukulele Tuner</a> &middot;
+        <a href="/violin-tuner">Violin Tuner</a> &middot;
+        <a href="/guzheng-tuner">Guzheng Tuner</a> &middot;
+        <a href="/guitar-chords">Guitar Chords</a> &middot;
+        <a href="/decibel-meter">Decibel Meter</a>
+      </p>
+    </div>
+  </footer>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var bpmInput = document.getElementById("bpm-input");
+    var meterSelect = document.getElementById("meter-select");
+    var reverbSelect = document.getElementById("reverb-select");
+    var calcBtn = document.getElementById("calc-btn");
+
+    function compute() {
+      var bpm = parseFloat(bpmInput.value);
+      if (isNaN(bpm) || bpm < 20) bpm = 20;
+      if (bpm > 300) bpm = 300;
+
+      var meterRaw = meterSelect.value;
+      var beatsPerBar = 4;
+      if (meterRaw === "3" || meterRaw === "3_68") beatsPerBar = 3;
+      if (meterRaw === "5") beatsPerBar = 5;
+
+      var qMs = 60000 / bpm;
+      var barMs = qMs * beatsPerBar;
+
+      var subdivisions = [
+        { label: "1/1 Bar (Measure)", mult: beatsPerBar },
+        { label: "1/2 Note (Half)", mult: 2.0 },
+        { label: "1/4 Note (Quarter Beat)", mult: 1.0 },
+        { label: "1/8 Note (Eighth)", mult: 0.5 },
+        { label: "1/16 Note (Sixteenth)", mult: 0.25 },
+        { label: "1/32 Note (Slapback / Pre-Delay)", mult: 0.125 },
+        { label: "1/64 Note (Tight Pre-Delay)", mult: 0.0625 }
+      ];
+
+      var rowsHtml = "";
+      for (var i = 0; i < subdivisions.length; i++) {
+        var sub = subdivisions[i];
+        var straightMs = qMs * sub.mult;
+        var dottedMs = straightMs * 1.5;
+        var tripletMs = straightMs * (2 / 3);
+        var straightHz = 1000 / straightMs;
+        var dottedHz = 1000 / dottedMs;
+
+        rowsHtml += "<tr>" +
+          "<td><strong>" + sub.label + "</strong></td>" +
+          "<td class=\"mono\">" + straightMs.toFixed(1) + " ms</td>" +
+          "<td class=\"mono\">" + dottedMs.toFixed(1) + " ms</td>" +
+          "<td class=\"mono\">" + tripletMs.toFixed(1) + " ms</td>" +
+          "<td class=\"mono\">" + straightHz.toFixed(3) + " Hz</td>" +
+          "<td class=\"mono\">" + dottedHz.toFixed(3) + " Hz</td>" +
+          "</tr>";
+      }
+
+      var dot8Ms = qMs * 0.75;
+      var revType = reverbSelect.value;
+      var preDelayMs = qMs * 0.0625;
+      var preLabel = "1/64";
+      var totalReverbWindow = barMs;
+      var revName = "Vocal Plate";
+
+      if (revType === "room") {
+        preDelayMs = qMs * 0.03125;
+        preLabel = "1/128";
+        totalReverbWindow = barMs * 0.5;
+        revName = "Small Studio Room";
+      } else if (revType === "hall") {
+        preDelayMs = qMs * 0.125;
+        preLabel = "1/32";
+        totalReverbWindow = barMs * 2.0;
+        revName = "Concert Hall";
+      }
+
+      var decayTailMs = Math.max(100, totalReverbWindow - preDelayMs);
+
+      document.getElementById("res-quarter-ms").textContent = qMs.toFixed(1) + " ms";
+      document.getElementById("res-dot8-ms").textContent = dot8Ms.toFixed(1) + " ms";
+      document.getElementById("res-predelay").textContent = preDelayMs.toFixed(1) + " ms (" + preLabel + ")";
+      document.getElementById("res-reverb-decay").textContent = decayTailMs.toFixed(1) + " ms";
+      document.getElementById("res-table-body").innerHTML = rowsHtml;
+      document.getElementById("res-advice").innerHTML =
+        "<strong>Studio Mix Recommendation (" + bpm + " BPM, " + revName + "):</strong> Set your reverb Pre-Delay to <strong>" +
+        preDelayMs.toFixed(1) + " ms</strong> (" + preLabel + " note) so dry transients remain clear, and set the Decay Time (RT60) to <strong>" +
+        decayTailMs.toFixed(1) + " ms</strong> so the reverb tail resolves cleanly on the bar line.";
+    }
+
+    bpmInput.addEventListener("input", compute);
+    meterSelect.addEventListener("change", compute);
+    reverbSelect.addEventListener("change", compute);
+    calcBtn.addEventListener("click", compute);
+    compute();
+  });
+  </script>
+</body>
+</html>

@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>21-String Guzheng Tuning &amp; Modulation Guide: D Major, G Major, C Major &amp; F Major Yanzhu Bridge Position Chart (2026)</title>
+  <meta name="description" content="Interactive 21-string Guzheng tuning and modulation calculator. Convert between D Major, G Major, C Major, F Major, and A Major with Yanzhu bridge shifts and Hz." />
+  <link rel="canonical" href="https://www.pluckbench.com/guzheng-21-string-modulation-chart" />
+  <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="21-String Guzheng Tuning &amp; Modulation Guide: D Major, G Major, C Major &amp; F Major Yanzhu Bridge Position Chart (2026)" />
+  <meta property="og:description" content="Complete 21-string Guzheng frequency chart (Strings 1 to 21), Jianpu pentatonic notation, and movable Yanzhu bridge modulation instructions." />
+  <meta property="og:url" content="https://www.pluckbench.com/guzheng-21-string-modulation-chart" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Article",
+        "headline": "21-String Guzheng Tuning & Modulation Guide: D Major, G Major, C Major & F Major Yanzhu Bridge Position Chart (2026)",
+        "description": "Comprehensive acoustic tuning reference and interactive Yanzhu bridge modulation calculator for the 21-string Chinese Guzheng across D, G, C, F, and A pentatonic scales.",
+        "datePublished": "2026-10-29",
+        "dateModified": "2026-10-29",
+        "author": {
+          "@type": "Organization",
+          "name": "PluckBench Acoustic Engineering Desk",
+          "url": "https://www.pluckbench.com/"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "PluckBench",
+          "url": "https://www.pluckbench.com/"
+        },
+        "mainEntityOfPage": "https://www.pluckbench.com/guzheng-21-string-modulation-chart"
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "PluckBench 21-String Guzheng Yanzhu Bridge Modulation & Frequency Calculator",
+        "url": "https://www.pluckbench.com/guzheng-21-string-modulation-chart",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Web, iOS, Android, macOS, Windows",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How do you modulate a 21-string Guzheng from D Major (1=D) to G Major (1=G)?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "To modulate from standard D Major (D-E-F#-A-B) to G Major (G-A-B-D-E), raise the four F# strings (Strings #4, #9, #14, and #19) by one semitone (+100 cents) to G natural (G5, G4, G3, and G2) by sliding their movable Yanzhu bridges 1.5 cm to 2.5 cm to the right toward the YueShan fixed bridge."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which direction do you move Guzheng Yanzhu bridges to raise or lower pitch?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The playing zone of a Guzheng lies between the right fixed bridge (YueShan) and the movable Yanzhu bridges. Sliding a Yanzhu bridge to the RIGHT shortens the vibrating string length and raises pitch (+100 cents per semitone); sliding a Yanzhu bridge to the LEFT lengthens the vibrating string and lowers pitch (-100 cents)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which strings are green on a standard 21-string Guzheng?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Strings #4, #9, #14, and #19 (or #3, #8, #13, and #18 depending on manufacturer string numbering) are colored green as visual orientation markers. In standard D Major tuning, Strings #3, #8, #13, and #18 sound the note A (Sol / 5 in Jianpu: A5, A4=440Hz, A3, A2), while Strings #4, #9, #14, and #19 sound F# (Mi / 3)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Should a Guzheng be tuned to A4 = 440 Hz or A4 = 442 Hz?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "For solo repertoire and western pop crossover, A4 = 440 Hz is standard. When performing in a Chinese traditional orchestra (MinYueTuan) alongside Erhu, Pipa, Dizi, and Sheng, orchestras typically calibrate to A4 = 442 Hz (+7.85 cents) for brighter hall projection."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #070a0f;
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      line-height: 1.65;
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+    a { color: #34d399; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 16px; width: 100%; }
+    .site-header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid #1e293b;
+      padding: 14px 0;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(8px);
+    }
+    .header-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+    .brand { font-weight: 800; font-size: 1.15rem; color: #f8fafc; display: flex; align-items: center; gap: 8px; }
+    .brand-badge { background: #10b981; color: #052e16; font-size: 0.7rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; }
+    .top-nav { display: flex; flex-wrap: wrap; gap: 6px; }
+    .top-nav a {
+      font-size: 0.76rem;
+      color: #cbd5e1;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 5px 10px;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+    .top-nav a:hover { border-color: #10b981; color: #34d399; }
+    .disclosure {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid #1e293b;
+      border-left: 3px solid #10b981;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin: 20px 0 16px;
+    }
+    h1 { font-size: clamp(1.5rem, 3.2vw, 2.2rem); line-height: 1.25; color: #f8fafc; margin: 12px 0 14px; font-weight: 800; }
+    h2 { font-size: clamp(1.2rem, 2.3vw, 1.55rem); color: #f8fafc; margin: 32px 0 12px; font-weight: 700; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }
+    h3 { font-size: 1.08rem; color: #e2e8f0; margin: 20px 0 8px; font-weight: 700; }
+    p, li { color: #cbd5e1; font-size: 0.96rem; }
+    .card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .calc-box {
+      background: linear-gradient(145deg, #0f172a 0%, #091526 100%);
+      border: 1px solid #10b981;
+      border-radius: 16px;
+      padding: 22px;
+      margin: 24px 0;
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.08);
+    }
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .field label { display: block; font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 6px; }
+    .field select, .field input {
+      width: 100%;
+      background: #070a0f;
+      border: 1px solid #334155;
+      color: #f8fafc;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+    }
+    .btn-calc {
+      background: #10b981;
+      color: #052e16;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      width: 100%;
+      transition: opacity 0.2s;
+    }
+    .btn-calc:hover { opacity: 0.92; }
+    .result-panel {
+      margin-top: 18px;
+      background: #070a0f;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .kpi {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 12px;
+      border-radius: 10px;
+    }
+    .kpi-label { font-size: 0.74rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em; }
+    .kpi-val { font-size: 1.15rem; font-weight: 800; color: #34d399; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin-top: 4px; }
+    .lp-table-wrap { overflow-x: auto; max-width: 100%; margin: 14px 0; border: 1px solid #1e293b; border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.84rem; min-width: 560px; }
+    th, td { padding: 9px 11px; text-align: left; border-bottom: 1px solid #1e293b; }
+    th { background: #090d16; color: #94a3b8; font-weight: 700; }
+    td { color: #e2e8f0; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #34d399; }
+    .green-row { background: rgba(16, 185, 129, 0.12); }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin: 18px 0; }
+    .tool-links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 14px; }
+    .tool-link-card {
+      display: block;
+      background: #090d16;
+      border: 1px solid #1e293b;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: #f1f5f9;
+      text-decoration: none;
+    }
+    .tool-link-card:hover { border-color: #10b981; text-decoration: none; }
+    .site-footer {
+      border-top: 1px solid #1e293b;
+      margin-top: 48px;
+      padding: 28px 0 40px;
+      color: #64748b;
+      font-size: 0.82rem;
+    }
+    @media (max-width: 640px) {
+      .card, .calc-box { padding: 16px; }
+      table { font-size: 0.76rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="brand">
+        <span>PluckBench</span>
+        <span class="brand-badge">PRO DSP</span>
+      </a>
+      <nav class="top-nav" aria-label="Main Musical Tools Navigation">
+        <a href="/">Tuner Home</a>
+        <a href="/guzheng-tuner">Guzheng Tuner</a>
+        <a href="/violin-tuner">Violin Tuner</a>
+        <a href="/guitar-tuner">Guitar Tuner</a>
+        <a href="/ukulele-tuner">Ukulele Tuner</a>
+        <a href="/bass-tuner">Bass Tuner</a>
+        <a href="/online-metronome">Metronome</a>
+        <a href="/guitar-chords">Guitar Chords</a>
+        <a href="/decibel-meter">dB Meter</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="disclosure">
+      <strong>Reader Disclosure:</strong> PluckBench builds free browser-based Web Audio instrument tuners and acoustic reference charts. Some outbound links to musician gift retailers or instructional book libraries are affiliate links (marked as sponsored), which may earn a small commission at no additional cost to you. All Guzheng string frequencies and Yanzhu bridge modulation steps are grounded in conservatory acoustics standards.
+    </div>
+
+    <h1>21-String Guzheng Tuning &amp; Modulation Guide: D Major, G Major, C Major &amp; F Major Yanzhu Bridge Position Chart (2026)</h1>
+    <p>
+      The standard <strong>21-string Chinese Guzheng (古筝)</strong> spans four complete pentatonic octaves from the deepest wound copper-steel bass string <strong>#21 (`D2 = 73.42 Hz`)</strong> closest to the player's body up to the highest treble string <strong>#1 (`D6 = 1174.66 Hz`)</strong>. Unlike fretted instruments that change key via finger placement or a capo, the Guzheng modulates between traditional keys—such as <strong>D Major (`1=D`)</strong>, <strong>G Major (`1=G`)</strong>, <strong>C Major (`1=C`)</strong>, <strong>F Major (`1=F`)</strong>, and <strong>A Major (`1=A`)</strong>—by physically sliding specific movable bridges (<strong>Yanzhu / 雁柱</strong>, literally "wild-goose pillars") left or right across the Paulownia soundboard. Use the interactive modulation calculator below alongside our <a href="/guzheng-tuner">Online 21-String Guzheng Tuner</a> and <a href="/violin-tuner">440Hz/442Hz Orchestral Tuner</a> to see which Yanzhu bridges to shift and verify all 21 target frequencies in Hertz.
+    </p>
+
+    <section class="calc-box" id="guzheng-mod-calc" aria-labelledby="calc-heading">
+      <h2 id="calc-heading" style="margin-top:0;border-bottom:none;padding-bottom:0;">Interactive 21-String Guzheng Yanzhu Bridge Modulation &amp; Frequency Calculator</h2>
+      <p style="font-size:0.88rem;color:#94a3b8;margin-top:4px;">
+        Select your current Guzheng tuning (`D Major`, `G Major`, or `C Major`), your target pentatonic key (`G`, `C`, `F`, `A`, or `D Major`), and your concert pitch reference (`A4 = 440 Hz` Solo or `A4 = 442 Hz` Chinese Orchestra) to generate exact Yanzhu bridge movement instructions and the full 21-string frequency table.
+      </p>
+      <div class="calc-grid">
+        <div class="field">
+          <label for="curr-key">1. Current Guzheng Key</label>
+          <select id="curr-key">
+            <option value="D" selected>D Major Pentatonic (1=D: D - E - F# - A - B)</option>
+            <option value="G">G Major Pentatonic (1=G: G - A - B - D - E)</option>
+            <option value="C">C Major Pentatonic (1=C: C - D - E - G - A)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="target-key">2. Target Guzheng Key</label>
+          <select id="target-key">
+            <option value="G" selected>G Major Pentatonic (1=G: D - E - G - A - B)</option>
+            <option value="C">C Major Pentatonic (1=C: D - E - G - A - C)</option>
+            <option value="F">F Major Pentatonic (1=F: D - F - G - A - C)</option>
+            <option value="A">A Major Pentatonic (1=A: C# - E - F# - A - B)</option>
+            <option value="D">D Major Pentatonic (1=D: D - E - F# - A - B)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="pitch-select">3. Concert Pitch Reference (A4)</label>
+          <select id="pitch-select">
+            <option value="440" selected>A4 = 440.0 Hz (Standard Solo / Studio)</option>
+            <option value="442">A4 = 442.0 Hz (MinYueTuan Chinese Orchestra)</option>
+          </select>
+        </div>
+      </div>
+      <button type="button" id="calc-btn" class="btn-calc">Generate Yanzhu Bridge Shift Instructions &amp; 21-String Hz Chart</button>
+
+      <div class="result-panel" id="calc-result" aria-live="polite">
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="kpi-label">Modulation Path</div>
+            <div class="kpi-val" id="res-mod-path">1=D &rarr; 1=G Major</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Bridges to Move</div>
+            <div class="kpi-val" id="res-bridges-moved" style="font-size:1.0rem;">#4, #9, #14, #19 (Right)</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Reference String #8 (A4)</div>
+            <div class="kpi-val" id="res-a4-hz">440.00 Hz (Green)</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Pitch Shift Action</div>
+            <div class="kpi-val" id="res-shift-action" style="font-size:0.96rem;">F# &rarr; G (+100 Cents)</div>
+          </div>
+        </div>
+        <p id="res-advice" style="font-size:0.88rem;color:#f8fafc;background:#0f172a;border:1px solid #10b981;padding:12px 14px;border-radius:10px;margin:0 0 14px;">
+          <strong>Yanzhu Bridge Movement Instructions (1=D to 1=G):</strong> Gently lift the string slightly to protect the Paulownia soundboard and slide movable bridges <strong>#4, #9, #14, and #19</strong> approximately <strong>1.5 cm to 2.5 cm to the RIGHT</strong> (toward the fixed YueShan bridge) to raise their pitch by +100 cents from <code>F# (F#5, F#4, F#3, F#2)</code> to <code>G natural (G5, G4, G3, G2)</code>. Verify each moved string on the PluckBench Online Guzheng Tuner.
+        </p>
+        <div class="lp-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>String #</th>
+                <th>Marker Color</th>
+                <th>Target Note</th>
+                <th>Jianpu (1=Target)</th>
+                <th>Exact Frequency (Hz)</th>
+                <th>Yanzhu Bridge Shift vs D Major</th>
+              </tr>
+            </thead>
+            <tbody id="res-table-body">
+              <tr><td>String #1 (Highest)</td><td>White</td><td class="mono">D6</td><td class="mono">5 (Sol)</td><td class="mono">1174.66 Hz</td><td>No shift (Stay at D6)</td></tr>
+              <tr><td>String #2</td><td>White</td><td class="mono">B5</td><td class="mono">3 (Mi)</td><td class="mono">987.77 Hz</td><td>No shift (Stay at B5)</td></tr>
+              <tr class="green-row"><td>String #3</td><td><strong>Green (A5)</strong></td><td class="mono">A5</td><td class="mono">2 (Re)</td><td class="mono">880.00 Hz</td><td>No shift (Stay at A5)</td></tr>
+              <tr><td>String #4</td><td>White / Mod</td><td class="mono">G5</td><td class="mono">1 (Do)</td><td class="mono">783.99 Hz</td><td><strong>Move Right (+100c: F#5 &rarr; G5)</strong></td></tr>
+              <tr><td>String #5</td><td>White</td><td class="mono">E5</td><td class="mono">6 (La)</td><td class="mono">659.25 Hz</td><td>No shift (Stay at E5)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Traditional &amp; Studio Musician Accessories</h3>
+      <p style="font-size:0.88rem;">
+        Looking for practice stands, music theory workbooks, or thoughtful gifts for traditional and classical string players? Browse these curated selections:
+      </p>
+      <div class="cta-row">
+        <a href="https://bbux.me/T9xC6WZH9" rel="sponsored noopener" target="_blank" style="display:inline-block;background:#059669;color:#ffffff !important;padding:12px 20px;border-radius:10px;font-weight:700;text-decoration:none;max-width:100%;box-sizing:border-box;">Explore Musician Accessories &amp; Gifts at Music Gifts Depot &rarr;</a>
+        <a href="https://bbux.me/b9xCEBDSZ" rel="sponsored noopener" target="_blank" style="display:inline-block;background:#2563eb;color:#ffffff !important;padding:12px 20px;border-radius:10px;font-weight:700;text-decoration:none;max-width:100%;box-sizing:border-box;">Browse Pentatonic Scales, Ear Training &amp; Music Theory eBooks &rarr;</a>
+      </div>
+    </div>
+    <h2>Master 21-String Guzheng Frequency &amp; Jianpu Chart (D Major, G Major, C Major &amp; F Major)</h2>
+    <p>
+      In standard Chinese conservatory pedagogy, Guzheng strings are numbered from <strong>#1 (the thinnest, highest-pitched treble string farthest from your body, `D6 = 1174.66 Hz`)</strong> to <strong>#21 (the thickest copper-wound bass string closest to your body, `D2 = 73.42 Hz`)</strong>. Every five strings complete one full <em>Gong-Shang-Jue-Zhi-Yu</em> (宫商角徵羽) pentatonic octave (`Do - Re - Mi - Sol - La`, or `1 - 2 - 3 - 5 - 6` in Numbered Musical Notation / Jianpu). Compare all 21 strings across the four primary repertoire keys below, and use our <a href="/guzheng-tuner">Online 21-String Guzheng Tuner</a> for hands-free sustain-lock calibration:
+    </p>
+    <div class="lp-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>String #</th>
+            <th>Register</th>
+            <th>1=D Major (Standard)</th>
+            <th>1=D Freq (440 Hz)</th>
+            <th>1=G Major Note</th>
+            <th>1=C Major Note</th>
+            <th>1=F Major Note</th>
+            <th>1=A Major Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>#1</strong></td><td>Treble Peak</td><td class="mono">D6 (1)</td><td class="mono">1174.66 Hz</td><td class="mono">D6 (5)</td><td class="mono">D6 (2)</td><td class="mono">D6 (6)</td><td class="mono">C#6 (3)</td></tr>
+          <tr><td><strong>#2</strong></td><td>Treble</td><td class="mono">B5 (6)</td><td class="mono">987.77 Hz</td><td class="mono">B5 (3)</td><td class="mono">C6 (1)</td><td class="mono">C6 (5)</td><td class="mono">B5 (2)</td></tr>
+          <tr class="green-row"><td><strong>#3 (Green)</strong></td><td>Treble Marker</td><td class="mono">A5 (5)</td><td class="mono">880.00 Hz</td><td class="mono">A5 (2)</td><td class="mono">A5 (6)</td><td class="mono">A5 (3)</td><td class="mono">A5 (1)</td></tr>
+          <tr><td><strong>#4</strong></td><td>Treble</td><td class="mono">F#5 (3)</td><td class="mono">739.99 Hz</td><td class="mono">G5 (1)</td><td class="mono">G5 (5)</td><td class="mono">G5 (2)</td><td class="mono">F#5 (6)</td></tr>
+          <tr><td><strong>#5</strong></td><td>Treble</td><td class="mono">E5 (2)</td><td class="mono">659.25 Hz</td><td class="mono">E5 (6)</td><td class="mono">E5 (3)</td><td class="mono">F5 (1)</td><td class="mono">E5 (5)</td></tr>
+          <tr><td><strong>#6</strong></td><td>High-Mid</td><td class="mono">D5 (1)</td><td class="mono">587.33 Hz</td><td class="mono">D5 (5)</td><td class="mono">D5 (2)</td><td class="mono">D5 (6)</td><td class="mono">C#5 (3)</td></tr>
+          <tr><td><strong>#7</strong></td><td>High-Mid</td><td class="mono">B4 (6)</td><td class="mono">493.88 Hz</td><td class="mono">B4 (3)</td><td class="mono">C5 (1)</td><td class="mono">C5 (5)</td><td class="mono">B4 (2)</td></tr>
+          <tr class="green-row"><td><strong>#8 (Green)</strong></td><td>Concert A4 Ref</td><td class="mono">A4 (5)</td><td class="mono">440.00 Hz</td><td class="mono">A4 (2)</td><td class="mono">A4 (6)</td><td class="mono">A4 (3)</td><td class="mono">A4 (1)</td></tr>
+          <tr><td><strong>#9</strong></td><td>High-Mid</td><td class="mono">F#4 (3)</td><td class="mono">369.99 Hz</td><td class="mono">G4 (1)</td><td class="mono">G4 (5)</td><td class="mono">G4 (2)</td><td class="mono">F#4 (6)</td></tr>
+          <tr><td><strong>#10</strong></td><td>High-Mid</td><td class="mono">E4 (2)</td><td class="mono">329.63 Hz</td><td class="mono">E4 (6)</td><td class="mono">E4 (3)</td><td class="mono">F4 (1)</td><td class="mono">E4 (5)</td></tr>
+          <tr><td><strong>#11</strong></td><td>Middle</td><td class="mono">D4 (1)</td><td class="mono">293.66 Hz</td><td class="mono">D4 (5)</td><td class="mono">D4 (2)</td><td class="mono">D4 (6)</td><td class="mono">C#4 (3)</td></tr>
+          <tr><td><strong>#12</strong></td><td>Middle</td><td class="mono">B3 (6)</td><td class="mono">246.94 Hz</td><td class="mono">B3 (3)</td><td class="mono">C4 (1)</td><td class="mono">C4 (5)</td><td class="mono">B3 (2)</td></tr>
+          <tr class="green-row"><td><strong>#13 (Green)</strong></td><td>Middle Marker</td><td class="mono">A3 (5)</td><td class="mono">220.00 Hz</td><td class="mono">A3 (2)</td><td class="mono">A3 (6)</td><td class="mono">A3 (3)</td><td class="mono">A3 (1)</td></tr>
+          <tr><td><strong>#14</strong></td><td>Middle</td><td class="mono">F#3 (3)</td><td class="mono">185.00 Hz</td><td class="mono">G3 (1)</td><td class="mono">G3 (5)</td><td class="mono">G3 (2)</td><td class="mono">F#3 (6)</td></tr>
+          <tr><td><strong>#15</strong></td><td>Middle</td><td class="mono">E3 (2)</td><td class="mono">164.81 Hz</td><td class="mono">E3 (6)</td><td class="mono">E3 (3)</td><td class="mono">F3 (1)</td><td class="mono">E3 (5)</td></tr>
+          <tr><td><strong>#16</strong></td><td>Bass</td><td class="mono">D3 (1)</td><td class="mono">146.83 Hz</td><td class="mono">D3 (5)</td><td class="mono">D3 (2)</td><td class="mono">D3 (6)</td><td class="mono">C#3 (3)</td></tr>
+          <tr><td><strong>#17</strong></td><td>Bass</td><td class="mono">B2 (6)</td><td class="mono">123.47 Hz</td><td class="mono">B2 (3)</td><td class="mono">C3 (1)</td><td class="mono">C3 (5)</td><td class="mono">B2 (2)</td></tr>
+          <tr class="green-row"><td><strong>#18 (Green)</strong></td><td>Bass Marker</td><td class="mono">A2 (5)</td><td class="mono">110.00 Hz</td><td class="mono">A2 (2)</td><td class="mono">A2 (6)</td><td class="mono">A2 (3)</td><td class="mono">A2 (1)</td></tr>
+          <tr><td><strong>#19</strong></td><td>Bass</td><td class="mono">F#2 (3)</td><td class="mono">92.50 Hz</td><td class="mono">G2 (1)</td><td class="mono">G2 (5)</td><td class="mono">G2 (2)</td><td class="mono">F#2 (6)</td></tr>
+          <tr><td><strong>#20</strong></td><td>Deep Bass</td><td class="mono">E2 (2)</td><td class="mono">82.41 Hz</td><td class="mono">E2 (6)</td><td class="mono">E2 (3)</td><td class="mono">F2 (1)</td><td class="mono">E2 (5)</td></tr>
+          <tr><td><strong>#21</strong></td><td>Lowest Bass</td><td class="mono">D2 (1)</td><td class="mono">73.42 Hz</td><td class="mono">D2 (5)</td><td class="mono">D2 (2)</td><td class="mono">D2 (6)</td><td class="mono">C#2 (3)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Acoustic Mechanics of Yanzhu (雁柱) Bridge Modulation &amp; Circle of Fifths Logic</h2>
+    <p>
+      Why can a 21-string Guzheng switch seamlessly between five different pentatonic keys just by sliding four bridges at a time, without touching the tuning wrench inside the right-hand tuning box? The secret lies in how the <strong>Circle of Fifths</strong> interacts with a 5-note anhemitonic pentatonic scale (a scale containing major seconds and minor thirds, but zero semitones):
+    </p>
+    <ul>
+      <li><strong>Modulating Down a Fifth (1=D &rarr; 1=G &rarr; 1=C &rarr; 1=F):</strong> In D Major (`D - E - F# - A - B`), the third scale degree (`Mi / 3`, which is `F#`) sits just one semitone below the root of the subdominant key (`G`). Raising all four `F#` strings (#4, #9, #14, #19) by <strong>+100 cents</strong> to `G` transforms the scale pitches into `D - E - G - A - B`—which is the exact pitch collection of <strong>G Major Pentatonic (`G - A - B - D - E`)</strong>! Starting from G Major, raising the new third scale degree (`B` on strings #2, #7, #12, #17) by +100 cents to `C` produces <strong>C Major Pentatonic (`C - D - E - G - A`)</strong>. Raising `E` (#5, #10, #15, #20) by +100 cents to `F` then yields <strong>F Major Pentatonic (`F - G - A - C - D`)</strong>.</li>
+      <li><strong>Modulating Up a Fifth (1=D &rarr; 1=A):</strong> Conversely, to modulate from D Major (`D - E - F# - A - B`) to the dominant key of <strong>A Major (`A - B - C# - E - F#`)</strong>, lower the four `D` strings (#1, #6, #11, #16, and #21) by <strong>-100 cents</strong> to `C#` by sliding their Yanzhu bridges <strong>1.5 cm to 2.5 cm to the LEFT</strong> (away from the YueShan bridge).</li>
+      <li><strong>Physical Distance per Semitone on the Soundboard:</strong> Because vibrating string length $L$ between the right fixed bridge (YueShan) and the movable Yanzhu bridge increases progressively from roughly <code>42 cm</code> on String #1 (`D6`) to over <code>132 cm</code> on String #21 (`D2`), a +100 cent semitone shift ($L_{\text{new}} \approx L_{\text{old}} \times 0.9439$) requires only a <code>1.2 cm to 1.6 cm</code> rightward bridge slide in the high treble register (#2–#5), compared to a <code>2.2 cm to 3.2 cm</code> slide in the low bass register (#17–#20).</li>
+    </ul>
+
+    <h2>Step-by-Step Guzheng Tuning &amp; Bridge Safety Protocol</h2>
+    <ol>
+      <li><strong>Calibrate the Green Anchor Strings First (#8 A4 = 440 Hz or 442 Hz):</strong> Before sliding any bridges for modulation, open our <a href="/guzheng-tuner">Online Guzheng Tuner</a> and pluck String #8 (`A4 = 440.00 Hz` or `442.00 Hz`). Once String #8 is locked within ±1.5 cents, calibrate the remaining octave A strings (#3 `A5 = 880 Hz`, #13 `A3 = 220 Hz`, #18 `A2 = 110 Hz`) using the square tuning wrench inside the right headbox.</li>
+      <li><strong>Lift Slightly Before Sliding Yanzhu Bridges:</strong> Never drag a Yanzhu bridge forcefully across the bare Paulownia soundboard under full string tension, as the bone or rosewood base can score the wood grain and cause the bridge to tip forward. Use your left index and middle fingers to lift the string upward by 3 mm right next to the bridge saddle to relieve downward pressure, while your right hand slides the Yanzhu base smoothly to its new position.</li>
+      <li><strong>Settle String Friction Over the Bridge Groove:</strong> Because a Guzheng string passes continuously over both the movable Yanzhu bridge and the fixed YueShan bridge, sliding a Yanzhu bridge to the right increases tension primarily on the right-hand playing segment while leaving the left non-playing tail slightly slacker. After moving a bridge, press down firmly on the left side of the string (just as you would for a vibrato or pitch bend) once or twice to equalize tension across the bridge groove before checking the final Hertz reading on the microphone tuner.</li>
+    </ol>
+
+    <section class="card" aria-labelledby="faq-heading">
+      <h2 id="faq-heading" style="margin-top:0;">Frequently Asked Questions: 21-String Guzheng Tuning &amp; Modulation</h2>
+      <h3>How do you modulate a 21-string Guzheng from D Major (1=D) to G Major (1=G)?</h3>
+      <p>
+        To modulate from standard D Major (D-E-F#-A-B) to G Major (G-A-B-D-E), raise the four F# strings (Strings #4, #9, #14, and #19) by one semitone (+100 cents) to G natural (G5, G4, G3, and G2) by sliding their movable Yanzhu bridges 1.5 cm to 2.5 cm to the right toward the YueShan fixed bridge.
+      </p>
+      <h3>Which direction do you move Guzheng Yanzhu bridges to raise or lower pitch?</h3>
+      <p>
+        The playing zone of a Guzheng lies between the right fixed bridge (YueShan) and the movable Yanzhu bridges. Sliding a Yanzhu bridge to the RIGHT shortens the vibrating string length and raises pitch (+100 cents per semitone); sliding a Yanzhu bridge to the LEFT lengthens the vibrating string and lowers pitch (-100 cents).
+      </p>
+      <h3>Which strings are green on a standard 21-string Guzheng?</h3>
+      <p>
+        Strings #4, #9, #14, and #19 (or #3, #8, #13, and #18 depending on manufacturer string numbering) are colored green as visual orientation markers. In standard D Major tuning, Strings #3, #8, #13, and #18 sound the note A (Sol / 5 in Jianpu: A5, A4=440Hz, A3, A2), while Strings #4, #9, #14, and #19 sound F# (Mi / 3).
+      </p>
+      <h3>Should a Guzheng be tuned to A4 = 440 Hz or A4 = 442 Hz?</h3>
+      <p>
+        For solo repertoire and western pop crossover, A4 = 440 Hz is standard. When performing in a Chinese traditional orchestra (MinYueTuan) alongside Erhu, Pipa, Dizi, and Sheng, orchestras typically calibrate to A4 = 442 Hz (+7.85 cents) for brighter hall projection.
+      </p>
+    </section>
+
+    <section class="card" aria-labelledby="related-heading">
+      <h2 id="related-heading" style="margin-top:0;">Related PluckBench Tuners &amp; Acoustic Calculators</h2>
+      <div class="tool-links-grid">
+        <a class="tool-link-card" href="/guzheng-tuner">
+          <strong>Online 21-String Guzheng Tuner</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Calibrate D Major, G Major &amp; C Major with attack-chirp filtering and Guzheng tones.</div>
+        </a>
+        <a class="tool-link-card" href="/violin-tuner">
+          <strong>440Hz / 442Hz Orchestral Tuner</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Bowed reference tones and Just / Pythagorean temperament calibration.</div>
+        </a>
+        <a class="tool-link-card" href="/">
+          <strong>Chromatic Instrument Tuner Home</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Full-range 27.5 Hz – 4186 Hz sustain pitch lock and Noise Shield DSP.</div>
+        </a>
+        <a class="tool-link-card" href="/drop-d-alternate-guitar-tuning-chart">
+          <strong>Drop D &amp; Alternate Tuning Calculator</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Guitar and bass alternate tuning Hz chart and string tension calculator.</div>
+        </a>
+        <a class="tool-link-card" href="/bpm-to-ms-delay-time-calculator">
+          <strong>BPM to Milliseconds Delay Calculator</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Calculate delay times, LFO Hz, and concert hall reverb pre-delay from BPM.</div>
+        </a>
+        <a class="tool-link-card" href="/capo-transposition-chord-chart-calculator">
+          <strong>Capo Key Change Calculator</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Transpose guitar and ukulele chords across Frets 1–11.</div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p style="margin:0 0 8px;color:#94a3b8;">
+        &copy; 2026 PluckBench Pro &mdash; Precision Browser-Based Web Audio Instrument Tuners, Rhythm Metronome &amp; Acoustic Engineering Calculators.
+      </p>
+      <p style="margin:0;font-size:0.78rem;">
+        <a href="/">Tuner Home</a> &middot;
+        <a href="/guzheng-tuner">Guzheng Tuner</a> &middot;
+        <a href="/violin-tuner">Violin Tuner</a> &middot;
+        <a href="/guitar-tuner">Guitar Tuner</a> &middot;
+        <a href="/ukulele-tuner">Ukulele Tuner</a> &middot;
+        <a href="/bass-tuner">Bass Tuner</a> &middot;
+        <a href="/online-metronome">Online Metronome</a> &middot;
+        <a href="/guitar-chords">Guitar Chords</a> &middot;
+        <a href="/decibel-meter">Decibel Meter</a>
+      </p>
+    </div>
+  </footer>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var D_BASE = [
+      { str: 1, note: "D6", midi: 86, green: false, degD: "1 (Do)" },
+      { str: 2, note: "B5", midi: 83, green: false, degD: "6 (La)" },
+      { str: 3, note: "A5", midi: 81, green: true, degD: "5 (Sol)" },
+      { str: 4, note: "F#5", midi: 78, green: false, degD: "3 (Mi)" },
+      { str: 5, note: "E5", midi: 76, green: false, degD: "2 (Re)" },
+      { str: 6, note: "D5", midi: 74, green: false, degD: "1 (Do)" },
+      { str: 7, note: "B4", midi: 71, green: false, degD: "6 (La)" },
+      { str: 8, note: "A4", midi: 69, green: true, degD: "5 (Sol)" },
+      { str: 9, note: "F#4", midi: 66, green: false, degD: "3 (Mi)" },
+      { str: 10, note: "E4", midi: 64, green: false, degD: "2 (Re)" },
+      { str: 11, note: "D4", midi: 62, green: false, degD: "1 (Do)" },
+      { str: 12, note: "B3", midi: 59, green: false, degD: "6 (La)" },
+      { str: 13, note: "A3", midi: 57, green: true, degD: "5 (Sol)" },
+      { str: 14, note: "F#3", midi: 54, green: false, degD: "3 (Mi)" },
+      { str: 15, note: "E3", midi: 52, green: false, degD: "2 (Re)" },
+      { str: 16, note: "D3", midi: 50, green: false, degD: "1 (Do)" },
+      { str: 17, note: "B2", midi: 47, green: false, degD: "6 (La)" },
+      { str: 18, note: "A2", midi: 45, green: true, degD: "5 (Sol)" },
+      { str: 19, note: "F#2", midi: 42, green: false, degD: "3 (Mi)" },
+      { str: 20, note: "E2", midi: 40, green: false, degD: "2 (Re)" },
+      { str: 21, note: "D2", midi: 38, green: false, degD: "1 (Do)" }
+    ];
+
+    var NOTE_NAMES = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"];
+
+    var KEY_CONFIGS = {
+      D: {
+        name: "1=D Major",
+        rootPc: 2,
+        offsets: [0, 0, 0, 0, 0],
+        movedSummary: "Standard D Major (All 21 bridges at base marks)",
+        actionSummary: "0 Cents (Base 1=D)",
+        advice: "Your Guzheng is in standard 1=D Major Pentatonic (D - E - F# - A - B). Strings #3, #8, #13, and #18 sound the A reference pitch (Sol / 5)."
+      },
+      G: {
+        name: "1=G Major",
+        rootPc: 7,
+        offsets: [0, 0, 0, 1, 0],
+        movedSummary: "#4, #9, #14, #19 (Move Right)",
+        actionSummary: "F# -> G (+100 Cents)",
+        advice: "Slide Yanzhu bridges <strong>#4, #9, #14, and #19</strong> approximately <strong>1.5 cm to 2.5 cm to the RIGHT</strong> (toward the YueShan bridge) to raise F# (F#5, F#4, F#3, F#2) by +100 cents to G natural (G5, G4, G3, G2)."
+      },
+      C: {
+        name: "1=C Major",
+        rootPc: 0,
+        offsets: [0, 1, 0, 1, 0],
+        movedSummary: "#4,#9,#14,#19 & #2,#7,#12,#17 (Right)",
+        actionSummary: "F#->G & B->C (+100c)",
+        advice: "From 1=D Major, slide both the <strong>F# bridges (#4, #9, #14, #19)</strong> AND the <strong>B bridges (#2, #7, #12, #17)</strong> 1.5 cm to 2.5 cm to the <strong>RIGHT</strong> to raise F# to G and B to C natural. (If starting from 1=G, only slide #2, #7, #12, #17 to the right)."
+      },
+      F: {
+        name: "1=F Major",
+        rootPc: 5,
+        offsets: [0, 1, 0, 1, 1],
+        movedSummary: "#4,#9,#14,#19 + #2,#7,#12,#17 + #5,#10,#15,#20",
+        actionSummary: "F#->G, B->C, E->F (+100c)",
+        advice: "From 1=D Major, slide three sets of bridges to the <strong>RIGHT</strong> (+100 cents each): <strong>#4/#9/#14/#19 (F# to G)</strong>, <strong>#2/#7/#12/#17 (B to C)</strong>, and <strong>#5/#10/#15/#20 (E to F)</strong>. (If starting from 1=C, only slide #5, #10, #15, #20 to the right)."
+      },
+      A: {
+        name: "1=A Major",
+        rootPc: 9,
+        offsets: [-1, 0, 0, 0, 0],
+        movedSummary: "#1, #6, #11, #16, #21 (Move Left)",
+        actionSummary: "D -> C# (-100 Cents)",
+        advice: "From 1=D Major, slide the five D tonic bridges <strong>#1, #6, #11, #16, and #21</strong> approximately <strong>1.5 cm to 2.5 cm to the LEFT</strong> (away from the YueShan bridge) to lower D by -100 cents to C# (C#6, C#5, C#4, C#3, C#2)."
+      }
+    };
+
+    var currKeyEl = document.getElementById("curr-key");
+    var targetKeyEl = document.getElementById("target-key");
+    var pitchEl = document.getElementById("pitch-select");
+    var calcBtn = document.getElementById("calc-btn");
+
+    function midiToHz(midi, a4) {
+      return a4 * Math.pow(2, (midi - 69) / 12);
+    }
+
+    function midiToName(midi) {
+      var pc = ((midi % 12) + 12) % 12;
+      var oct = Math.floor(midi / 12) - 1;
+      return NOTE_NAMES[pc] + oct;
+    }
+
+    function getJianpu(midi, rootPc) {
+      var diff = (((midi % 12) - rootPc) + 12) % 12;
+      if (diff === 0) return "1 (Do)";
+      if (diff === 2) return "2 (Re)";
+      if (diff === 4) return "3 (Mi)";
+      if (diff === 7) return "5 (Sol)";
+      if (diff === 9) return "6 (La)";
+      return "Mod";
+    }
+
+    function compute() {
+      var currK = currKeyEl.value;
+      var targK = targetKeyEl.value;
+      var a4 = parseFloat(pitchEl.value) || 440.0;
+      var cfg = KEY_CONFIGS[targK] || KEY_CONFIGS.G;
+
+      var rowsHtml = "";
+      for (var i = 0; i < D_BASE.length; i++) {
+        var row = D_BASE[i];
+        var posInOctave = (row.str - 1) % 5;
+        var semiOffset = cfg.offsets[posInOctave];
+        var newMidi = row.midi + semiOffset;
+        var newName = midiToName(newMidi);
+        var hz = midiToHz(newMidi, a4);
+        var jianpu = getJianpu(newMidi, cfg.rootPc);
+
+        var shiftText = "No shift (Stay at " + row.note + ")";
+        if (semiOffset === 1) {
+          shiftText = "<strong>Move Right (+100c: " + row.note + " &rarr; " + newName + ")</strong>";
+        } else if (semiOffset === -1) {
+          shiftText = "<strong>Move Left (-100c: " + row.note + " &rarr; " + newName + ")</strong>";
+        }
+
+        var trClass = row.green ? " class=\"green-row\"" : "";
+        var colorLabel = row.green ? "<strong>Green (" + row.note + ")</strong>" : (semiOffset !== 0 ? "White / Shifted" : "White");
+
+        rowsHtml += "<tr" + trClass + ">" +
+          "<td>String #" + row.str + "</td>" +
+          "<td>" + colorLabel + "</td>" +
+          "<td class=\"mono\">" + newName + "</td>" +
+          "<td class=\"mono\">" + jianpu + "</td>" +
+          "<td class=\"mono\">" + hz.toFixed(2) + " Hz</td>" +
+          "<td>" + shiftText + "</td>" +
+          "</tr>";
+      }
+
+      document.getElementById("res-mod-path").textContent = "1=" + currK + " -> " + cfg.name;
+      document.getElementById("res-bridges-moved").textContent = cfg.movedSummary;
+      document.getElementById("res-a4-hz").textContent = a4.toFixed(2) + " Hz (Green #8)";
+      document.getElementById("res-shift-action").textContent = cfg.actionSummary;
+      document.getElementById("res-table-body").innerHTML = rowsHtml;
+      document.getElementById("res-advice").innerHTML =
+        "<strong>Yanzhu Bridge Movement Instructions (1=" + currK + " to " + cfg.name + " at A4 = " + a4 + " Hz):</strong> " + cfg.advice;
+    }
+
+    currKeyEl.addEventListener("change", compute);
+    targetKeyEl.addEventListener("change", compute);
+    pitchEl.addEventListener("change", compute);
+    calcBtn.addEventListener("click", compute);
+    compute();
+  });
+  </script>
+</body>
+</html>
