@@ -568,6 +568,14 @@ export const SeoKnowledgeFooter: React.FC<{
                 ja: '21弦古筝 転調＆柱（雁柱）移動周波数チャート',
               },
             },
+            {
+              href: '/432hz-vs-440hz-vs-442hz-pitch-frequency-calculator',
+              label: {
+                zh: 'A4=432Hz vs 440Hz vs 442Hz 标准音频率与纯律音分差计算器',
+                en: '432Hz vs 440Hz vs 442Hz Pitch Frequency & 12-TET/Just Intonation Calculator',
+                ja: '432Hz vs 440Hz vs 442Hz 基準ピッチ周波数＆音律セント偏差計算機',
+              },
+            },
           ].map((link) => (
             <a
               key={link.href}

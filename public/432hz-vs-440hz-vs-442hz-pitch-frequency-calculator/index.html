@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>A4 = 432 Hz vs 440 Hz vs 442 Hz Pitch Frequency Converter &amp; 12-TET vs Just Intonation Cents Deviation Calculator (2026)</title>
+  <meta name="description" content="Convert musical note frequencies across A4 = 432 Hz, 440 Hz, 442 Hz, and 415 Hz Baroque pitch. Compare 12-TET, Just Intonation, and Pythagorean cents offsets." />
+  <link rel="canonical" href="https://www.pluckbench.com/432hz-vs-440hz-vs-442hz-pitch-frequency-calculator" />
+  <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="A4 = 432 Hz vs 440 Hz vs 442 Hz Pitch Frequency Converter &amp; 12-TET vs Just Intonation Cents Deviation Calculator (2026)" />
+  <meta property="og:description" content="Interactive concert pitch frequency converter (415 Hz to 446 Hz) and 12-TET vs Just Intonation vs Pythagorean cents deviation calculator." />
+  <meta property="og:url" content="https://www.pluckbench.com/432hz-vs-440hz-vs-442hz-pitch-frequency-calculator" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Article",
+        "headline": "A4 = 432 Hz vs 440 Hz vs 442 Hz Pitch Frequency Converter & 12-TET vs Just Intonation Cents Deviation Calculator (2026)",
+        "description": "Acoustic physics analysis and interactive frequency calculator comparing A4 = 432 Hz, ISO 16 A4 = 440 Hz, orchestral 442 Hz, and 415 Hz Baroque pitch across 12-TET, Just Intonation, and Pythagorean temperaments.",
+        "datePublished": "2026-10-29",
+        "dateModified": "2026-10-29",
+        "author": {
+          "@type": "Organization",
+          "name": "PluckBench Acoustic Engineering Desk",
+          "url": "https://www.pluckbench.com/"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "PluckBench",
+          "url": "https://www.pluckbench.com/"
+        },
+        "mainEntityOfPage": "https://www.pluckbench.com/432hz-vs-440hz-vs-442hz-pitch-frequency-calculator"
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "PluckBench 432Hz vs 440Hz vs 442Hz Pitch Frequency & Temperament Calculator",
+        "url": "https://www.pluckbench.com/432hz-vs-440hz-vs-442hz-pitch-frequency-calculator",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Web, iOS, Android, macOS, Windows",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How many cents lower is A4 = 432 Hz compared to standard A4 = 440 Hz?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Using the logarithmic cents equation c = 1200 * log2(432 / 440), A4 = 432 Hz is exactly -31.7666 cents (approximately -31.8 cents, or just under one-third of a semitone) flatter than the ISO 16 concert standard of A4 = 440.00 Hz."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How many cents higher is orchestral A4 = 442 Hz compared to A4 = 440 Hz?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "At A4 = 442 Hz, every pitch shifts upward by c = 1200 * log2(442 / 440) = +7.852 cents. Many European and Asian symphony orchestras and traditional ensembles calibrate to 442 Hz or 443 Hz to increase string tension and brighten acoustic projection in large concert halls."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does tuning to 432 Hz make Middle C equal to 256 Hz?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "In 12-Tone Equal Temperament (12-TET), setting A4 = 432.00 Hz places Middle C (C4) at 256.87 Hz, not 256.00 Hz. Conversely, if you define C4 = 256.00 Hz (Scientific or Verdi pitch) in 12-TET, A4 equals 430.54 Hz. Only under Pythagorean or specific Just Intonation ratios (such as a 27:16 major sixth above C4 = 256 Hz) does C4 = 256.00 Hz coexist with A4 = 432.00 Hz."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is the cents difference between 12-TET and Just Intonation on a Major Third and Perfect Fifth?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "A pure Just Intonation Major Third has a frequency ratio of 5:4 (386.31 cents), which is 13.69 cents flatter than a 12-TET Major Third (400.00 cents). A pure Just Intonation Perfect Fifth has a 3:2 ratio (701.96 cents), which is 1.96 cents sharper than a 12-TET Perfect Fifth (700.00 cents)."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #070a0f;
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      line-height: 1.65;
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+    a { color: #34d399; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 16px; width: 100%; }
+    .site-header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid #1e293b;
+      padding: 14px 0;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(8px);
+    }
+    .header-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+    .brand { font-weight: 800; font-size: 1.15rem; color: #f8fafc; display: flex; align-items: center; gap: 8px; }
+    .brand-badge { background: #10b981; color: #052e16; font-size: 0.7rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; }
+    .top-nav { display: flex; flex-wrap: wrap; gap: 6px; }
+    .top-nav a {
+      font-size: 0.76rem;
+      color: #cbd5e1;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 5px 10px;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+    .top-nav a:hover { border-color: #10b981; color: #34d399; }
+    .disclosure {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid #1e293b;
+      border-left: 3px solid #10b981;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin: 20px 0 16px;
+    }
+    h1 { font-size: clamp(1.5rem, 3.2vw, 2.2rem); line-height: 1.25; color: #f8fafc; margin: 12px 0 14px; font-weight: 800; }
+    h2 { font-size: clamp(1.2rem, 2.3vw, 1.55rem); color: #f8fafc; margin: 32px 0 12px; font-weight: 700; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }
+    h3 { font-size: 1.08rem; color: #e2e8f0; margin: 20px 0 8px; font-weight: 700; }
+    p, li { color: #cbd5e1; font-size: 0.96rem; }
+    .card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .calc-box {
+      background: linear-gradient(145deg, #0f172a 0%, #091526 100%);
+      border: 1px solid #10b981;
+      border-radius: 16px;
+      padding: 22px;
+      margin: 24px 0;
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.08);
+    }
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .field label { display: block; font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 6px; }
+    .field select, .field input {
+      width: 100%;
+      background: #070a0f;
+      border: 1px solid #334155;
+      color: #f8fafc;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+    }
+    .btn-calc {
+      background: #10b981;
+      color: #052e16;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      width: 100%;
+      transition: opacity 0.2s;
+    }
+    .btn-calc:hover { opacity: 0.92; }
+    .result-panel {
+      margin-top: 18px;
+      background: #070a0f;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .kpi {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 12px;
+      border-radius: 10px;
+    }
+    .kpi-label { font-size: 0.74rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em; }
+    .kpi-val { font-size: 1.15rem; font-weight: 800; color: #34d399; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin-top: 4px; }
+    .lp-table-wrap { overflow-x: auto; max-width: 100%; margin: 14px 0; border: 1px solid #1e293b; border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 560px; }
+    th, td { padding: 9px 11px; text-align: left; border-bottom: 1px solid #1e293b; }
+    th { background: #090d16; color: #94a3b8; font-weight: 700; }
+    td { color: #e2e8f0; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #34d399; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin: 18px 0; }
+    .tool-links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 14px; }
+    .tool-link-card {
+      display: block;
+      background: #090d16;
+      border: 1px solid #1e293b;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: #f1f5f9;
+      text-decoration: none;
+    }
+    .tool-link-card:hover { border-color: #10b981; text-decoration: none; }
+    .site-footer {
+      border-top: 1px solid #1e293b;
+      margin-top: 48px;
+      padding: 28px 0 40px;
+      color: #64748b;
+      font-size: 0.82rem;
+    }
+    @media (max-width: 640px) {
+      .card, .calc-box { padding: 16px; }
+      table { font-size: 0.76rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="brand">
+        <span>PluckBench</span>
+        <span class="brand-badge">PRO DSP</span>
+      </a>
+      <nav class="top-nav" aria-label="Main Musical Tools Navigation">
+        <a href="/">Tuner Home</a>
+        <a href="/violin-tuner">Violin Tuner</a>
+        <a href="/guitar-tuner">Guitar Tuner</a>
+        <a href="/guzheng-tuner">Guzheng Tuner</a>
+        <a href="/ukulele-tuner">Ukulele Tuner</a>
+        <a href="/bass-tuner">Bass Tuner</a>
+        <a href="/online-metronome">Metronome</a>
+        <a href="/guitar-chords">Guitar Chords</a>
+        <a href="/decibel-meter">dB Meter</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="disclosure">
+      <strong>Reader Disclosure:</strong> PluckBench builds free browser-based Web Audio measurement and tuning utilities. Some outbound links to audio electronics or musician accessory retailers are affiliate links (marked as sponsored), which may earn a small commission at no additional cost to you. All pitch formulas and temperament ratios are derived directly from acoustic physics and ISO 16 standards.
+    </div>
+
+    <h1>A4 = 432 Hz vs 440 Hz vs 442 Hz Pitch Frequency Converter &amp; 12-TET vs Just Intonation Cents Deviation Calculator (2026)</h1>
+    <p>
+      While the International Organization for Standardization codified <strong>A4 = 440.00 Hz (ISO 16)</strong> as the global concert pitch reference in 1955 (and reaffirmed it in 1975), working musicians regularly encounter alternative pitch standards across genres and continents. Symphony orchestras in Europe, Japan, and China frequently calibrate to <strong>A4 = 442 Hz or 443 Hz</strong> (+7.85 to +11.76 cents) on our <a href="/violin-tuner">Online Violin &amp; Orchestral Tuner</a> for added brilliance, historical Baroque ensembles perform at <strong>A4 = 415 Hz</strong> (-101.37 cents, roughly one semitone below 440 Hz), and ambient/acoustic guitarists frequently experiment with <strong>A4 = 432 Hz</strong> (-31.77 cents). Use the interactive pitch converter below to compute exact note frequencies in Hertz, cents offsets, and pure harmonic deviations across <strong>12-Tone Equal Temperament (12-TET)</strong>, <strong>5-Limit Just Intonation</strong>, and <strong>Pythagorean Tuning</strong>.
+    </p>
+
+    <section class="calc-box" id="pitch-conv-calc" aria-labelledby="calc-heading">
+      <h2 id="calc-heading" style="margin-top:0;border-bottom:none;padding-bottom:0;">Interactive A4 Pitch Reference &amp; Temperament Cents Converter</h2>
+      <p style="font-size:0.88rem;color:#94a3b8;margin-top:4px;">
+        Select or enter your custom A4 reference frequency (`415 Hz` to `446 Hz`), choose the target octave (`Octave 3`, `Octave 4`, or `Octave 5`), and pick your musical temperament (`12-TET`, `Just Intonation`, or `Pythagorean` anchored on C) to compare exact Hertz values and cents deviations against ISO 440 Hz.
+      </p>
+      <div class="calc-grid">
+        <div class="field">
+          <label for="a4-select">1. Custom A4 Reference Pitch (Hz)</label>
+          <select id="a4-select">
+            <option value="432" selected>A4 = 432.0 Hz (Verdi / Alternative -31.8¢)</option>
+            <option value="440">A4 = 440.0 Hz (ISO 16 Standard Concert Pitch)</option>
+            <option value="442">A4 = 442.0 Hz (European / Asian Orchestral +7.9¢)</option>
+            <option value="443">A4 = 443.0 Hz (Berlin / Vienna Symphonic +11.8¢)</option>
+            <option value="444">A4 = 444.0 Hz (High Chamber / Bright +15.7¢)</option>
+            <option value="430.54">A4 = 430.54 Hz (Scientific C4 = 256.00 Hz)</option>
+            <option value="415">A4 = 415.0 Hz (Baroque Period Pitch -101.4¢)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="octave-select">2. Target Octave Register</label>
+          <select id="octave-select">
+            <option value="2">Octave 2 (C2 – B2: Guitar &amp; Cello Low Register)</option>
+            <option value="3">Octave 3 (C3 – B3: Viola &amp; Guitar Mid Register)</option>
+            <option value="4" selected>Octave 4 (C4 Middle C – B4 Concert Register)</option>
+            <option value="5">Octave 5 (C5 – B5: Violin E5 &amp; Flute Treble)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="temp-select">3. Tuning Temperament System</label>
+          <select id="temp-select">
+            <option value="12tet" selected>12-Tone Equal Temperament (12-TET Standard)</option>
+            <option value="just">5-Limit Just Intonation (Pure 3:2 &amp; 5:4 Ratios on C)</option>
+            <option value="pyth">Pythagorean Tuning (Pure 3:2 Fifths for Solo Strings)</option>
+          </select>
+        </div>
+      </div>
+      <button type="button" id="calc-btn" class="btn-calc">Convert Octave Frequencies (Hz) &amp; Calculate Cents Deviation</button>
+
+      <div class="result-panel" id="calc-result" aria-live="polite">
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="kpi-label">A4 Reference Cents vs 440Hz</div>
+            <div class="kpi-val" id="res-a4-cents">-31.77 cents</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Middle C (C4) Frequency</div>
+            <div class="kpi-val" id="res-c4-hz">256.87 Hz</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Temperament System</div>
+            <div class="kpi-val" id="res-temp-name" style="font-size:0.98rem;">12-TET Equal</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">String Tension Shift</div>
+            <div class="kpi-val" id="res-tension-shift">-3.60% vs 440Hz</div>
+          </div>
+        </div>
+        <div class="lp-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Note Name</th>
+                <th>Selected A4 + Temperament (Hz)</th>
+                <th>A4 = 432 Hz (12-TET)</th>
+                <th>A4 = 440 Hz (12-TET)</th>
+                <th>A4 = 442 Hz (12-TET)</th>
+                <th>Total Cents vs 440 Hz 12-TET</th>
+              </tr>
+            </thead>
+            <tbody id="res-table-body">
+              <tr><td class="mono"><strong>C4</strong></td><td class="mono">256.87 Hz</td><td class="mono">256.87 Hz</td><td class="mono">261.63 Hz</td><td class="mono">262.81 Hz</td><td class="mono">-31.77 ¢</td></tr>
+              <tr><td class="mono"><strong>D4</strong></td><td class="mono">288.33 Hz</td><td class="mono">288.33 Hz</td><td class="mono">293.66 Hz</td><td class="mono">295.00 Hz</td><td class="mono">-31.77 ¢</td></tr>
+              <tr><td class="mono"><strong>E4</strong></td><td class="mono">323.63 Hz</td><td class="mono">323.63 Hz</td><td class="mono">329.63 Hz</td><td class="mono">331.13 Hz</td><td class="mono">-31.77 ¢</td></tr>
+              <tr><td class="mono"><strong>G4</strong></td><td class="mono">384.87 Hz</td><td class="mono">384.87 Hz</td><td class="mono">392.00 Hz</td><td class="mono">393.78 Hz</td><td class="mono">-31.77 ¢</td></tr>
+              <tr><td class="mono"><strong>A4</strong></td><td class="mono">432.00 Hz</td><td class="mono">432.00 Hz</td><td class="mono">440.00 Hz</td><td class="mono">442.00 Hz</td><td class="mono">-31.77 ¢</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p id="res-advice" style="font-size:0.86rem;color:#cbd5e1;margin:10px 0 0;">
+          <strong>Calibration Note (A4 = 432 Hz, 12-TET):</strong> Every note in 432 Hz 12-TET sits exactly <strong>-31.77 cents</strong> below ISO 440 Hz, and reduces mechanical string tension by <strong>3.60%</strong>. You can dial A4 directly between 430 Hz and 450 Hz in the top toolbar of the PluckBench Online Tuner.
+        </p>
+      </div>
+    </section>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Studio Monitoring &amp; Musician Practice Gear</h3>
+      <p style="font-size:0.88rem;">
+        Hearing subtle 2-to-14 cent temperament differences requires clean studio headphones or audio interfaces, alongside reliable music stand accessories:
+      </p>
+      <div class="cta-row">
+        <a href="https://bbux.me/oarMyk3d" rel="sponsored noopener" target="_blank" style="display:inline-block;background:#059669;color:#ffffff !important;padding:12px 20px;border-radius:10px;font-weight:700;text-decoration:none;max-width:100%;box-sizing:border-box;">Shop Studio Headphones, Microphones &amp; Audio Gear at BestBuy &rarr;</a>
+        <a href="https://bbux.me/T9xC6WZH9" rel="sponsored noopener" target="_blank" style="display:inline-block;background:#2563eb;color:#ffffff !important;padding:12px 20px;border-radius:10px;font-weight:700;text-decoration:none;max-width:100%;box-sizing:border-box;">Explore Classical &amp; Orchestral Musician Gifts at Music Gifts Depot &rarr;</a>
+      </div>
+    </div>
+    <h2>Mathematical Equations: Converting A4 Reference Pitch &amp; Logarithmic Cents</h2>
+    <p>
+      Human pitch perception is logarithmic rather than linear: the ear hears an octave doubling from <code>110 Hz (A2)</code> to <code>220 Hz (A3)</code> as the exact same musical distance as the doubling from <code>440 Hz (A4)</code> to <code>880 Hz (A5)</code>. To divide each octave into 12 equal semitones (<strong>12-Tone Equal Temperament, or 12-TET</strong>), every semitone step multiplies the frequency by $2^{1/12} \approx 1.059463094$, and each semitone is further subdivided into <strong>100 logarithmic cents</strong> (1,200 cents per octave):
+    </p>
+    <div class="card" style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:0.88rem;color:#34d399;text-align:center;">
+      f(n) = f<sub>A4</sub> &times; 2<sup>(n &minus; 69) / 12</sup> &nbsp;&nbsp;|&nbsp;&nbsp; Cents Offset (&Delta;c) = 1200 &times; log<sub>2</sub>(f<sub>target</sub> / f<sub>reference</sub>)
+    </div>
+    <p>
+      Using this logarithmic formula, we can calculate the exact cents deviation and mechanical string tension change ($\text{Tension Ratio} = (f_{\text{target}} / 440)^2$) for every historical and modern concert pitch standard:
+    </p>
+    <ul>
+      <li><strong>A4 = 415.00 Hz (Baroque Period Pitch):</strong> $\Delta c = 1200 \times \log_2(415 / 440) = -101.37\text{ cents}$ (virtually one full semitone flat, so an A4 on a Baroque harpsichord or gut-string violin sounds like G#4/Ab4 on a modern piano). String tension drops by <strong>11.04%</strong> compared to 440 Hz.</li>
+      <li><strong>A4 = 430.54 Hz (Scientific / Sauveur C4 = 256 Hz Pitch):</strong> Proposed by French physicist Joseph Sauveur in 1713 so that every C octave is an integer power of two ($C_0 = 16\text{ Hz}, C_4 = 256\text{ Hz}, C_5 = 512\text{ Hz}$). In 12-TET, $256 \times 2^{9/12} = 430.539\text{ Hz}$, which sits at <strong>-37.63 cents</strong> below 440 Hz.</li>
+      <li><strong>A4 = 432.00 Hz (Verdi 1884 / Alternative Concert Pitch):</strong> Advocated by Italian opera composer Giuseppe Verdi in 1884 to reduce soprano vocal strain compared to 450 Hz 19th-century theatre pitches. $\Delta c = 1200 \times \log_2(432 / 440) = -31.7666\text{ cents}$ (roughly 31.8 cents flat), reducing string tension by <strong>3.60%</strong>. Note that in 12-TET Equal Temperament, A4 = 432.00 Hz places Middle C (C4) at <strong>256.87 Hz</strong> (not 256.00 Hz).</li>
+      <li><strong>A4 = 440.00 Hz (ISO 16 International Standard):</strong> Adopted at the 1939 London conference and published as ISO 16. Serves as the baseline `0.00 cents` reference for synthesizers, digital pianos, and guitars worldwide.</li>
+      <li><strong>A4 = 442.00 Hz &amp; 443.00 Hz (Modern Orchestral &amp; MinYueTuan Standard):</strong> $\Delta c = +7.85\text{ cents}$ at 442 Hz and $+11.76\text{ cents}$ at 443 Hz, increasing string tension by <strong>+0.91% to +1.37%</strong> to project violin and wind overtones through large symphony halls.</li>
+    </ul>
+
+    <h2>12-TET vs 5-Limit Just Intonation vs Pythagorean Tuning: Complete Cents Comparison Table</h2>
+    <p>
+      Changing the A4 reference number (`432 Hz` vs `440 Hz` vs `442 Hz`) shifts the entire instrument up or down uniformly, but <strong>does not change the internal interval ratios</strong> between notes. By contrast, changing the <strong>Temperament System</strong> on our <a href="/violin-tuner">Online Violin Tuner</a> or <a href="/">Chromatic Tuner</a> alters the harmonic purity of thirds, fourths, fifths, and sixths relative to the root key:
+    </p>
+    <div class="lp-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Scale Degree &amp; Interval</th>
+            <th>12-TET Equal Cents</th>
+            <th>5-Limit Just Ratio</th>
+            <th>Just Intonation Cents</th>
+            <th>Just vs 12-TET Diff</th>
+            <th>Pythagorean Ratio</th>
+            <th>Pythagorean vs 12-TET</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Unison (1 / C)</strong></td><td class="mono">0.00 ¢</td><td class="mono">1 : 1</td><td class="mono">0.00 ¢</td><td class="mono">0.00 ¢</td><td class="mono">1 : 1</td><td class="mono">0.00 ¢</td></tr>
+          <tr><td><strong>Minor 2nd (Db)</strong></td><td class="mono">100.00 ¢</td><td class="mono">16 : 15</td><td class="mono">111.73 ¢</td><td class="mono">+11.73 ¢</td><td class="mono">256 : 243</td><td class="mono">-9.78 ¢</td></tr>
+          <tr><td><strong>Major 2nd (2 / D)</strong></td><td class="mono">200.00 ¢</td><td class="mono">9 : 8</td><td class="mono">203.91 ¢</td><td class="mono">+3.91 ¢</td><td class="mono">9 : 8</td><td class="mono">+3.91 ¢</td></tr>
+          <tr><td><strong>Minor 3rd (Eb)</strong></td><td class="mono">300.00 ¢</td><td class="mono">6 : 5</td><td class="mono">315.64 ¢</td><td class="mono">+15.64 ¢</td><td class="mono">32 : 27</td><td class="mono">-5.87 ¢</td></tr>
+          <tr><td><strong>Major 3rd (3 / E)</strong></td><td class="mono">400.00 ¢</td><td class="mono">5 : 4</td><td class="mono">386.31 ¢</td><td class="mono"><strong>-13.69 ¢</strong></td><td class="mono">81 : 64</td><td class="mono">+7.82 ¢</td></tr>
+          <tr><td><strong>Perfect 4th (4 / F)</strong></td><td class="mono">500.00 ¢</td><td class="mono">4 : 3</td><td class="mono">498.04 ¢</td><td class="mono">-1.96 ¢</td><td class="mono">4 : 3</td><td class="mono">-1.96 ¢</td></tr>
+          <tr><td><strong>Tritone (F# / Gb)</strong></td><td class="mono">600.00 ¢</td><td class="mono">45 : 32</td><td class="mono">590.22 ¢</td><td class="mono">-9.78 ¢</td><td class="mono">729 : 512</td><td class="mono">+11.73 ¢</td></tr>
+          <tr><td><strong>Perfect 5th (5 / G)</strong></td><td class="mono">700.00 ¢</td><td class="mono">3 : 2</td><td class="mono">701.96 ¢</td><td class="mono"><strong>+1.96 ¢</strong></td><td class="mono">3 : 2</td><td class="mono">+1.96 ¢</td></tr>
+          <tr><td><strong>Minor 6th (Ab)</strong></td><td class="mono">800.00 ¢</td><td class="mono">8 : 5</td><td class="mono">813.69 ¢</td><td class="mono">+13.69 ¢</td><td class="mono">128 : 81</td><td class="mono">-7.82 ¢</td></tr>
+          <tr><td><strong>Major 6th (6 / A)</strong></td><td class="mono">900.00 ¢</td><td class="mono">5 : 3</td><td class="mono">884.36 ¢</td><td class="mono"><strong>-15.64 ¢</strong></td><td class="mono">27 : 16</td><td class="mono">+5.87 ¢</td></tr>
+          <tr><td><strong>Minor 7th (Bb)</strong></td><td class="mono">1000.00 ¢</td><td class="mono">9 : 5</td><td class="mono">1017.60 ¢</td><td class="mono">+17.60 ¢</td><td class="mono">16 : 9</td><td class="mono">-3.91 ¢</td></tr>
+          <tr><td><strong>Major 7th (7 / B)</strong></td><td class="mono">1100.00 ¢</td><td class="mono">15 : 8</td><td class="mono">1088.27 ¢</td><td class="mono">-11.73 ¢</td><td class="mono">243 : 128</td><td class="mono">+9.78 ¢</td></tr>
+          <tr><td><strong>Octave (8 / C)</strong></td><td class="mono">1200.00 ¢</td><td class="mono">2 : 1</td><td class="mono">1200.00 ¢</td><td class="mono">0.00 ¢</td><td class="mono">2 : 1</td><td class="mono">0.00 ¢</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Why 432 Hz vs 440 Hz Matters Less for Consonance Than Temperament Choice</h2>
+    <h3>1. The 13.69-Cent Major Third Beating Phenomenon</h3>
+    <p>
+      In 12-TET Equal Temperament—whether anchored at <code>432 Hz</code>, <code>440 Hz</code>, or <code>442 Hz</code>—every Major Third interval (`C4 to E4` or `G3 to B3` on a guitar) is tuned to $2^{4/12} = 1.25992$, which is <strong>+13.69 cents sharper</strong> than the pure harmonic 5th partial ratio of $5:4 = 1.25000$. When two sustained instruments (such as a violin double-stop or brass section) play a 12-TET Major Third at <code>C4 (261.63 Hz)</code> and <code>E4 (329.63 Hz)</code>, their 5th and 4th overtones collide and produce an audible acoustic beat frequency of $5(261.63) - 4(329.63) = 1308.15 - 1318.52 = \mathbf{10.37\text{ beats per second (Hz)}}$. Lowering A4 to 432 Hz in 12-TET merely slows that beating from 10.37 Hz to 10.18 Hz; switching to <strong>Just Intonation (5:4)</strong> eliminates the beating completely (`0.00 Hz`).
+    </p>
+    <h3>2. When to Use Pythagorean vs Just vs 12-TET on String Instruments</h3>
+    <p>
+      Fretted instruments with straight metal frets (<a href="/guitar-tuner">guitars</a>, <a href="/ukulele-tuner">ukuleles</a>, and <a href="/bass-tuner">electric basses</a>) have fixed 12-TET semitone spacing built into the fingerboard, so their open strings should be calibrated in 12-TET to prevent out-of-tune chords across different keys. Fretless bowed strings (<a href="/violin-tuner">violin, viola, cello</a>, erhu) tune their open fifths (`C-G-D-A-E`) to pure $3:2$ <strong>Pythagorean fifths</strong> (+1.96 cents per fifth) for maximum open-string resonance, and then adjust finger placement dynamically toward <strong>Just Intonation</strong> during slow sustained chords or <strong>Pythagorean</strong> sharp leading tones during melodic solos.
+    </p>
+
+    <section class="card" aria-labelledby="faq-heading">
+      <h2 id="faq-heading" style="margin-top:0;">Frequently Asked Questions: 432 Hz vs 440 Hz vs 442 Hz Calibration</h2>
+      <h3>How many cents lower is A4 = 432 Hz compared to standard A4 = 440 Hz?</h3>
+      <p>
+        Using the logarithmic cents equation c = 1200 * log2(432 / 440), A4 = 432 Hz is exactly -31.7666 cents (approximately -31.8 cents, or just under one-third of a semitone) flatter than the ISO 16 concert standard of A4 = 440.00 Hz.
+      </p>
+      <h3>How many cents higher is orchestral A4 = 442 Hz compared to A4 = 440 Hz?</h3>
+      <p>
+        At A4 = 442 Hz, every pitch shifts upward by c = 1200 * log2(442 / 440) = +7.852 cents. Many European and Asian symphony orchestras and traditional ensembles calibrate to 442 Hz or 443 Hz to increase string tension and brighten acoustic projection in large concert halls.
+      </p>
+      <h3>Does tuning to 432 Hz make Middle C equal to 256 Hz?</h3>
+      <p>
+        In 12-Tone Equal Temperament (12-TET), setting A4 = 432.00 Hz places Middle C (C4) at 256.87 Hz, not 256.00 Hz. Conversely, if you define C4 = 256.00 Hz (Scientific or Verdi pitch) in 12-TET, A4 equals 430.54 Hz. Only under Pythagorean or specific Just Intonation ratios (such as a 27:16 major sixth above C4 = 256 Hz) does C4 = 256.00 Hz coexist with A4 = 432.00 Hz.
+      </p>
+      <h3>What is the cents difference between 12-TET and Just Intonation on a Major Third and Perfect Fifth?</h3>
+      <p>
+        A pure Just Intonation Major Third has a frequency ratio of 5:4 (386.31 cents), which is 13.69 cents flatter than a 12-TET Major Third (400.00 cents). A pure Just Intonation Perfect Fifth has a 3:2 ratio (701.96 cents), which is 1.96 cents sharper than a 12-TET Perfect Fifth (700.00 cents).
+      </p>
+    </section>
+
+    <section class="card" aria-labelledby="related-heading">
+      <h2 id="related-heading" style="margin-top:0;">Related PluckBench Tuners &amp; Acoustic Calculators</h2>
+      <div class="tool-links-grid">
+        <a class="tool-link-card" href="/violin-tuner">
+          <strong>Online Violin &amp; 442Hz Tuner</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Bowed reference synthesis with 430–450 Hz A4 and Just/Pythagorean modes.</div>
+        </a>
+        <a class="tool-link-card" href="/">
+          <strong>Chromatic Instrument Tuner Home</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Multi-instrument sustain pitch lock tuner and reference tone generator.</div>
+        </a>
+        <a class="tool-link-card" href="/drop-d-alternate-guitar-tuning-chart">
+          <strong>Drop D &amp; Alternate Tuning Calculator</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Target Hz and Mersenne's Law string tension for Drop D, Drop C &amp; Bass.</div>
+        </a>
+        <a class="tool-link-card" href="/bpm-to-ms-delay-time-calculator">
+          <strong>BPM to Milliseconds Delay Calculator</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Convert BPM tempo into delay ms, LFO Hz, and vocal plate reverb pre-delay.</div>
+        </a>
+        <a class="tool-link-card" href="/capo-transposition-chord-chart-calculator">
+          <strong>Capo Transposition &amp; Key Calculator</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Convert open CAGED chord progressions across Frets 1 to 11.</div>
+        </a>
+        <a class="tool-link-card" href="/guzheng-21-string-modulation-chart">
+          <strong>21-String Guzheng Modulation Chart</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Yanzhu bridge shift chart for D, G, C, F &amp; A pentatonic scales.</div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p style="margin:0 0 8px;color:#94a3b8;">
+        &copy; 2026 PluckBench Pro &mdash; Precision Browser-Based Web Audio Instrument Tuners, Rhythm Metronome &amp; Acoustic Engineering Calculators.
+      </p>
+      <p style="margin:0;font-size:0.78rem;">
+        <a href="/">Tuner Home</a> &middot;
+        <a href="/violin-tuner">Violin Tuner</a> &middot;
+        <a href="/guitar-tuner">Guitar Tuner</a> &middot;
+        <a href="/guzheng-tuner">Guzheng Tuner</a> &middot;
+        <a href="/ukulele-tuner">Ukulele Tuner</a> &middot;
+        <a href="/bass-tuner">Bass Tuner</a> &middot;
+        <a href="/online-metronome">Online Metronome</a> &middot;
+        <a href="/guitar-chords">Guitar Chords</a> &middot;
+        <a href="/decibel-meter">Decibel Meter</a>
+      </p>
+    </div>
+  </footer>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var NOTE_NAMES = ["C", "C#/Db", "D", "Eb", "E", "F", "F#/Gb", "G", "Ab", "A", "Bb", "B"];
+    var JUST_CENTS_DIFF = [0, 11.73, 3.91, 15.64, -13.69, -1.96, -9.78, 1.96, 13.69, -15.64, 17.60, -11.73];
+    var PYTH_CENTS_DIFF = [0, -9.78, 3.91, -5.87, 7.82, -1.96, 11.73, 1.96, -7.82, 5.87, -3.91, 9.78];
+
+    var a4El = document.getElementById("a4-select");
+    var octEl = document.getElementById("octave-select");
+    var tempEl = document.getElementById("temp-select");
+    var btnEl = document.getElementById("calc-btn");
+
+    function hz12Tet(midi, a4) {
+      return a4 * Math.pow(2, (midi - 69) / 12);
+    }
+
+    function compute() {
+      var a4 = parseFloat(a4El.value) || 432.0;
+      var oct = parseInt(octEl.value, 10) || 4;
+      var temp = tempEl.value;
+
+      var baseCentsOffset = 1200 * (Math.log(a4 / 440.0) / Math.LN2);
+      var tensionRatioPct = ((a4 / 440.0) * (a4 / 440.0) - 1) * 100;
+      var c4Hz = hz12Tet(60, a4);
+      if (temp === "just") {
+        c4Hz = c4Hz * Math.pow(2, JUST_CENTS_DIFF[0] / 1200);
+      }
+
+      var rowsHtml = "";
+      for (var i = 0; i < 12; i++) {
+        var midi = (oct + 1) * 12 + i;
+        var noteLabel = NOTE_NAMES[i] + oct;
+        var f432 = hz12Tet(midi, 432.0);
+        var f440 = hz12Tet(midi, 440.0);
+        var f442 = hz12Tet(midi, 442.0);
+
+        var tempDiff = 0;
+        if (temp === "just") tempDiff = JUST_CENTS_DIFF[i];
+        if (temp === "pyth") tempDiff = PYTH_CENTS_DIFF[i];
+
+        var fSelected = hz12Tet(midi, a4) * Math.pow(2, tempDiff / 1200);
+        var totalCents = baseCentsOffset + tempDiff;
+        var sign = totalCents >= 0 ? "+" : "";
+
+        rowsHtml += "<tr>" +
+          "<td class=\"mono\"><strong>" + noteLabel + "</strong></td>" +
+          "<td class=\"mono\">" + fSelected.toFixed(2) + " Hz</td>" +
+          "<td class=\"mono\">" + f432.toFixed(2) + " Hz</td>" +
+          "<td class=\"mono\">" + f440.toFixed(2) + " Hz</td>" +
+          "<td class=\"mono\">" + f442.toFixed(2) + " Hz</td>" +
+          "<td class=\"mono\">" + sign + totalCents.toFixed(2) + " ¢</td>" +
+          "</tr>";
+      }
+
+      var a4Sign = baseCentsOffset >= 0 ? "+" : "";
+      var tSign = tensionRatioPct >= 0 ? "+" : "";
+      var tempLabel = temp === "just" ? "5-Limit Just" : (temp === "pyth" ? "Pythagorean" : "12-TET Equal");
+
+      document.getElementById("res-a4-cents").textContent = a4Sign + baseCentsOffset.toFixed(2) + " cents";
+      document.getElementById("res-c4-hz").textContent = c4Hz.toFixed(2) + " Hz";
+      document.getElementById("res-temp-name").textContent = tempLabel;
+      document.getElementById("res-tension-shift").textContent = tSign + tensionRatioPct.toFixed(2) + "% vs 440Hz";
+      document.getElementById("res-table-body").innerHTML = rowsHtml;
+      document.getElementById("res-advice").innerHTML =
+        "<strong>Calibration Note (A4 = " + a4 + " Hz, " + tempLabel + "):</strong> Reference A4 shifts by <strong>" +
+        a4Sign + baseCentsOffset.toFixed(2) + " cents</strong> relative to ISO 440 Hz, changing string tension by <strong>" +
+        tSign + tensionRatioPct.toFixed(2) + "%</strong>.";
+    }
+
+    a4El.addEventListener("change", compute);
+    octEl.addEventListener("change", compute);
+    tempEl.addEventListener("change", compute);
+    btnEl.addEventListener("click", compute);
+    compute();
+  });
+  </script>
+</body>
+</html>

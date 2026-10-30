@@ -35,6 +35,11 @@ const LIVE_CALCULATOR_PAGES = [
     priority: '0.85',
     shortLabel: '21-String Guzheng Modulation Chart',
   },
+  {
+    canonicalPath: '/432hz-vs-440hz-vs-442hz-pitch-frequency-calculator',
+    priority: '0.85',
+    shortLabel: '432Hz vs 440Hz vs 442Hz Pitch Calculator',
+  },
 ];
 
 /**
