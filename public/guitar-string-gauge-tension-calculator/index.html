@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Guitar &amp; Bass String Gauge Tension Calculator: Scale Length, Pitch &amp; Pounds-Per-String Setup Guide (2026)</title>
+  <meta name="description" content="Calculate guitar and bass string tension in pounds (lbs) and kilograms (kg) across 24.75, 25.5, 27, and 34-inch scale lengths using Mersenne's Law physics." />
+  <link rel="canonical" href="https://www.pluckbench.com/guitar-string-gauge-tension-calculator" />
+  <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Guitar &amp; Bass String Gauge Tension Calculator: Scale Length, Pitch &amp; Pounds-Per-String Setup Guide (2026)" />
+  <meta property="og:description" content="Interactive guitar and bass string gauge tension calculator in lbs and kg for .009, .010, .011, .012, and .045-.105 sets across all scale lengths." />
+  <meta property="og:url" content="https://www.pluckbench.com/guitar-string-gauge-tension-calculator" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Article",
+        "headline": "Guitar & Bass String Gauge Tension Calculator: Scale Length, Pitch & Pounds-Per-String Setup Guide (2026)",
+        "description": "Luthier setup guide and Mersenne's Law string tension calculator computing per-string pounds (lbs) and kilograms (kg) for electric, acoustic, and bass guitars.",
+        "datePublished": "2026-10-29",
+        "dateModified": "2026-10-29",
+        "author": {
+          "@type": "Organization",
+          "name": "PluckBench Acoustic Engineering Desk",
+          "url": "https://www.pluckbench.com/"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "PluckBench",
+          "url": "https://www.pluckbench.com/"
+        },
+        "mainEntityOfPage": "https://www.pluckbench.com/guitar-string-gauge-tension-calculator"
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "PluckBench Guitar & Bass String Gauge Tension Calculator",
+        "url": "https://www.pluckbench.com/guitar-string-gauge-tension-calculator",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Web, iOS, Android, macOS, Windows",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How is guitar string tension calculated in pounds (lbs)?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Guitar string tension follows Mersenne's Law: T = (UW * (2 * L * f)^2) / 386.088, where UW is the string's unit weight in pounds per linear inch, L is the vibrating scale length in inches, f is the fundamental frequency in Hertz, and 386.088 in/s^2 is standard gravitational acceleration."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is the total neck tension of a .009-.042 vs .010-.046 electric guitar string set?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "On a standard 25.5-inch Fender scale length tuned to E440 Standard, a .009-.042 Super Light nickel-wound set exerts approximately 85.1 lbs (38.6 kg) of total neck pull, whereas a .010-.046 Regular Light set exerts approximately 103.6 lbs (47.0 kg)—an increase of 21.7% in total tension."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Why do .010 strings feel looser on a 24.75-inch Les Paul than on a 25.5-inch Stratocaster?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Because string tension is proportional to the square of scale length (L^2), a 25.5-inch scale requires (25.5 / 24.75)^2 = 1.0615, or 6.15% higher tension than a 24.75-inch scale tuned to the same pitch. This is why a .010-.046 set on a 24.75-inch guitar feels closer in stiffness to a .0095-.044 set on a 25.5-inch guitar."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Do phosphor bronze acoustic strings have higher tension than nickel-plated electric strings of the same gauge?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. 80/20 bronze and phosphor bronze wrap alloys have a higher material density than nickel-plated steel wrap wire, and acoustic sets typically use a wound 3rd (G3) string (.024w) instead of a plain steel .017, yielding 155 to 168 lbs of total neck load on a .012-.053 Light acoustic pack."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #070a0f;
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      line-height: 1.65;
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+    a { color: #34d399; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 16px; width: 100%; }
+    .site-header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid #1e293b;
+      padding: 14px 0;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(8px);
+    }
+    .header-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+    .brand { font-weight: 800; font-size: 1.15rem; color: #f8fafc; display: flex; align-items: center; gap: 8px; }
+    .brand-badge { background: #10b981; color: #052e16; font-size: 0.7rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; }
+    .top-nav { display: flex; flex-wrap: wrap; gap: 6px; }
+    .top-nav a {
+      font-size: 0.76rem;
+      color: #cbd5e1;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 5px 10px;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+    .top-nav a:hover { border-color: #10b981; color: #34d399; }
+    .disclosure {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid #1e293b;
+      border-left: 3px solid #10b981;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin: 20px 0 16px;
+    }
+    h1 { font-size: clamp(1.5rem, 3.2vw, 2.2rem); line-height: 1.25; color: #f8fafc; margin: 12px 0 14px; font-weight: 800; }
+    h2 { font-size: clamp(1.2rem, 2.3vw, 1.55rem); color: #f8fafc; margin: 32px 0 12px; font-weight: 700; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }
+    h3 { font-size: 1.08rem; color: #e2e8f0; margin: 20px 0 8px; font-weight: 700; }
+    p, li { color: #cbd5e1; font-size: 0.96rem; }
+    .card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .calc-box {
+      background: linear-gradient(145deg, #0f172a 0%, #091526 100%);
+      border: 1px solid #10b981;
+      border-radius: 16px;
+      padding: 22px;
+      margin: 24px 0;
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.08);
+    }
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .field label { display: block; font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 6px; }
+    .field select, .field input {
+      width: 100%;
+      background: #070a0f;
+      border: 1px solid #334155;
+      color: #f8fafc;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+    }
+    .btn-calc {
+      background: #10b981;
+      color: #052e16;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      width: 100%;
+      transition: opacity 0.2s;
+    }
+    .btn-calc:hover { opacity: 0.92; }
+    .result-panel {
+      margin-top: 18px;
+      background: #070a0f;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .kpi {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 12px;
+      border-radius: 10px;
+    }
+    .kpi-label { font-size: 0.74rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em; }
+    .kpi-val { font-size: 1.15rem; font-weight: 800; color: #34d399; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin-top: 4px; }
+    .lp-table-wrap { overflow-x: auto; max-width: 100%; margin: 14px 0; border: 1px solid #1e293b; border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 560px; }
+    th, td { padding: 9px 11px; text-align: left; border-bottom: 1px solid #1e293b; }
+    th { background: #090d16; color: #94a3b8; font-weight: 700; }
+    td { color: #e2e8f0; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #34d399; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin: 18px 0; }
+    .tool-links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 14px; }
+    .tool-link-card {
+      display: block;
+      background: #090d16;
+      border: 1px solid #1e293b;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: #f1f5f9;
+      text-decoration: none;
+    }
+    .tool-link-card:hover { border-color: #10b981; text-decoration: none; }
+    .site-footer {
+      border-top: 1px solid #1e293b;
+      margin-top: 48px;
+      padding: 28px 0 40px;
+      color: #64748b;
+      font-size: 0.82rem;
+    }
+    @media (max-width: 640px) {
+      .card, .calc-box { padding: 16px; }
+      table { font-size: 0.76rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="brand">
+        <span>PluckBench</span>
+        <span class="brand-badge">PRO DSP</span>
+      </a>
+      <nav class="top-nav" aria-label="Main Musical Tools Navigation">
+        <a href="/">Tuner Home</a>
+        <a href="/guitar-tuner">Guitar Tuner</a>
+        <a href="/bass-tuner">Bass Tuner</a>
+        <a href="/ukulele-tuner">Ukulele Tuner</a>
+        <a href="/violin-tuner">Violin Tuner</a>
+        <a href="/guzheng-tuner">Guzheng Tuner</a>
+        <a href="/online-metronome">Metronome</a>
+        <a href="/guitar-chords">Guitar Chords</a>
+        <a href="/decibel-meter">dB Meter</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="disclosure">
+      <strong>Reader Disclosure:</strong> PluckBench builds free browser-based Web Audio instrument tuners and luthier setup calculators. Some outbound links to electric guitar manufacturers or electronics retailers are affiliate links (marked as sponsored), which may earn a small commission at no additional cost to you. All unit weight and tension equations follow published D'Addario and Mersenne's Law engineering specifications.
+    </div>
+
+    <h1>Guitar &amp; Bass String Gauge Tension Calculator: Scale Length, Pitch &amp; Pounds-Per-String Setup Guide (2026)</h1>
+    <p>
+      Choosing between a <code>.009–.042</code> Super Light set, a <code>.010–.046</code> Regular Light set, or a <code>.011–.052</code> Medium set is not guesswork—it is pure mechanical physics. Every guitar and bass neck is a balanced lever system where total forward string pull (typically <strong>85 lbs to 165 lbs</strong> on 6-string guitars and <strong>160 lbs to 215 lbs</strong> on electric basses) is counteracted by an internal steel truss rod and tremolo claw springs. Use the interactive Mersenne's Law string tension calculator below alongside our <a href="/guitar-tuner">Online Guitar Tuner</a>, <a href="/bass-tuner">Online Bass Tuner</a>, and <a href="/drop-d-alternate-guitar-tuning-chart">Alternate Tuning Frequency Chart</a> to calculate exact per-string pounds (`lbs`) and kilograms (`kg`) across any scale length and tuning preset.
+    </p>
+
+    <section class="calc-box" id="string-tension-calc" aria-labelledby="calc-heading">
+      <h2 id="calc-heading" style="margin-top:0;border-bottom:none;padding-bottom:0;">Interactive Guitar &amp; Bass String Gauge Tension Calculator (lbs &amp; kg)</h2>
+      <p style="font-size:0.88rem;color:#94a3b8;margin-top:4px;">
+        Select your instrument scale length (`24.75"` Gibson to `35.0"` Bass), string gauge pack (`.009-.042` to `.045-.105` Bass), and tuning preset to compute individual string tension in pounds and kilograms, total neck load, and feel classification.
+      </p>
+      <div class="calc-grid">
+        <div class="field">
+          <label for="scale-select">1. Vibrating Scale Length (Inches)</label>
+          <select id="scale-select">
+            <option value="24.75">24.75" Gibson Les Paul / SG / ES-335</option>
+            <option value="25.0">25.00" PRS Custom 24 / Core Scale</option>
+            <option value="25.5" selected>25.50" Fender Stratocaster / Telecaster</option>
+            <option value="26.5">26.50" Extended Drop / Baritone Light</option>
+            <option value="27.0">27.00" Baritone Guitar Scale</option>
+            <option value="34.0">34.00" Standard Long-Scale Electric Bass</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="gauge-select">2. String Gauge Pack</label>
+          <select id="gauge-select">
+            <option value="009">.009 - .042 Super Light Nickel Electric</option>
+            <option value="010" selected>.010 - .046 Regular Light Nickel Electric</option>
+            <option value="011">.011 - .052 Medium / Hybrid Electric</option>
+            <option value="012ac">.012 - .053 Phosphor Bronze Acoustic Light</option>
+            <option value="bass45">.045 - .105 Regular Light 4-String Bass</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="tuning-select">3. Tuning Pitch Preset</label>
+          <select id="tuning-select">
+            <option value="std" selected>Standard Pitch (E2-A2-D3-G3-B3-E4 / E1-G2)</option>
+            <option value="eb">Half-Step Down Eb (-100 Cents All Strings)</option>
+            <option value="drop_d">Drop D (Low String -200 Cents to D2 / D1)</option>
+            <option value="d_std">Full-Step Down D Standard (-200 Cents All)</option>
+            <option value="drop_c">Drop C (CGCFAD / Low String -400 Cents)</option>
+          </select>
+        </div>
+      </div>
+      <button type="button" id="calc-btn" class="btn-calc">Calculate Per-String Tension (lbs / kg) &amp; Total Neck Load</button>
+
+      <div class="result-panel" id="calc-result" aria-live="polite">
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="kpi-label">Total Neck Load (lbs)</div>
+            <div class="kpi-val" id="res-total-lbs">103.6 lbs</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Total Neck Load (kg)</div>
+            <div class="kpi-val" id="res-total-kg">47.0 kg</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Avg Tension / String</div>
+            <div class="kpi-val" id="res-avg-lbs">17.3 lbs / string</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Bending &amp; Fretboard Feel</div>
+            <div class="kpi-val" id="res-feel" style="font-size:0.96rem;">Balanced Studio Standard</div>
+          </div>
+        </div>
+        <div class="lp-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>String #</th>
+                <th>Note &amp; Pitch (Hz)</th>
+                <th>Gauge Diameter</th>
+                <th>Construction</th>
+                <th>Tension (lbs)</th>
+                <th>Tension (kg)</th>
+              </tr>
+            </thead>
+            <tbody id="res-table-body">
+              <tr><td>1st (High)</td><td class="mono">E4 (329.63 Hz)</td><td class="mono">.010"</td><td>Plain Steel</td><td class="mono">16.2 lbs</td><td class="mono">7.35 kg</td></tr>
+              <tr><td>2nd</td><td class="mono">B3 (246.94 Hz)</td><td class="mono">.013"</td><td>Plain Steel</td><td class="mono">15.4 lbs</td><td class="mono">6.99 kg</td></tr>
+              <tr><td>3rd</td><td class="mono">G3 (196.00 Hz)</td><td class="mono">.017"</td><td>Plain Steel</td><td class="mono">16.6 lbs</td><td class="mono">7.53 kg</td></tr>
+              <tr><td>4th</td><td class="mono">D3 (146.83 Hz)</td><td class="mono">.026"</td><td>Nickel Wound</td><td class="mono">18.4 lbs</td><td class="mono">8.35 kg</td></tr>
+              <tr><td>5th</td><td class="mono">A2 (110.00 Hz)</td><td class="mono">.036"</td><td>Nickel Wound</td><td class="mono">19.5 lbs</td><td class="mono">8.85 kg</td></tr>
+              <tr><td>6th (Low)</td><td class="mono">E2 (82.41 Hz)</td><td class="mono">.046"</td><td>Nickel Wound</td><td class="mono">17.5 lbs</td><td class="mono">7.94 kg</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p id="res-advice" style="font-size:0.86rem;color:#cbd5e1;margin:10px 0 0;">
+          <strong>Setup Recommendation (25.5" Scale, .010-.046 in Standard Pitch):</strong> Averaging 17.3 lbs per string, this setup provides crisp fretting intonation and comfortable whole-step solo bends without excessive tremolo spring pull.
+        </p>
+      </div>
+    </section>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Precision Guitars &amp; Studio Maintenance Gear</h3>
+      <p style="font-size:0.88rem;">
+        Looking for modern electric guitars featuring hand-polished stainless steel frets and roasted maple necks that resist seasonal humidity shifts, or replacement string sets and studio audio gear?
+      </p>
+      <div class="cta-row">
+        <a href="https://bbux.me/BarMtMwIw" rel="sponsored noopener" target="_blank" style="display:inline-block;background:#059669;color:#ffffff !important;padding:12px 20px;border-radius:10px;font-weight:700;text-decoration:none;max-width:100%;box-sizing:border-box;">Inspect EART-GUITAR Roasted-Maple &amp; Stainless-Fret Guitars &rarr;</a>
+        <a href="https://bbux.me/oarMyk3d" rel="sponsored noopener" target="_blank" style="display:inline-block;background:#2563eb;color:#ffffff !important;padding:12px 20px;border-radius:10px;font-weight:700;text-decoration:none;max-width:100%;box-sizing:border-box;">Shop Guitar Strings, Cables &amp; Recording Gear at BestBuy &rarr;</a>
+      </div>
+    </div>
+    <h2>Mersenne's Law Explained: How Unit Weight, Scale Length &amp; Pitch Determine String Tension</h2>
+    <p>
+      Published by French polymath Marin Mersenne in <em>Harmonie universelle</em> (1636), the acoustic equation for a stretched vibrating string relates fundamental frequency ($f$, in Hertz), speaking length between the nut and bridge saddle ($L$, in inches), linear unit weight ($UW$, in pounds per linear inch), and gravitational acceleration ($g = 386.088\text{ in/s}^2$) to mechanical tension ($T$, in pounds-force):
+    </p>
+    <div class="card" style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:0.88rem;color:#34d399;text-align:center;">
+      T (lbs) = [ UW &times; (2 &times; L &times; f)<sup>2</sup> ] / 386.088 &nbsp;&nbsp;|&nbsp;&nbsp; T (kg) = T (lbs) &times; 0.453592
+    </div>
+    <p>
+      Every variable in this equation gives luthiers and players a direct mechanical lever over fretboard playability and acoustic tone:
+    </p>
+    <ul>
+      <li><strong>Unit Weight ($UW$) and Core-to-Wrap Ratios:</strong> For plain steel treble strings (`E4, B3, G3`), unit weight scales directly with the cross-sectional area of high-carbon steel ($\pi r^2 \times \rho_{\text{steel}}$), meaning a `.010"` string has $(0.010 / 0.009)^2 = 1.2346$, or <strong>23.5% more mass and tension</strong> than a `.009"` string at the same pitch! For wound bass strings (`D3, A2, E2`), total mass is the sum of the hexagonal or round steel core wire plus the outer nickel-plated steel or 80/20 bronze wrap wire.</li>
+      <li><strong>Scale Length Squared ($L^2$):</strong> Moving from a <code>24.75"</code> Gibson Les Paul scale to a <code>25.50"</code> Fender Stratocaster scale increases speaking length by only 3.03%, yet increases tension at the exact same pitch and gauge by $(25.50 / 24.75)^2 - 1 = \mathbf{+6.15\%}$. Moving from `25.50"` to a `27.00"` Baritone scale increases tension at the same pitch by $(27.00 / 25.50)^2 - 1 = \mathbf{+12.11\%}$, which is why baritones can tune down a fourth to `B1 Standard (B1-E2-A2-D3-F#3-B3)` without requiring unplayably thick bridge-cable strings.</li>
+      <li><strong>Frequency Squared ($f^2$):</strong> Each semitone step upward increases string tension by $2^{2/12} - 1 = \mathbf{+12.25\%}$, while each semitone step downward reduces string tension by $1 - 2^{-2/12} = \mathbf{-10.91\%}$.</li>
+    </ul>
+
+    <h2>Standard String Gauge Pack Tension Comparison Chart (E440 Standard Tuning)</h2>
+    <p>
+      Compare per-string and total neck load across the five most popular electric, acoustic, and 4-string bass gauge packs below, and verify your open-string calibration on our <a href="/guitar-tuner">Online Guitar Tuner</a> or <a href="/bass-tuner">Online Bass Tuner</a>:
+    </p>
+    <div class="lp-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>String Pack &amp; Alloy</th>
+            <th>Scale Length</th>
+            <th>Gauges (1st to 6th / 4th)</th>
+            <th>1st String (lbs)</th>
+            <th>6th / Low String (lbs)</th>
+            <th>Total Neck Load (lbs / kg)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>.009 - .042 Super Light Electric</strong></td>
+            <td class="mono">25.50" Fender</td>
+            <td class="mono">.009 - .011 - .016 - .024w - .032w - .042w</td>
+            <td class="mono">13.1 lbs</td>
+            <td class="mono">14.8 lbs</td>
+            <td class="mono">85.1 lbs (38.6 kg)</td>
+          </tr>
+          <tr>
+            <td><strong>.010 - .046 Regular Light Electric</strong></td>
+            <td class="mono">24.75" Gibson</td>
+            <td class="mono">.010 - .013 - .017 - .026w - .036w - .046w</td>
+            <td class="mono">15.3 lbs</td>
+            <td class="mono">16.5 lbs</td>
+            <td class="mono">97.6 lbs (44.3 kg)</td>
+          </tr>
+          <tr>
+            <td><strong>.010 - .046 Regular Light Electric</strong></td>
+            <td class="mono">25.50" Fender</td>
+            <td class="mono">.010 - .013 - .017 - .026w - .036w - .046w</td>
+            <td class="mono">16.2 lbs</td>
+            <td class="mono">17.5 lbs</td>
+            <td class="mono">103.6 lbs (47.0 kg)</td>
+          </tr>
+          <tr>
+            <td><strong>.010 - .052 Skinny Top Heavy Bottom</strong></td>
+            <td class="mono">25.50" Fender</td>
+            <td class="mono">.010 - .013 - .017 - .030w - .042w - .052w</td>
+            <td class="mono">16.2 lbs</td>
+            <td class="mono">22.1 lbs</td>
+            <td class="mono">120.0 lbs (54.4 kg)</td>
+          </tr>
+          <tr>
+            <td><strong>.011 - .052 Medium Electric</strong></td>
+            <td class="mono">25.50" Fender</td>
+            <td class="mono">.011 - .014 - .018 - .030w - .042w - .052w</td>
+            <td class="mono">19.6 lbs</td>
+            <td class="mono">22.1 lbs</td>
+            <td class="mono">127.8 lbs (58.0 kg)</td>
+          </tr>
+          <tr>
+            <td><strong>.012 - .053 Acoustic Phosphor Bronze</strong></td>
+            <td class="mono">25.40" Acoustic</td>
+            <td class="mono">.012 - .016 - .024w - .032w - .042w - .053w</td>
+            <td class="mono">23.3 lbs</td>
+            <td class="mono">25.0 lbs</td>
+            <td class="mono">161.2 lbs (73.1 kg)</td>
+          </tr>
+          <tr>
+            <td><strong>.045 - .105 Regular Light 4-String Bass</strong></td>
+            <td class="mono">34.00" Long Bass</td>
+            <td class="mono">.045w - .065w - .085w - .105w</td>
+            <td class="mono">42.9 lbs (G2)</td>
+            <td class="mono">40.2 lbs (E1)</td>
+            <td class="mono">173.9 lbs (78.9 kg)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Why Plain G3 Strings Feel Stiff and How Balanced Tension Sets Solve It</h2>
+    <p>
+      Look closely at the per-string tension figures for a traditional <code>.010–.046</code> electric guitar pack at 25.5" scale length: the 2nd string (`B3, .013"`) sits at <code>15.4 lbs</code>, the 4th string (`D3, .026w"`) sits at <code>18.4 lbs</code>, and the 5th string (`A2, .036w"`) spikes to <code>19.5 lbs</code>, before the 6th string (`E2, .046w"`) drops back down to <code>17.5 lbs</code>. Historically, string manufacturers assembled packs using even thousandth-of-an-inch gauge increments rather than equalized mechanical tension.
+    </p>
+    <p>
+      Even more noticeable is the <strong>unwound .017" or .018" G3 string</strong>. Because an unwound solid steel cylinder of `.017"` diameter has much higher flexural bending rigidity (inharmonicity) than a thin `.009"` core wrapped in flexible nickel wire, a plain G3 string resists finger vibrato and exhibits a pronounced +20 cent sharp pitch chirp when picked hard. Switching to a <strong>balanced tension set</strong> (such as `.010 - .0135 - .017 - .025w - .034w - .046w`) or using a <strong>wound .020w" or .022w" G3 string</strong> for jazz and D-Standard setups equalizes right-hand pick bounce and improves chord intonation across the 2nd through 7th frets.
+    </p>
+
+    <h2>Nut Slot Width, Tremolo Claw Springs &amp; Intonation Adjustments After Changing Gauges</h2>
+    <ol>
+      <li><strong>Check Nut Slot Binding on Wound Strings:</strong> Jumping from a <code>.009–.042</code> pack to a <code>.011–.052</code> or <code>.012–.056</code> pack increases string diameter by `.010"` to `.014"` on the low E and A strings. If a thicker wound string pinches inside a narrow bone or synthetic nut slot, it will bind when you turn the tuning peg and ping out of tune after a string bend. Apply dry graphite (pencil lead) or PTFE nut lubricant, or have a luthier widen the nut slots with gauged nut files to `.002"` wider than the string diameter.</li>
+      <li><strong>Re-Level Floating Tremolo Bridges:</strong> Increasing total neck load from <code>85.1 lbs (.009s)</code> to <code>103.6 lbs (.010s)</code> adds <strong>+18.5 lbs</strong> of forward pull on a Stratocaster or Floyd Rose bridge, lifting the rear of the bridge plate off the body. Remove the rear spring cavity cover and tighten the two tremolo claw wood screws clockwise by 1.5 to 2.5 turns (or add a fourth tremolo spring) until the bridge plate sits parallel to the guitar top at concert pitch.</li>
+      <li><strong>Fine-Tune Bridge Saddle Compensation:</strong> Higher-mass strings have greater flexural stiffness at the termination points, requiring slightly longer speaking length to intonate accurately at the 12th fret. Use our <a href="/guitar-tuner">Online Guitar Tuner</a> in sustain-lock mode to compare the 12th-fret harmonic against the fretted 12th-fret note and move the saddle backward slightly if the fretted note reads sharp.</li>
+    </ol>
+
+    <section class="card" aria-labelledby="faq-heading">
+      <h2 id="faq-heading" style="margin-top:0;">Frequently Asked Questions: Guitar &amp; Bass String Tension</h2>
+      <h3>How is guitar string tension calculated in pounds (lbs)?</h3>
+      <p>
+        Guitar string tension follows Mersenne's Law: T = (UW * (2 * L * f)^2) / 386.088, where UW is the string's unit weight in pounds per linear inch, L is the vibrating scale length in inches, f is the fundamental frequency in Hertz, and 386.088 in/s^2 is standard gravitational acceleration.
+      </p>
+      <h3>What is the total neck tension of a .009-.042 vs .010-.046 electric guitar string set?</h3>
+      <p>
+        On a standard 25.5-inch Fender scale length tuned to E440 Standard, a .009-.042 Super Light nickel-wound set exerts approximately 85.1 lbs (38.6 kg) of total neck pull, whereas a .010-.046 Regular Light set exerts approximately 103.6 lbs (47.0 kg)—an increase of 21.7% in total tension.
+      </p>
+      <h3>Why do .010 strings feel looser on a 24.75-inch Les Paul than on a 25.5-inch Stratocaster?</h3>
+      <p>
+        Because string tension is proportional to the square of scale length (L^2), a 25.5-inch scale requires (25.5 / 24.75)^2 = 1.0615, or 6.15% higher tension than a 24.75-inch scale tuned to the same pitch. This is why a .010-.046 set on a 24.75-inch guitar feels closer in stiffness to a .0095-.044 set on a 25.5-inch guitar.
+      </p>
+      <h3>Do phosphor bronze acoustic strings have higher tension than nickel-plated electric strings of the same gauge?</h3>
+      <p>
+        Yes. 80/20 bronze and phosphor bronze wrap alloys have a higher material density than nickel-plated steel wrap wire, and acoustic sets typically use a wound 3rd (G3) string (.024w) instead of a plain steel .017, yielding 155 to 168 lbs of total neck load on a .012-.053 Light acoustic pack.
+      </p>
+    </section>
+
+    <section class="card" aria-labelledby="related-heading">
+      <h2 id="related-heading" style="margin-top:0;">Related PluckBench Tuners &amp; Luthier Calculators</h2>
+      <div class="tool-links-grid">
+        <a class="tool-link-card" href="/guitar-tuner">
+          <strong>Online Guitar Tuner</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Calibrate Standard, Drop D, Eb &amp; Open tunings with ±1.5¢ sustain pitch lock.</div>
+        </a>
+        <a class="tool-link-card" href="/bass-tuner">
+          <strong>Online 4 &amp; 5-String Bass Tuner</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Sub-bass harmonic lock for B0 (30.87 Hz) and E1 (41.20 Hz).</div>
+        </a>
+        <a class="tool-link-card" href="/drop-d-alternate-guitar-tuning-chart">
+          <strong>Drop D &amp; Alternate Tuning Chart</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Compare Drop D, Drop C, DADGAD &amp; Open G target frequencies.</div>
+        </a>
+        <a class="tool-link-card" href="/capo-transposition-chord-chart-calculator">
+          <strong>Capo Transposition &amp; Key Calculator</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Transpose open chord progressions across Frets 1–11.</div>
+        </a>
+        <a class="tool-link-card" href="/bpm-to-ms-delay-time-calculator">
+          <strong>BPM to Milliseconds Delay Calculator</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Convert tempo into dotted 1/8 delay ms, LFO Hz &amp; reverb pre-delay.</div>
+        </a>
+        <a class="tool-link-card" href="/guzheng-21-string-modulation-chart">
+          <strong>21-String Guzheng Modulation Chart</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Yanzhu bridge position guide for D, G, C, F &amp; A Major.</div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p style="margin:0 0 8px;color:#94a3b8;">
+        &copy; 2026 PluckBench Pro &mdash; Precision Browser-Based Web Audio Instrument Tuners, Rhythm Metronome &amp; Acoustic Engineering Calculators.
+      </p>
+      <p style="margin:0;font-size:0.78rem;">
+        <a href="/">Tuner Home</a> &middot;
+        <a href="/guitar-tuner">Guitar Tuner</a> &middot;
+        <a href="/bass-tuner">Bass Tuner</a> &middot;
+        <a href="/ukulele-tuner">Ukulele Tuner</a> &middot;
+        <a href="/violin-tuner">Violin Tuner</a> &middot;
+        <a href="/guzheng-tuner">Guzheng Tuner</a> &middot;
+        <a href="/online-metronome">Online Metronome</a> &middot;
+        <a href="/guitar-chords">Guitar Chords</a> &middot;
+        <a href="/decibel-meter">Decibel Meter</a>
+      </p>
+    </div>
+  </footer>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var PACKS = {
+      "009": {
+        name: ".009-.042 Super Light Electric",
+        refScale: 25.5,
+        strings: [
+          { num: "1st (High)", gauge: ".009\"", type: "Plain Steel", baseLbs: 13.1, stdMidi: 64 },
+          { num: "2nd", gauge: ".011\"", type: "Plain Steel", baseLbs: 11.0, stdMidi: 59 },
+          { num: "3rd", gauge: ".016\"", type: "Plain Steel", baseLbs: 14.7, stdMidi: 55 },
+          { num: "4th", gauge: ".024w\"", type: "Nickel Wound", baseLbs: 15.7, stdMidi: 50 },
+          { num: "5th", gauge: ".032w\"", type: "Nickel Wound", baseLbs: 15.8, stdMidi: 45 },
+          { num: "6th (Low)", gauge: ".042w\"", type: "Nickel Wound", baseLbs: 14.8, stdMidi: 40 }
+        ]
+      },
+      "010": {
+        name: ".010-.046 Regular Light Electric",
+        refScale: 25.5,
+        strings: [
+          { num: "1st (High)", gauge: ".010\"", type: "Plain Steel", baseLbs: 16.2, stdMidi: 64 },
+          { num: "2nd", gauge: ".013\"", type: "Plain Steel", baseLbs: 15.4, stdMidi: 59 },
+          { num: "3rd", gauge: ".017\"", type: "Plain Steel", baseLbs: 16.6, stdMidi: 55 },
+          { num: "4th", gauge: ".026w\"", type: "Nickel Wound", baseLbs: 18.4, stdMidi: 50 },
+          { num: "5th", gauge: ".036w\"", type: "Nickel Wound", baseLbs: 19.5, stdMidi: 45 },
+          { num: "6th (Low)", gauge: ".046w\"", type: "Nickel Wound", baseLbs: 17.5, stdMidi: 40 }
+        ]
+      },
+      "011": {
+        name: ".011-.052 Medium Electric",
+        refScale: 25.5,
+        strings: [
+          { num: "1st (High)", gauge: ".011\"", type: "Plain Steel", baseLbs: 19.6, stdMidi: 64 },
+          { num: "2nd", gauge: ".014\"", type: "Plain Steel", baseLbs: 17.8, stdMidi: 59 },
+          { num: "3rd", gauge: ".018\"", type: "Plain Steel", baseLbs: 18.6, stdMidi: 55 },
+          { num: "4th", gauge: ".030w\"", type: "Nickel Wound", baseLbs: 23.9, stdMidi: 50 },
+          { num: "5th", gauge: ".042w\"", type: "Nickel Wound", baseLbs: 25.8, stdMidi: 45 },
+          { num: "6th (Low)", gauge: ".052w\"", type: "Nickel Wound", baseLbs: 22.1, stdMidi: 40 }
+        ]
+      },
+      "012ac": {
+        name: ".012-.053 Phosphor Bronze Acoustic",
+        refScale: 25.4,
+        strings: [
+          { num: "1st (High)", gauge: ".012\"", type: "Plain Steel", baseLbs: 23.3, stdMidi: 64 },
+          { num: "2nd", gauge: ".016\"", type: "Plain Steel", baseLbs: 23.3, stdMidi: 59 },
+          { num: "3rd", gauge: ".024w\"", type: "Bronze Wound", baseLbs: 30.2, stdMidi: 55 },
+          { num: "4th", gauge: ".032w\"", type: "Bronze Wound", baseLbs: 30.5, stdMidi: 50 },
+          { num: "5th", gauge: ".042w\"", type: "Bronze Wound", baseLbs: 29.9, stdMidi: 45 },
+          { num: "6th (Low)", gauge: ".053w\"", type: "Bronze Wound", baseLbs: 25.0, stdMidi: 40 }
+        ]
+      },
+      "bass45": {
+        name: ".045-.105 Regular Light 4-String Bass",
+        refScale: 34.0,
+        strings: [
+          { num: "1st (High G)", gauge: ".045w\"", type: "Nickel Roundwound", baseLbs: 42.9, stdMidi: 43 },
+          { num: "2nd (D)", gauge: ".065w\"", type: "Nickel Roundwound", baseLbs: 46.8, stdMidi: 38 },
+          { num: "3rd (A)", gauge: ".085w\"", type: "Nickel Roundwound", baseLbs: 44.0, stdMidi: 33 },
+          { num: "4th (Low E)", gauge: ".105w\"", type: "Nickel Roundwound", baseLbs: 40.2, stdMidi: 28 }
+        ]
+      }
+    };
+
+    var NOTES = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"];
+
+    var scaleEl = document.getElementById("scale-select");
+    var gaugeEl = document.getElementById("gauge-select");
+    var tuningEl = document.getElementById("tuning-select");
+    var btnEl = document.getElementById("calc-btn");
+
+    function midiToHz(midi) {
+      return 440.0 * Math.pow(2, (midi - 69) / 12);
+    }
+
+    function midiToLabel(midi) {
+      var n = NOTES[((midi % 12) + 12) % 12];
+      var oct = Math.floor(midi / 12) - 1;
+      return n + oct;
+    }
+
+    function compute() {
+      var scale = parseFloat(scaleEl.value) || 25.5;
+      var packKey = gaugeEl.value;
+      var pack = PACKS[packKey] || PACKS["010"];
+      var tun = tuningEl.value;
+
+      var n = pack.strings.length;
+      var offsets = [0, 0, 0, 0, 0, 0];
+      if (tun === "eb") offsets = [-1, -1, -1, -1, -1, -1];
+      if (tun === "drop_d") {
+        offsets = n === 4 ? [0, 0, 0, -2] : [0, 0, 0, 0, 0, -2];
+      }
+      if (tun === "d_std") offsets = [-2, -2, -2, -2, -2, -2];
+      if (tun === "drop_c") {
+        offsets = n === 4 ? [-2, -2, -2, -4] : [-2, -2, -2, -2, -2, -4];
+      }
+
+      var scaleRatioSq = (scale / pack.refScale) * (scale / pack.refScale);
+      var totalLbs = 0;
+      var rowsHtml = "";
+
+      for (var i = 0; i < n; i++) {
+        var st = pack.strings[i];
+        var newMidi = st.stdMidi + offsets[i];
+        var fStd = midiToHz(st.stdMidi);
+        var fNew = midiToHz(newMidi);
+        var freqRatioSq = (fNew / fStd) * (fNew / fStd);
+
+        var lbs = st.baseLbs * scaleRatioSq * freqRatioSq;
+        var kg = lbs * 0.453592;
+        totalLbs += lbs;
+
+        rowsHtml += "<tr>" +
+          "<td>" + st.num + "</td>" +
+          "<td class=\"mono\">" + midiToLabel(newMidi) + " (" + fNew.toFixed(2) + " Hz)</td>" +
+          "<td class=\"mono\">" + st.gauge + "</td>" +
+          "<td>" + st.type + "</td>" +
+          "<td class=\"mono\">" + lbs.toFixed(1) + " lbs</td>" +
+          "<td class=\"mono\">" + kg.toFixed(2) + " kg</td>" +
+          "</tr>";
+      }
+
+      var totalKg = totalLbs * 0.453592;
+      var avgLbs = totalLbs / n;
+
+      var feel = "Balanced Studio Standard";
+      if (n === 6) {
+        if (avgLbs < 14.5) feel = "Ultra-Light / Sloppy in Drop";
+        else if (avgLbs < 16.2) feel = "Supple / Easy Solo Bending";
+        else if (avgLbs > 21.0) feel = "High-Tension Acoustic / Jazz";
+        else if (avgLbs > 18.5) feel = "Firm / Tight Drop Rhythm";
+      } else {
+        if (avgLbs < 37.0) feel = "Light / Low-Action Slap Bass";
+        else if (avgLbs > 45.0) feel = "High-Tension Punchy Bass";
+        else feel = "Balanced Long-Scale Bass";
+      }
+
+      document.getElementById("res-total-lbs").textContent = totalLbs.toFixed(1) + " lbs";
+      document.getElementById("res-total-kg").textContent = totalKg.toFixed(1) + " kg";
+      document.getElementById("res-avg-lbs").textContent = avgLbs.toFixed(1) + " lbs / string";
+      document.getElementById("res-feel").textContent = feel;
+      document.getElementById("res-table-body").innerHTML = rowsHtml;
+      document.getElementById("res-advice").innerHTML =
+        "<strong>Setup Recommendation (" + scale.toFixed(2) + "\" Scale, " + pack.name + "):</strong> Total neck pull is <strong>" +
+        totalLbs.toFixed(1) + " lbs (" + totalKg.toFixed(1) + " kg)</strong>, averaging <strong>" + avgLbs.toFixed(1) + " lbs per string</strong> (" + feel + ").";
+    }
+
+    scaleEl.addEventListener("change", compute);
+    gaugeEl.addEventListener("change", compute);
+    tuningEl.addEventListener("change", compute);
+    btnEl.addEventListener("click", compute);
+    compute();
+  });
+  </script>
+</body>
+</html>

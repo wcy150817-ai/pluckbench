@@ -40,6 +40,11 @@ const LIVE_CALCULATOR_PAGES = [
     priority: '0.85',
     shortLabel: '432Hz vs 440Hz vs 442Hz Pitch Calculator',
   },
+  {
+    canonicalPath: '/guitar-string-gauge-tension-calculator',
+    priority: '0.85',
+    shortLabel: 'Guitar & Bass String Tension Calculator',
+  },
 ];
 
 /**

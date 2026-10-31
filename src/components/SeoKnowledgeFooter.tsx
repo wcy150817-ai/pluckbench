@@ -576,6 +576,14 @@ export const SeoKnowledgeFooter: React.FC<{
                 ja: '432Hz vs 440Hz vs 442Hz 基準ピッチ周波数＆音律セント偏差計算機',
               },
             },
+            {
+              href: '/guitar-string-gauge-tension-calculator',
+              label: {
+                zh: '吉他与贝斯弦径张力 (lbs) 计算器：有效弦长与降调配弦指南',
+                en: 'Guitar & Bass String Gauge Tension Calculator (Scale Length & lbs Setup)',
+                ja: 'ギター＆ベース 弦ゲージ張力 (lbs) ＆スケール長計算機',
+              },
+            },
           ].map((link) => (
             <a
               key={link.href}
