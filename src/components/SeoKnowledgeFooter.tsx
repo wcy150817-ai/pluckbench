@@ -584,6 +584,14 @@ export const SeoKnowledgeFooter: React.FC<{
                 ja: 'ギター＆ベース 弦ゲージ張力 (lbs) ＆スケール長計算機',
               },
             },
+            {
+              href: '/interval-ear-trainer-frequency-ratio-calculator',
+              label: {
+                zh: '音程频率比、声学拍频 (Beat Hz) 与排练室安全分贝暴露计算器',
+                en: 'Musical Interval Frequency Ratio, Beat Frequency & Safe Rehearsal dB Calculator',
+                ja: '音程周波数比・うなり周波数 (Beat Hz) ＆安全デシベル計算機',
+              },
+            },
           ].map((link) => (
             <a
               key={link.href}

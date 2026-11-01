@@ -45,6 +45,11 @@ const LIVE_CALCULATOR_PAGES = [
     priority: '0.85',
     shortLabel: 'Guitar & Bass String Tension Calculator',
   },
+  {
+    canonicalPath: '/interval-ear-trainer-frequency-ratio-calculator',
+    priority: '0.85',
+    shortLabel: 'Interval Frequency Ratio & Beat Hz Calculator',
+  },
 ];
 
 /**

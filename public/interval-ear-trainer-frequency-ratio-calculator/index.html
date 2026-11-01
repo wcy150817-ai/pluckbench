@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Musical Interval Frequency Ratio, Acoustic Beat Frequency &amp; Safe Rehearsal Decibel Exposure Calculator (2026)</title>
+  <meta name="description" content="Calculate musical interval frequency ratios (3:2, 5:4, 6:5, 4:3), 12-TET vs Just Intonation acoustic beat rates in Hz, and NIOSH 85 dBA safe practice time." />
+  <link rel="canonical" href="https://www.pluckbench.com/interval-ear-trainer-frequency-ratio-calculator" />
+  <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Musical Interval Frequency Ratio, Acoustic Beat Frequency &amp; Safe Rehearsal Decibel Exposure Calculator (2026)" />
+  <meta property="og:description" content="Interactive musical interval frequency ratio, overtone beat rate (Hz), and NIOSH 85 dBA rehearsal room hearing safety exposure calculator." />
+  <meta property="og:url" content="https://www.pluckbench.com/interval-ear-trainer-frequency-ratio-calculator" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Article",
+        "headline": "Musical Interval Frequency Ratio, Acoustic Beat Frequency & Safe Rehearsal Decibel Exposure Calculator (2026)",
+        "description": "Psychoacoustics and ear-training reference with an interactive calculator for 12-TET vs Just Intonation interval frequency ratios, harmonic beat rates, and NIOSH 85 dBA rehearsal room exposure limits.",
+        "datePublished": "2026-10-29",
+        "dateModified": "2026-10-29",
+        "author": {
+          "@type": "Organization",
+          "name": "PluckBench Acoustic Engineering Desk",
+          "url": "https://www.pluckbench.com/"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "PluckBench",
+          "url": "https://www.pluckbench.com/"
+        },
+        "mainEntityOfPage": "https://www.pluckbench.com/interval-ear-trainer-frequency-ratio-calculator"
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "PluckBench Interval Ratio, Acoustic Beat Frequency & Safe Rehearsal dB Calculator",
+        "url": "https://www.pluckbench.com/interval-ear-trainer-frequency-ratio-calculator",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Web, iOS, Android, macOS, Windows",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How is acoustic beat frequency calculated when tuning musical intervals?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "When two close frequencies f1 and f2 sound simultaneously, wave interference creates periodic amplitude pulsations at f_beat = |f1 - f2| beats per second (Hz). For a harmonic interval with ratio p:q (such as a 3:2 Perfect Fifth), beating occurs between the q-th harmonic of the upper note and the p-th harmonic of the root note: f_beat = |q * f_upper - p * f_root|."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How fast does an equal-tempered A4-E5 Perfect Fifth beat compared to a Major Third?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "On an A4 (440.00 Hz) to E5 (659.255 Hz) 12-TET Perfect Fifth (ratio 3:2), the 3rd harmonic of A4 is 1320.00 Hz and the 2nd harmonic of E5 is 1318.51 Hz, creating a slow, gentle beat rate of 1.49 beats per second (Hz). By contrast, an A4 (440.00 Hz) to C#5 (554.365 Hz) 12-TET Major Third (ratio 5:4) beats at 5(440) - 4(554.365) = 17.46 beats per second."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is the NIOSH 85 dBA formula for maximum safe daily music rehearsal time?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The National Institute for Occupational Safety and Health (NIOSH) sets an 8-hour (480-minute) daily Recommended Exposure Limit at 85 dBA with a 3 dB exchange rate: Safe Time T = 480 / 2^((L - 85) / 3) minutes. Every +3 dB doubles acoustic sound energy and cuts safe rehearsal duration in half (4 hours at 88 dB, 2 hours at 91 dB, 1 hour at 94 dB, and 15 minutes at 100 dB)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How can musicians protect their hearing during loud band or orchestral rehearsals without losing pitch clarity?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Monitor room SPL using a real-time decibel meter and wear flat-attenuation musician earplugs (-12 dB to -20 dB acoustic filters) whenever sustained rehearsal volume exceeds 85 dB SPL. Unlike foam plugs that muffle high-frequency overtones, flat-response acoustic filters reduce overall dB uniformly so interval beating and intonation remain clear."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #070a0f;
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      line-height: 1.65;
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+    a { color: #34d399; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 16px; width: 100%; }
+    .site-header {
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid #1e293b;
+      padding: 14px 0;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(8px);
+    }
+    .header-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+    .brand { font-weight: 800; font-size: 1.15rem; color: #f8fafc; display: flex; align-items: center; gap: 8px; }
+    .brand-badge { background: #10b981; color: #052e16; font-size: 0.7rem; padding: 2px 7px; border-radius: 6px; font-weight: 800; }
+    .top-nav { display: flex; flex-wrap: wrap; gap: 6px; }
+    .top-nav a {
+      font-size: 0.76rem;
+      color: #cbd5e1;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 5px 10px;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+    .top-nav a:hover { border-color: #10b981; color: #34d399; }
+    .disclosure {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid #1e293b;
+      border-left: 3px solid #10b981;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin: 20px 0 16px;
+    }
+    h1 { font-size: clamp(1.5rem, 3.2vw, 2.2rem); line-height: 1.25; color: #f8fafc; margin: 12px 0 14px; font-weight: 800; }
+    h2 { font-size: clamp(1.2rem, 2.3vw, 1.55rem); color: #f8fafc; margin: 32px 0 12px; font-weight: 700; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }
+    h3 { font-size: 1.08rem; color: #e2e8f0; margin: 20px 0 8px; font-weight: 700; }
+    p, li { color: #cbd5e1; font-size: 0.96rem; }
+    .card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .calc-box {
+      background: linear-gradient(145deg, #0f172a 0%, #091526 100%);
+      border: 1px solid #10b981;
+      border-radius: 16px;
+      padding: 22px;
+      margin: 24px 0;
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.08);
+    }
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .field label { display: block; font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 6px; }
+    .field select, .field input {
+      width: 100%;
+      background: #070a0f;
+      border: 1px solid #334155;
+      color: #f8fafc;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.92rem;
+    }
+    .btn-calc {
+      background: #10b981;
+      color: #052e16;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      width: 100%;
+      transition: opacity 0.2s;
+    }
+    .btn-calc:hover { opacity: 0.92; }
+    .result-panel {
+      margin-top: 18px;
+      background: #070a0f;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .kpi {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 12px;
+      border-radius: 10px;
+    }
+    .kpi-label { font-size: 0.74rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em; }
+    .kpi-val { font-size: 1.15rem; font-weight: 800; color: #34d399; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin-top: 4px; }
+    .lp-table-wrap { overflow-x: auto; max-width: 100%; margin: 14px 0; border: 1px solid #1e293b; border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 560px; }
+    th, td { padding: 9px 11px; text-align: left; border-bottom: 1px solid #1e293b; }
+    th { background: #090d16; color: #94a3b8; font-weight: 700; }
+    td { color: #e2e8f0; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #34d399; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin: 18px 0; }
+    .tool-links-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 14px; }
+    .tool-link-card {
+      display: block;
+      background: #090d16;
+      border: 1px solid #1e293b;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: #f1f5f9;
+      text-decoration: none;
+    }
+    .tool-link-card:hover { border-color: #10b981; text-decoration: none; }
+    .site-footer {
+      border-top: 1px solid #1e293b;
+      margin-top: 48px;
+      padding: 28px 0 40px;
+      color: #64748b;
+      font-size: 0.82rem;
+    }
+    @media (max-width: 640px) {
+      .card, .calc-box { padding: 16px; }
+      table { font-size: 0.76rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="brand">
+        <span>PluckBench</span>
+        <span class="brand-badge">PRO DSP</span>
+      </a>
+      <nav class="top-nav" aria-label="Main Musical Tools Navigation">
+        <a href="/">Tuner Home</a>
+        <a href="/decibel-meter">dB Meter</a>
+        <a href="/violin-tuner">Violin Tuner</a>
+        <a href="/guitar-tuner">Guitar Tuner</a>
+        <a href="/ukulele-tuner">Ukulele Tuner</a>
+        <a href="/guzheng-tuner">Guzheng Tuner</a>
+        <a href="/bass-tuner">Bass Tuner</a>
+        <a href="/online-metronome">Metronome</a>
+        <a href="/guitar-chords">Guitar Chords</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="disclosure">
+      <strong>Reader Disclosure:</strong> PluckBench builds free browser-based Web Audio ear trainers, decibel monitors, and instrument tuners. Some outbound links to audio electronics or musician gift retailers are affiliate links (marked as sponsored), which may earn a small commission at no additional cost to you. All acoustic beat equations and NIOSH exposure limits are derived from published physics and occupational audiology standards.
+    </div>
+
+    <h1>Musical Interval Frequency Ratio, Acoustic Beat Frequency &amp; Safe Rehearsal Decibel Exposure Calculator (2026)</h1>
+    <p>
+      Training your ear to recognize harmonic intervals and tune strings by ear relies on two physical acoustics principles: <strong>integer overtone ratios ($p:q$)</strong> and <strong>acoustic beat interference ($f_{\text{beat}} = |f_1 - f_2|$)</strong>. At the same time, preserving the cochlear hair cells responsible for fine pitch discrimination requires monitoring practice room sound pressure levels (dB SPL) on our <a href="/decibel-meter">Online Acoustic Decibel Meter</a> against the <strong>NIOSH 85 dBA 3 dB exchange rate</strong>. Use the interactive calculator below alongside our <a href="/violin-tuner">Online Violin Tuner</a> and <a href="/">Chromatic Instrument Workbench</a> to compute 12-TET vs Just Intonation frequencies, overtone beat rates in Hertz, and maximum safe daily rehearsal duration.
+    </p>
+
+    <section class="calc-box" id="interval-beat-calc" aria-labelledby="calc-heading">
+      <h2 id="calc-heading" style="margin-top:0;border-bottom:none;padding-bottom:0;">Interactive Interval Frequency Ratio, Beat Rate &amp; Rehearsal dB Safety Calculator</h2>
+      <p style="font-size:0.88rem;color:#94a3b8;margin-top:4px;">
+        Choose your root pitch (`G3` to `A4`), select the musical interval (`Perfect 5th 3:2`, `Major 3rd 5:4`, `Minor 3rd 6:5`, `Perfect 4th 4:3`, `Major 6th 5:3`, or `Octave 2:1`), and select your rehearsal room volume (`75 dB` to `105 dB SPL`) to calculate exact 12-TET vs Just Intonation frequencies, harmonic beat rates (beats/sec), and NIOSH safe exposure time.
+      </p>
+      <div class="calc-grid">
+        <div class="field">
+          <label for="root-select">1. Root Note Frequency (Hz)</label>
+          <select id="root-select">
+            <option value="196.00">G3 = 196.00 Hz (Violin 4th / Guitar 3rd String)</option>
+            <option value="220.00">A3 = 220.00 Hz (Guitar 5th Fret / Viola A)</option>
+            <option value="261.63" selected>C4 = 261.63 Hz (Middle C / Ukulele 3rd String)</option>
+            <option value="293.66">D4 = 293.66 Hz (Violin 3rd String)</option>
+            <option value="329.63">E4 = 329.63 Hz (Guitar 1st / Ukulele 2nd String)</option>
+            <option value="440.00">A4 = 440.00 Hz (Concert Pitch Reference)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="interval-select">2. Target Musical Interval (Just Ratio)</label>
+          <select id="interval-select">
+            <option value="p5" selected>Perfect 5th (3:2 Ratio | 7 Semitones)</option>
+            <option value="M3">Major 3rd (5:4 Ratio | 4 Semitones)</option>
+            <option value="m3">Minor 3rd (6:5 Ratio | 3 Semitones)</option>
+            <option value="p4">Perfect 4th (4:3 Ratio | 5 Semitones)</option>
+            <option value="M6">Major 6th (5:3 Ratio | 9 Semitones)</option>
+            <option value="oct">Perfect Octave (2:1 Ratio | 12 Semitones)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="db-select">3. Rehearsal Room Sound Level (dB SPL)</label>
+          <select id="db-select">
+            <option value="75">75 dB SPL (Quiet Acoustic Practice)</option>
+            <option value="82">82 dB SPL (Unplugged Violin / Piano Etude)</option>
+            <option value="85" selected>85 dB SPL (NIOSH 8-Hour Safety Threshold)</option>
+            <option value="88">88 dB SPL (Chamber Ensemble / Brass Warmup)</option>
+            <option value="91">91 dB SPL (Loud Acoustic / Small Amp Combo)</option>
+            <option value="94">94 dB SPL (Orchestral Tutti / Saxophone Peak)</option>
+            <option value="97">97 dB SPL (Full Band Rehearsal Room)</option>
+            <option value="100">100 dB SPL (Acoustic Drum Kit / Stage Monitor)</option>
+            <option value="103">103 dB SPL (Loud Rock Stage / Snare Rimshot)</option>
+          </select>
+        </div>
+      </div>
+      <button type="button" id="calc-btn" class="btn-calc">Calculate 12-TET vs Just Beat Rate (Hz) &amp; NIOSH Safe Rehearsal Time</button>
+
+      <div class="result-panel" id="calc-result" aria-live="polite">
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="kpi-label">12-TET vs Just Pitch</div>
+            <div class="kpi-val" id="res-freq-pair" style="font-size:1.0rem;">391.99 Hz vs 392.45 Hz</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Fundamental Diff</div>
+            <div class="kpi-val" id="res-fund-diff">0.44 Hz (-1.96 ¢)</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Coincident Harmonic Beat</div>
+            <div class="kpi-val" id="res-harm-beat">0.89 beats/sec (Hz)</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">NIOSH Max Safe Time</div>
+            <div class="kpi-val" id="res-safe-time">8h 00m (480 min)</div>
+          </div>
+        </div>
+        <div class="lp-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Interval Parameter</th>
+                <th>12-Tone Equal Temperament (12-TET)</th>
+                <th>5-Limit Just Intonation (Pure)</th>
+                <th>Acoustic Difference &amp; Beating</th>
+              </tr>
+            </thead>
+            <tbody id="res-table-body">
+              <tr><td><strong>Upper Interval Frequency</strong></td><td class="mono">392.00 Hz</td><td class="mono">392.45 Hz (3:2)</td><td class="mono">0.44 Hz fundamental offset</td></tr>
+              <tr><td><strong>Interval Size in Cents</strong></td><td class="mono">700.00 cents</td><td class="mono">701.96 cents</td><td class="mono">-1.96 cents (12-TET is slightly flat)</td></tr>
+              <tr><td><strong>Coincident Overtone</strong></td><td class="mono">2 &times; 392.00 = 783.99 Hz</td><td class="mono">3 &times; 261.63 = 784.89 Hz</td><td class="mono"><strong>0.89 Hz audible beat rate</strong></td></tr>
+              <tr><td><strong>Rehearsal SPL Exposure (85 dB)</strong></td><td class="mono">NIOSH REL: 85 dBA</td><td class="mono">3 dB Exchange Rate</td><td class="mono"><strong>480 min (8h 00m) max daily limit</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p id="res-advice" style="font-size:0.86rem;color:#cbd5e1;margin:10px 0 0;">
+          <strong>Ear Training &amp; Hearing Guidance (C4 = 261.63 Hz, Perfect 5th at 85 dB):</strong> A 12-TET Perfect Fifth above C4 beats gently at <strong>0.89 beats per second</strong> at the 3rd/2nd harmonic (784 Hz). At 85 dB SPL, your maximum safe daily rehearsal exposure without earplugs is <strong>8 hours (480 minutes)</strong>.
+        </p>
+      </div>
+    </section>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Studio Isolation Headphones &amp; Musician Practice Accessories</h3>
+      <p style="font-size:0.88rem;">
+        Practicing with closed-back studio monitor headphones or acoustic attenuation accessories lets you hear subtle harmonic beats at safe listening volumes:
+      </p>
+      <div class="cta-row">
+        <a href="https://bbux.me/oarMyk3d" rel="sponsored noopener" target="_blank" style="display:inline-block;background:#059669;color:#ffffff !important;padding:12px 20px;border-radius:10px;font-weight:700;text-decoration:none;max-width:100%;box-sizing:border-box;">Shop Closed-Back Studio Headphones &amp; Audio Monitors at BestBuy &rarr;</a>
+        <a href="https://bbux.me/T9xC6WZH9" rel="sponsored noopener" target="_blank" style="display:inline-block;background:#2563eb;color:#ffffff !important;padding:12px 20px;border-radius:10px;font-weight:700;text-decoration:none;max-width:100%;box-sizing:border-box;">Browse Practice Accessories &amp; Gifts at Music Gifts Depot &rarr;</a>
+      </div>
+    </div>
+    <h2>The Physics of Musical Consonance: Small-Integer Ratios &amp; Coincident Harmonics</h2>
+    <p>
+      Why do two notes separated by an <strong>Octave (2:1)</strong> or a <strong>Perfect Fifth (3:2)</strong> sound fused, smooth, and consonant, whereas a <strong>Minor Second (16:15)</strong> or <strong>Tritone (45:32)</strong> sounds tense and rough? As Hermann von Helmholtz demonstrated in <em>On the Sensations of Tone</em> (1863), every acoustic instrument—whether a bowed <a href="/violin-tuner">violin</a>, plucked <a href="/guitar-tuner">guitar</a>, or <a href="/guzheng-tuner">21-string Guzheng</a>—radiates not just a single sine wave at its fundamental frequency $f_0$, but a rich harmonic overtone series at integer multiples ($2f_0, 3f_0, 4f_0, 5f_0, 6f_0 \dots$).
+    </p>
+    <p>
+      When two notes form a simple small-integer ratio $p:q$, the $q$-th harmonic of the upper note lands at the exact same frequency as the $p$-th harmonic of the lower root note:
+    </p>
+    <div class="card" style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:0.88rem;color:#34d399;text-align:center;">
+      f<sub>beat (fundamental)</sub> = |f<sub>12TET</sub> &minus; f<sub>Just</sub>| &nbsp;&nbsp;|&nbsp;&nbsp; f<sub>beat (harmonic)</sub> = |q &times; f<sub>upper</sub> &minus; p &times; f<sub>root</sub>|
+    </div>
+    <p>
+      In 12-Tone Equal Temperament (12-TET), intervals other than the 2:1 Octave deviate slightly from pure $p:q$ integer ratios, causing those coincident harmonics to miss each other by a few Hertz and generate periodic amplitude pulsations known as <strong>acoustic beats</strong>:
+    </p>
+    <ul>
+      <li><strong>Perfect Fifth ($3:2 = 1.5000$ vs 12-TET $2^{7/12} = 1.49831$):</strong> On `A4 (440.00 Hz)` and `E5 (659.255 Hz)`, the 3rd harmonic of A4 vibrates at $3 \times 440.00 = 1320.00\text{ Hz}$, while the 2nd harmonic of E5 vibrates at $2 \times 659.255 = 1318.51\text{ Hz}$. Their interference creates a slow, smooth pulse of $1320.00 - 1318.51 = \mathbf{1.49\text{ beats per second (Hz)}}$. Piano technicians and violinists listen directly to this 3rd/2nd harmonic beat rate when tuning fifths by ear.</li>
+      <li><strong>Perfect Fourth ($4:3 = 1.3333$ vs 12-TET $2^{5/12} = 1.33484$):</strong> On `A4 (440.00 Hz)` and `D5 (587.330 Hz)`, the 4th harmonic of A4 (`1760.00 Hz`) and the 3rd harmonic of D5 (`1761.99 Hz`) beat at <strong>1.99 beats per second (Hz)</strong>.</li>
+      <li><strong>Major Third ($5:4 = 1.2500$ vs 12-TET $2^{4/12} = 1.25992$):</strong> Because a 12-TET Major Third is +13.69 cents wider than a pure 5:4 harmonic third, the 5th harmonic of `C4 (261.63 Hz)` at `1308.15 Hz` and the 4th harmonic of `E4 (329.63 Hz)` at `1318.51 Hz` collide at a rapid, shimmering <strong>10.37 beats per second (Hz)</strong>! String quartets, brass choirs, and barbershop vocal ensembles instinctively flatten the third of a major chord by ~14 cents to lock into zero-beat 5:4 resonance.</li>
+    </ul>
+
+    <h2>Musical Interval Frequency Ratio &amp; 12-TET Beat Rate Master Chart (Root = C4 261.63 Hz &amp; A4 440.00 Hz)</h2>
+    <div class="lp-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Musical Interval</th>
+            <th>Semitones</th>
+            <th>Pure Just Ratio (p:q)</th>
+            <th>12-TET Ratio</th>
+            <th>Cents Deviation</th>
+            <th>Harmonic Beat Rate on C4 (261.63 Hz)</th>
+            <th>Harmonic Beat Rate on A4 (440.00 Hz)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Unison (P1)</strong></td><td class="mono">0</td><td class="mono">1 : 1 (1.0000)</td><td class="mono">1.00000</td><td class="mono">0.00 ¢</td><td class="mono">0.00 Hz</td><td class="mono">0.00 Hz</td></tr>
+          <tr><td><strong>Minor Third (m3)</strong></td><td class="mono">3</td><td class="mono">6 : 5 (1.2000)</td><td class="mono">1.18921</td><td class="mono">-15.64 ¢</td><td class="mono">14.12 Hz (6th/5th)</td><td class="mono">23.74 Hz (6th/5th)</td></tr>
+          <tr><td><strong>Major Third (M3)</strong></td><td class="mono">4</td><td class="mono">5 : 4 (1.2500)</td><td class="mono">1.25992</td><td class="mono">+13.69 ¢</td><td class="mono">10.38 Hz (5th/4th)</td><td class="mono">17.46 Hz (5th/4th)</td></tr>
+          <tr><td><strong>Perfect Fourth (P4)</strong></td><td class="mono">5</td><td class="mono">4 : 3 (1.3333)</td><td class="mono">1.33484</td><td class="mono">+1.96 ¢</td><td class="mono">1.18 Hz (4th/3rd)</td><td class="mono">1.99 Hz (4th/3rd)</td></tr>
+          <tr><td><strong>Perfect Fifth (P5)</strong></td><td class="mono">7</td><td class="mono">3 : 2 (1.5000)</td><td class="mono">1.49831</td><td class="mono">-1.96 ¢</td><td class="mono">0.89 Hz (3rd/2nd)</td><td class="mono">1.49 Hz (3rd/2nd)</td></tr>
+          <tr><td><strong>Major Sixth (M6)</strong></td><td class="mono">9</td><td class="mono">5 : 3 (1.6667)</td><td class="mono">1.68179</td><td class="mono">+15.64 ¢</td><td class="mono">11.88 Hz (5th/3rd)</td><td class="mono">19.98 Hz (5th/3rd)</td></tr>
+          <tr><td><strong>Perfect Octave (P8)</strong></td><td class="mono">12</td><td class="mono">2 : 1 (2.0000)</td><td class="mono">2.00000</td><td class="mono">0.00 ¢</td><td class="mono">0.00 Hz</td><td class="mono">0.00 Hz</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>NIOSH 85 dBA Safe Rehearsal Exposure Limits for Musicians &amp; Audio Engineers</h2>
+    <p>
+      Fine ear training and studio mixing depend entirely on healthy inner-ear stereocilia. According to the <strong>National Institute for Occupational Safety and Health (NIOSH)</strong> criteria standard, continuous sound exposure at or below <strong>85 dBA</strong> is safe for an <strong>8-hour (480-minute)</strong> workday. Because decibels measure acoustic intensity on a logarithmic base-10 scale ($L = 10 \log_{10}(I / I_0)$), every <strong>+3 dB increase represents a 100% doubling of physical acoustic energy</strong> impacting the eardrum and cuts safe rehearsal time in half:
+    </p>
+    <div class="card" style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:0.88rem;color:#34d399;text-align:center;">
+      Safe Daily Exposure Time T (minutes) = 480 / 2<sup>(dB &minus; 85) / 3</sup>
+    </div>
+    <ul>
+      <li><strong>75 to 82 dB SPL (Unplugged Acoustic Guitar, Guzheng, Piano Practice):</strong> Below the 85 dBA NIOSH action threshold; safe for full-day studio practice without hearing protection.</li>
+      <li><strong>85 dB SPL (Chamber Rehearsal / Studio Reference Mixing):</strong> Maximum <strong>8 hours (480 minutes)</strong> per day.</li>
+      <li><strong>88 to 91 dB SPL (Violin E5 Under the Left Ear / Horn Section):</strong> Because a violin rests inches beneath the player's left ear, fortissimo passages on the E5 string (`659.25 Hz`) frequently reach `88 to 92 dB SPL`, limiting safe unprotected exposure to <strong>2 to 4 hours</strong> per day.</li>
+      <li><strong>94 to 97 dB SPL (Amplified Band Rehearsal / Brass Ensemble):</strong> Safe unprotected exposure drops to <strong>30 to 60 minutes</strong> per day.</li>
+      <li><strong>100 to 103 dB SPL (Acoustic Drum Kit / Stage Wedge Monitors):</strong> Safe unprotected exposure is only <strong>7.5 to 15 minutes</strong> per day! Measure your rehearsal space with our <a href="/decibel-meter">Online Decibel Meter</a> and use -15 dB flat-response musician earplugs or sealed in-ear monitors (IEMs) to drop 100 dB stage levels back down to a safe 85 dB effective ear dose.</li>
+    </ul>
+
+    <section class="card" aria-labelledby="faq-heading">
+      <h2 id="faq-heading" style="margin-top:0;">Frequently Asked Questions: Interval Ratios, Beat Rates &amp; Safe Rehearsal dB</h2>
+      <h3>How is acoustic beat frequency calculated when tuning musical intervals?</h3>
+      <p>
+        When two close frequencies f1 and f2 sound simultaneously, wave interference creates periodic amplitude pulsations at f_beat = |f1 - f2| beats per second (Hz). For a harmonic interval with ratio p:q (such as a 3:2 Perfect Fifth), beating occurs between the q-th harmonic of the upper note and the p-th harmonic of the root note: f_beat = |q * f_upper - p * f_root|.
+      </p>
+      <h3>How fast does an equal-tempered A4-E5 Perfect Fifth beat compared to a Major Third?</h3>
+      <p>
+        On an A4 (440.00 Hz) to E5 (659.255 Hz) 12-TET Perfect Fifth (ratio 3:2), the 3rd harmonic of A4 is 1320.00 Hz and the 2nd harmonic of E5 is 1318.51 Hz, creating a slow, gentle beat rate of 1.49 beats per second (Hz). By contrast, an A4 (440.00 Hz) to C#5 (554.365 Hz) 12-TET Major Third (ratio 5:4) beats at 5(440) - 4(554.365) = 17.46 beats per second.
+      </p>
+      <h3>What is the NIOSH 85 dBA formula for maximum safe daily music rehearsal time?</h3>
+      <p>
+        The National Institute for Occupational Safety and Health (NIOSH) sets an 8-hour (480-minute) daily Recommended Exposure Limit at 85 dBA with a 3 dB exchange rate: Safe Time T = 480 / 2^((L - 85) / 3) minutes. Every +3 dB doubles acoustic sound energy and cuts safe rehearsal duration in half (4 hours at 88 dB, 2 hours at 91 dB, 1 hour at 94 dB, and 15 minutes at 100 dB).
+      </p>
+      <h3>How can musicians protect their hearing during loud band or orchestral rehearsals without losing pitch clarity?</h3>
+      <p>
+        Monitor room SPL using a real-time decibel meter and wear flat-attenuation musician earplugs (-12 dB to -20 dB acoustic filters) whenever sustained rehearsal volume exceeds 85 dB SPL. Unlike foam plugs that muffle high-frequency overtones, flat-response acoustic filters reduce overall dB uniformly so interval beating and intonation remain clear.
+      </p>
+    </section>
+
+    <section class="card" aria-labelledby="related-heading">
+      <h2 id="related-heading" style="margin-top:0;">Related PluckBench Decibel Meter, Tuners &amp; Calculators</h2>
+      <div class="tool-links-grid">
+        <a class="tool-link-card" href="/decibel-meter">
+          <strong>Online Acoustic Decibel Meter</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Monitor real-time rehearsal room dB SPL, peak hold, and noise floor via microphone.</div>
+        </a>
+        <a class="tool-link-card" href="/violin-tuner">
+          <strong>Online Violin &amp; Just Intonation Tuner</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Practice pure 3:2 fifths and 5:4 thirds with continuous bowed reference tones.</div>
+        </a>
+        <a class="tool-link-card" href="/">
+          <strong>PluckBench Ear Trainer &amp; Tuner Home</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Interactive pitch ear training and multi-instrument sustain lock workbench.</div>
+        </a>
+        <a class="tool-link-card" href="/drop-d-alternate-guitar-tuning-chart">
+          <strong>Drop D &amp; Alternate Tuning Calculator</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Exact Hz frequencies and string tension delta for guitar and bass.</div>
+        </a>
+        <a class="tool-link-card" href="/bpm-to-ms-delay-time-calculator">
+          <strong>BPM to Milliseconds Delay Calculator</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Convert tempo into delay milliseconds, LFO Hz &amp; vocal reverb pre-delay.</div>
+        </a>
+        <a class="tool-link-card" href="/capo-transposition-chord-chart-calculator">
+          <strong>Capo Transposition &amp; Key Calculator</strong>
+          <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Convert open chord shapes into concert pitch keys across Frets 1–11.</div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p style="margin:0 0 8px;color:#94a3b8;">
+        &copy; 2026 PluckBench Pro &mdash; Precision Browser-Based Web Audio Instrument Tuners, Rhythm Metronome &amp; Acoustic Engineering Calculators.
+      </p>
+      <p style="margin:0;font-size:0.78rem;">
+        <a href="/">Tuner Home</a> &middot;
+        <a href="/decibel-meter">Decibel Meter</a> &middot;
+        <a href="/violin-tuner">Violin Tuner</a> &middot;
+        <a href="/guitar-tuner">Guitar Tuner</a> &middot;
+        <a href="/ukulele-tuner">Ukulele Tuner</a> &middot;
+        <a href="/guzheng-tuner">Guzheng Tuner</a> &middot;
+        <a href="/bass-tuner">Bass Tuner</a> &middot;
+        <a href="/online-metronome">Online Metronome</a> &middot;
+        <a href="/guitar-chords">Guitar Chords</a>
+      </p>
+    </div>
+  </footer>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var INTERVALS = {
+      p5: { name: "Perfect 5th", semi: 7, p: 3, q: 2, justCents: 701.96 },
+      M3: { name: "Major 3rd", semi: 4, p: 5, q: 4, justCents: 386.31 },
+      m3: { name: "Minor 3rd", semi: 3, p: 6, q: 5, justCents: 315.64 },
+      p4: { name: "Perfect 4th", semi: 5, p: 4, q: 3, justCents: 498.04 },
+      M6: { name: "Major 6th", semi: 9, p: 5, q: 3, justCents: 884.36 },
+      oct: { name: "Perfect Octave", semi: 12, p: 2, q: 1, justCents: 1200.00 }
+    };
+
+    var rootEl = document.getElementById("root-select");
+    var intEl = document.getElementById("interval-select");
+    var dbEl = document.getElementById("db-select");
+    var btnEl = document.getElementById("calc-btn");
+
+    function formatMinutes(min) {
+      if (min >= 480) return "8h+ (" + Math.round(min) + " min)";
+      if (min >= 60) {
+        var h = Math.floor(min / 60);
+        var m = Math.round(min % 60);
+        return h + "h " + (m < 10 ? "0" + m : m) + "m (" + Math.round(min) + " min)";
+      }
+      return min.toFixed(1) + " min";
+    }
+
+    function compute() {
+      var fRoot = parseFloat(rootEl.value) || 261.63;
+      var intKey = intEl.value;
+      var iv = INTERVALS[intKey] || INTERVALS.p5;
+      var db = parseFloat(dbEl.value) || 85;
+
+      var f12Tet = fRoot * Math.pow(2, iv.semi / 12);
+      var fJust = fRoot * (iv.p / iv.q);
+      var fundDiff = Math.abs(f12Tet - fJust);
+      var cents12 = iv.semi * 100;
+      var centsDiff = cents12 - iv.justCents;
+
+      var harmUpper = iv.q * f12Tet;
+      var harmRoot = iv.p * fRoot;
+      var harmBeat = Math.abs(harmUpper - harmRoot);
+
+      var safeMin = 480 / Math.pow(2, (db - 85) / 3);
+      if (safeMin > 960) safeMin = 960;
+
+      var sign = centsDiff >= 0 ? "+" : "";
+      var safeFormatted = formatMinutes(safeMin);
+
+      var rowsHtml =
+        "<tr><td><strong>Upper Interval Frequency</strong></td><td class=\"mono\">" + f12Tet.toFixed(2) + " Hz</td><td class=\"mono\">" + fJust.toFixed(2) + " Hz (" + iv.p + ":" + iv.q + ")</td><td class=\"mono\">" + fundDiff.toFixed(2) + " Hz fundamental offset</td></tr>" +
+        "<tr><td><strong>Interval Size in Cents</strong></td><td class=\"mono\">" + cents12.toFixed(2) + " cents</td><td class=\"mono\">" + iv.justCents.toFixed(2) + " cents</td><td class=\"mono\">" + sign + centsDiff.toFixed(2) + " cents (12-TET vs Just)</td></tr>" +
+        "<tr><td><strong>Coincident Overtone (" + iv.p + ":" + iv.q + ")</strong></td><td class=\"mono\">" + iv.q + " &times; " + f12Tet.toFixed(2) + " = " + harmUpper.toFixed(2) + " Hz</td><td class=\"mono\">" + iv.p + " &times; " + fRoot.toFixed(2) + " = " + harmRoot.toFixed(2) + " Hz</td><td class=\"mono\"><strong>" + harmBeat.toFixed(2) + " Hz audible beat rate</strong></td></tr>" +
+        "<tr><td><strong>Rehearsal SPL Exposure (" + db + " dB)</strong></td><td class=\"mono\">NIOSH REL: 85 dBA</td><td class=\"mono\">3 dB Exchange Rate</td><td class=\"mono\"><strong>" + safeFormatted + " max daily limit</strong></td></tr>";
+
+      document.getElementById("res-freq-pair").textContent = f12Tet.toFixed(2) + " Hz vs " + fJust.toFixed(2) + " Hz";
+      document.getElementById("res-fund-diff").textContent = fundDiff.toFixed(2) + " Hz (" + sign + centsDiff.toFixed(2) + " ¢)";
+      document.getElementById("res-harm-beat").textContent = harmBeat.toFixed(2) + " beats/sec (Hz)";
+      document.getElementById("res-safe-time").textContent = safeFormatted;
+      document.getElementById("res-table-body").innerHTML = rowsHtml;
+      document.getElementById("res-advice").innerHTML =
+        "<strong>Ear Training &amp; Hearing Guidance (Root = " + fRoot.toFixed(2) + " Hz, " + iv.name + " at " + db + " dB SPL):</strong> A 12-TET " +
+        iv.name + " produces an overtone beat frequency of <strong>" + harmBeat.toFixed(2) + " beats per second</strong> at the " + iv.p + ":" + iv.q +
+        " partial (" + harmRoot.toFixed(1) + " Hz). At " + db + " dB SPL, maximum safe unprotected daily rehearsal duration is <strong>" + safeFormatted + "</strong>.";
+    }
+
+    rootEl.addEventListener("change", compute);
+    intEl.addEventListener("change", compute);
+    dbEl.addEventListener("change", compute);
+    btnEl.addEventListener("click", compute);
+    compute();
+  });
+  </script>
+</body>
+</html>
