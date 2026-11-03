@@ -8,13 +8,18 @@ const distDir = path.join(rootDir, 'dist');
 const publicDir = path.join(rootDir, 'public');
 
 const SITE_ORIGIN = 'https://www.pluckbench.com';
-const TODAY = '2026-10-29';
+const TODAY = '2026-11-03';
 
 /**
- * 4 Live Interactive Calculator / Reference Guide Pages (Days 1–4)
+ * 8 Live Interactive Calculator / Reference Guide Pages
  * Placed in public/<slug>/index.html and copied to dist/<slug>/index.html by Vite.
  */
 const LIVE_CALCULATOR_PAGES = [
+  {
+    canonicalPath: '/online-stimmgeraet-gitarre',
+    priority: '0.88',
+    shortLabel: 'Online Stimmgerät für Gitarre (E-A-D-G-H-e)',
+  },
   {
     canonicalPath: '/drop-d-alternate-guitar-tuning-chart',
     priority: '0.85',
@@ -133,6 +138,15 @@ const SEO_PAGES = [
         a: 'Unwound G3 strings have high stiffness relative to their diameter, causing pronounced attack pitch chirp. PluckBench ignores the first 90ms attack peak so you tune the sustained pitch that listeners actually hear in chords.',
       },
     ],
+    extraSectionsHtml: `
+          <section class="p-6 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-3">
+            <h2 class="text-lg font-bold text-slate-100">
+              Online Stimmgerät für Gitarre (Deutsch / DACH): E-A-D-G-H-e Standard-Stimmung &amp; H/B-Notation
+            </h2>
+            <p class="text-xs leading-relaxed text-slate-300">
+              Suchen Sie ein deutschsprachiges <strong>Online Stimmgerät für Gitarre</strong> mit den deutschen Notennamen <strong>E2 &ndash; A2 &ndash; D3 &ndash; G3 &ndash; H3 &ndash; e4</strong> (Merkspruch: <em>&bdquo;Eine Alte Dame Geht Heringe essen&ldquo;</em>) sowie Kammerton-Umrechnung für <strong>440 Hz, 442 Hz und 443 Hz</strong>? Auf internationalen Tunern wird die deutsche <strong>2. Saite (H-Saite, 246,94 Hz)</strong> als <code class="text-emerald-400">B3</code> angezeigt, während das deutsche <em>B</em> (233,08 Hz) international <code class="text-emerald-400">Bb3</code> heißt. Öffnen Sie unseren vollständigen Leitfaden und interaktiven Rechner: <a href="/online-stimmgeraet-gitarre" class="text-emerald-400 font-semibold underline">Online Stimmgerät für Gitarre (E-A-D-G-H-e Frequenz- &amp; Saitenspannungs-Rechner) &rarr;</a>
+            </p>
+          </section>`,
   },
   {
     slug: 'ukulele-tuner',
