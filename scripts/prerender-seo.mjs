@@ -1153,11 +1153,18 @@ ${urls}
 
 function main() {
   const distIndexPath = path.join(distDir, 'index.html');
+  const cachedBasePath = path.join(distDir, '.base-index.html');
   if (!fs.existsSync(distIndexPath)) {
     throw new Error(`dist/index.html not found at ${distIndexPath}. Run vite build first.`);
   }
 
-  const baseTemplate = fs.readFileSync(distIndexPath, 'utf8');
+  const rawIndex = fs.readFileSync(distIndexPath, 'utf8');
+  if (rawIndex.includes('<div id="root"></div>')) {
+    fs.writeFileSync(cachedBasePath, rawIndex, 'utf8');
+  }
+  const baseTemplate = fs.existsSync(cachedBasePath)
+    ? fs.readFileSync(cachedBasePath, 'utf8')
+    : rawIndex;
 
   console.log('\n================================================================================');
   console.log('PluckBench GeFei SEO Static Pre-Renderer & Keyword Density Audit');
