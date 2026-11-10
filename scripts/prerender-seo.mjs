@@ -180,7 +180,255 @@ const SEO_PAGES = [
         q: 'Are Low G and Baritone ukulele presets supported?',
         a: 'Yes. Select Low G (G3-C4-E4-A4) or Baritone (D3-G3-B3-E4) in the preset bar to update both the nylon reference pluck sound and the microphone target frequencies.',
       },
+      {
+        q: 'How does an automatic ukulele tuner detect G4 vs G3 without manual string selection?',
+        a: 'In automatic chromatic detection mode, our 4096-sample McLeod Pitch Method (MPM) autocorrelation engine measures the fundamental period of your plucked string and compares it against both re-entrant High G4 (392.00 Hz) and linear Low G3 (196.00 Hz) using octave-disambiguation harmonic ratio checks.',
+      },
+      {
+        q: 'What is the difference between Soprano, Concert, Tenor, and Baritone ukulele scale lengths?',
+        a: 'Standard vibrating scale lengths (nut to saddle) are 13.5 inches (343 mm) for Soprano, 15.0 inches (381 mm) for Concert, 17.0 inches (432 mm) for Tenor, and 19.0 inches (483 mm) for Baritone. Soprano, Concert, and Tenor ukuleles all share G-C-E-A tuning, whereas Baritone ukuleles tune a fourth lower to D3-G3-B3-E4.',
+      },
+      {
+        q: 'Wie stimmt man eine Ukulele online (Standard G-C-E-A & Bariton D-G-H-E)?',
+        a: 'Auf Deutsch werden die vier Saiten einer Sopran-, Konzert- oder Tenor-Ukulele von oben (4. Saite) nach unten (1. Saite) auf G4 (392,00 Hz) – C4 (261,63 Hz) – E4 (329,63 Hz) – A4 (440,00 Hz) gestimmt. Bei einer Bariton-Ukulele lautet die Stimmung D3 – G3 – H3 – E4 (entspricht den vier hohen Saiten einer Gitarre).',
+      },
     ],
+    extraSectionsHtml: `
+          <section class="p-6 rounded-2xl border border-emerald-800/70 bg-slate-900/80 space-y-5">
+            <div class="text-xs text-slate-400 border-l-4 border-emerald-500 pl-3 py-1 bg-slate-950/60 rounded-r-lg">
+              <strong>Acoustic Engineering &amp; Affiliate Disclosure:</strong> All ukulele frequencies on this page are derived from the ISO 16 standard concert pitch formula (<code>f = A4 &times; 2^((n-69)/12)</code>) and Mersenne&apos;s vibrating string law. When you purchase music theory books, session audio services, or practice accessories through partner links below, PluckBench may earn an affiliate commission at no extra cost to you.
+            </div>
+            <h2 class="text-lg font-bold text-slate-100">
+              Interactive Ukulele String Frequency, Scale Length &amp; Mersenne Tension Calculator (2026)
+            </h2>
+            <p class="text-xs leading-relaxed text-slate-300">
+              Whether you need an <strong>online tuner for ukulele</strong>, an <strong>automatic ukulele tuner</strong> reference chart, or exact string tension targets when switching a Concert or Tenor instrument from re-entrant High G4 (<code>392.00 Hz</code>) to linear Low G3 (<code>196.00 Hz</code>), use the calculator below to compute exact string frequencies and relative tension across any A4 concert calibration (432 Hz to 446 Hz):
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-950/90 p-4 rounded-xl border border-slate-800">
+              <div>
+                <label for="ukeScaleSelect" class="block text-xs font-bold text-slate-300 mb-1.5">Ukulele Body &amp; Scale Length</label>
+                <select id="ukeScaleSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100">
+                  <option value="13.5">Soprano Ukulele (13.5 in / 343 mm)</option>
+                  <option value="15.0" selected>Concert Ukulele (15.0 in / 381 mm)</option>
+                  <option value="17.0">Tenor Ukulele (17.0 in / 432 mm)</option>
+                  <option value="19.0">Baritone Ukulele (19.0 in / 483 mm)</option>
+                </select>
+              </div>
+              <div>
+                <label for="ukeTuningSelect" class="block text-xs font-bold text-slate-300 mb-1.5">Target Tuning Preset</label>
+                <select id="ukeTuningSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100">
+                  <option value="gcea_high" selected>Standard Re-Entrant G4-C4-E4-A4 (High G)</option>
+                  <option value="gcea_low">Linear Low-G Tuning G3-C4-E4-A4</option>
+                  <option value="baritone">Baritone D3-G3-B3-E4 (German D-G-H-E)</option>
+                  <option value="d6">Traditional D6 Tuning A4-D4-F#4-B4 (+2 Semitones)</option>
+                </select>
+              </div>
+              <div>
+                <label for="ukeA4Input" class="block text-xs font-bold text-slate-300 mb-1.5">Reference Concert Pitch A4 (Hz)</label>
+                <input id="ukeA4Input" type="number" value="440" min="430" max="448" step="1" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100" />
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <button type="button" id="ukeCalcBtn" style="background:#059669 !important; color:#ffffff !important;" class="px-4 py-2.5 rounded-xl font-bold text-xs cursor-pointer">
+                Calculate Ukulele String Hz &amp; Scale Tension &rarr;
+              </button>
+              <div class="flex flex-wrap gap-2">
+                <a href="https://bbux.me/b9xCEBDSZ" target="_blank" rel="sponsored noopener" style="display:inline-block; background:#059669 !important; color:#ffffff !important; padding:9px 14px; border-radius:8px; font-weight:700; font-size:0.75rem; text-decoration:none !important;">Download Ukulele &amp; Guitar Chord eBooks (CPS) &rarr;</a>
+                <a href="https://bbux.me/r9xBvo61g" target="_blank" rel="sponsored noopener" style="display:inline-block; background:#2563eb !important; color:#ffffff !important; padding:9px 14px; border-radius:8px; font-weight:700; font-size:0.75rem; text-decoration:none !important;">Hire Session Ukulele Players on Fiverr &rarr;</a>
+                <a href="https://bbux.me/T9xC6WZH9" target="_blank" rel="sponsored noopener" style="display:inline-block; background:#7c3aed !important; color:#ffffff !important; padding:9px 14px; border-radius:8px; font-weight:700; font-size:0.75rem; text-decoration:none !important;">Shop Musician Practice Gifts &rarr;</a>
+              </div>
+            </div>
+            <div id="ukeCalcResult" class="p-4 rounded-xl bg-slate-950 border border-emerald-700/60 text-xs text-slate-200 leading-relaxed font-mono">
+              Concert Ukulele (15.0&quot; / 381 mm) | Standard G4-C4-E4-A4 @ A4=440 Hz: String 4 (G4) = 392.00 Hz | String 3 (C4) = 261.63 Hz | String 2 (E4) = 329.63 Hz | String 1 (A4) = 440.00 Hz | Relative Scale Tension Index: 1.00x (Fluorocarbon/Nylon Set ~27.4 lbs total)
+            </div>
+            <script>
+            (function(){
+              function initUkeCalc(){
+                var scaleEl = document.getElementById("ukeScaleSelect");
+                var tuneEl = document.getElementById("ukeTuningSelect");
+                var a4El = document.getElementById("ukeA4Input");
+                var btnEl = document.getElementById("ukeCalcBtn");
+                var outEl = document.getElementById("ukeCalcResult");
+                function calc(){
+                  if(!scaleEl || !tuneEl || !a4El || !outEl) return;
+                  var scaleIn = parseFloat(scaleEl.value) || 15.0;
+                  var scaleMm = Math.round(scaleIn * 25.4);
+                  var a4 = Math.max(415, Math.min(460, parseFloat(a4El.value) || 440));
+                  var mode = tuneEl.value;
+                  var semitones = [-2, -9, -5, 0];
+                  var labels = ["String 4 (G4)", "String 3 (C4)", "String 2 (E4)", "String 1 (A4)"];
+                  var modeName = "Standard Re-Entrant G4-C4-E4-A4";
+                  if(mode === "gcea_low"){
+                    semitones = [-14, -9, -5, 0];
+                    labels = ["String 4 (Low G3)", "String 3 (C4)", "String 2 (E4)", "String 1 (A4)"];
+                    modeName = "Linear Low-G G3-C4-E4-A4";
+                  } else if(mode === "baritone"){
+                    semitones = [-19, -14, -10, -5];
+                    labels = ["String 4 (D3)", "String 3 (G3)", "String 2 (B3/H3)", "String 1 (E4)"];
+                    modeName = "Baritone D3-G3-B3-E4";
+                  } else if(mode === "d6"){
+                    semitones = [0, -7, -3, 2];
+                    labels = ["String 4 (A4)", "String 3 (D4)", "String 2 (F#4)", "String 1 (B4)"];
+                    modeName = "Traditional D6 A4-D4-F#4-B4";
+                  }
+                  var parts = [];
+                  for(var i=0; i<4; i++){
+                    var f = a4 * Math.pow(2, semitones[i] / 12.0);
+                    parts.push(labels[i] + " = " + f.toFixed(2) + " Hz");
+                  }
+                  var tensionRatio = Math.pow(scaleIn / 15.0, 2) * Math.pow(a4 / 440.0, 2) * (mode === "d6" ? 1.26 : 1.0);
+                  var totalLbs = (27.4 * tensionRatio).toFixed(1);
+                  outEl.textContent = "Scale " + scaleIn.toFixed(1) + " in (" + scaleMm + " mm) | " + modeName + " @ A4=" + a4 + " Hz: " + parts.join(" | ") + " | Relative Tension Multiplier: " + tensionRatio.toFixed(2) + "x (~" + totalLbs + " lbs total set tension)";
+                }
+                if(btnEl) btnEl.addEventListener("click", calc);
+                if(scaleEl) scaleEl.addEventListener("change", calc);
+                if(tuneEl) tuneEl.addEventListener("change", calc);
+                if(a4El) a4El.addEventListener("input", calc);
+              }
+              if(document.readyState === "loading"){
+                document.addEventListener("DOMContentLoaded", initUkeCalc);
+              } else {
+                initUkeCalc();
+              }
+            })();
+            </script>
+          </section>
+
+          <section class="p-6 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-4">
+            <h2 class="text-lg font-bold text-slate-100">
+              Complete Ukulele Tuning Chart: Standard GCEA, Low G, Baritone &amp; D6 Frequencies
+            </h2>
+            <p class="text-xs leading-relaxed text-slate-300">
+              When using an <strong>online ukulele tuner</strong> with a laptop or smartphone microphone, understanding the difference between <strong>re-entrant tuning</strong> and <strong>linear tuning</strong> prevents broken strings and octave confusion. On a standard Soprano (<code>13.5&quot;</code> scale), Concert (<code>15.0&quot;</code> scale), or Tenor (<code>17.0&quot;</code> scale) ukulele, the top 4th string is tuned to <strong>G4 (392.00 Hz)</strong>—which is actually a fifth <em>higher</em> than the 3rd string <strong>C4 (261.63 Hz, Middle C)</strong> and just one whole step lower than the bottom 1st string <strong>A4 (440.00 Hz)</strong>. That bright, closely voiced cluster gives Hawaiian ukulele strumming its unmistakable chime.
+            </p>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="border-b border-slate-700 text-slate-300">
+                    <th class="py-2 pr-3 font-semibold">Ukulele Tuning System</th>
+                    <th class="py-2 pr-3 font-semibold">4th String (Top)</th>
+                    <th class="py-2 pr-3 font-semibold">3rd String</th>
+                    <th class="py-2 pr-3 font-semibold">2nd String</th>
+                    <th class="py-2 font-semibold">1st String (Bottom)</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/70 text-slate-300">
+                  <tr>
+                    <td class="py-2 pr-3 font-bold text-emerald-400">Standard C6 Re-Entrant (High G)</td>
+                    <td class="py-2 pr-3 font-mono">G4 (392.00 Hz)</td>
+                    <td class="py-2 pr-3 font-mono">C4 (261.63 Hz)</td>
+                    <td class="py-2 pr-3 font-mono">E4 (329.63 Hz)</td>
+                    <td class="py-2 font-mono">A4 (440.00 Hz)</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 pr-3 font-bold text-emerald-400">Linear Low-G (Solo Fingerstyle)</td>
+                    <td class="py-2 pr-3 font-mono">G3 (196.00 Hz)</td>
+                    <td class="py-2 pr-3 font-mono">C4 (261.63 Hz)</td>
+                    <td class="py-2 pr-3 font-mono">E4 (329.63 Hz)</td>
+                    <td class="py-2 font-mono">A4 (440.00 Hz)</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 pr-3 font-bold text-emerald-400">Baritone Ukulele (Guitar DGBE)</td>
+                    <td class="py-2 pr-3 font-mono">D3 (146.83 Hz)</td>
+                    <td class="py-2 pr-3 font-mono">G3 (196.00 Hz)</td>
+                    <td class="py-2 pr-3 font-mono">B3 / H3 (246.94 Hz)</td>
+                    <td class="py-2 font-mono">E4 (329.63 Hz)</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 pr-3 font-bold text-emerald-400">Traditional D6 (Soprano ADF#B)</td>
+                    <td class="py-2 pr-3 font-mono">A4 (440.00 Hz)</td>
+                    <td class="py-2 pr-3 font-mono">D4 (293.66 Hz)</td>
+                    <td class="py-2 pr-3 font-mono">F#4 (369.99 Hz)</td>
+                    <td class="py-2 font-mono">B4 (493.88 Hz)</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 pr-3 font-bold text-emerald-400">Hawaiian Slack-Key (Taro Patch C)</td>
+                    <td class="py-2 pr-3 font-mono">G4 (392.00 Hz)</td>
+                    <td class="py-2 pr-3 font-mono">C4 (261.63 Hz)</td>
+                    <td class="py-2 pr-3 font-mono">E4 (329.63 Hz)</td>
+                    <td class="py-2 font-mono">G4 (392.00 Hz)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="text-xs leading-relaxed text-slate-300">
+              <strong>Important Note on Low G Strings:</strong> You cannot simply loosen a standard unweighted High-G4 nylon string down a full octave to <code>G3 = 196.00 Hz</code>; at one-quarter of its design tension (by Mersenne&apos;s Law, halving frequency reduces tension by <code>75%</code>), a thin G4 string becomes floppy and unplayable. To tune to Low G3, install a dedicated wound copper-nylon or high-density fluorocarbon <code>.032&quot;–.036&quot;</code> Low-G fourth string. For deeper string mass and tension physics, compare our <a href="/guitar-string-gauge-tension-calculator" class="text-emerald-400 underline">String Gauge &amp; Tension Calculator</a> and <a href="/432hz-vs-440hz-vs-442hz-pitch-frequency-calculator" class="text-emerald-400 underline">432 Hz vs 440 Hz vs 442 Hz Pitch Frequency Calculator</a>.
+            </p>
+          </section>
+
+          <section class="p-6 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-4">
+            <h2 class="text-lg font-bold text-slate-100">
+              Ukulele Chords Tuner Online: Essential Beginner Chord Fingerings &amp; Intonation Check
+            </h2>
+            <p class="text-xs leading-relaxed text-slate-300">
+              Players searching for a <strong>ukulele chords tuner online</strong> often notice that their ukulele reads &ldquo;in tune&rdquo; on open strings (<code>0-0-0-0</code>, which forms a natural <code>C6</code> chord: G4–C4–E4–A4) yet sounds slightly sharp when fretting first-position chords like <code>F Major</code> or <code>G7</code>. Because short-scale ukulele strings (especially 13.5-inch Soprano models) experience higher relative deflection angle when pressed down behind the 1st or 2nd fret, use these 8 core chord shapes to verify both open-string calibration and fretted intonation—or open our full <a href="/guitar-chords" class="text-emerald-400 underline">Interactive Guitar &amp; Ukulele Chord Library</a> and <a href="/capo-transposition-chord-chart-calculator" class="text-emerald-400 underline">Capo Transposition Chord Chart Calculator</a>:
+            </p>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="border-b border-slate-700 text-slate-300">
+                    <th class="py-2 pr-3 font-semibold">Chord Name</th>
+                    <th class="py-2 pr-3 font-semibold">Fret Diagram (G-C-E-A)</th>
+                    <th class="py-2 pr-3 font-semibold">Sounding Notes (Low to High)</th>
+                    <th class="py-2 font-semibold">Target Fundamental Hz Check</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/70 text-slate-300">
+                  <tr>
+                    <td class="py-2 pr-3 font-bold text-emerald-400">C Major (C)</td>
+                    <td class="py-2 pr-3 font-mono">0 – 0 – 0 – 3</td>
+                    <td class="py-2 pr-3">G4 – C4 – E4 – C5</td>
+                    <td class="py-2 font-mono">392.00 / 261.63 / 329.63 / 523.25 Hz</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 pr-3 font-bold text-emerald-400">A Minor (Am)</td>
+                    <td class="py-2 pr-3 font-mono">2 – 0 – 0 – 0</td>
+                    <td class="py-2 pr-3">A4 – C4 – E4 – A4</td>
+                    <td class="py-2 font-mono">440.00 / 261.63 / 329.63 / 440.00 Hz</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 pr-3 font-bold text-emerald-400">F Major (F)</td>
+                    <td class="py-2 pr-3 font-mono">2 – 0 – 1 – 0</td>
+                    <td class="py-2 pr-3">A4 – C4 – F4 – A4</td>
+                    <td class="py-2 font-mono">440.00 / 261.63 / 349.23 / 440.00 Hz</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 pr-3 font-bold text-emerald-400">G Major (G)</td>
+                    <td class="py-2 pr-3 font-mono">0 – 2 – 3 – 2</td>
+                    <td class="py-2 pr-3">G4 – D4 – G4 – B4</td>
+                    <td class="py-2 font-mono">392.00 / 293.66 / 392.00 / 493.88 Hz</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 pr-3 font-bold text-emerald-400">G Dominant 7th (G7)</td>
+                    <td class="py-2 pr-3 font-mono">0 – 2 – 1 – 2</td>
+                    <td class="py-2 pr-3">G4 – D4 – F4 – B4</td>
+                    <td class="py-2 font-mono">392.00 / 293.66 / 349.23 / 493.88 Hz</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2 pr-3 font-bold text-emerald-400">D Minor (Dm)</td>
+                    <td class="py-2 pr-3 font-mono">2 – 2 – 1 – 0</td>
+                    <td class="py-2 pr-3">A4 – D4 – F4 – A4</td>
+                    <td class="py-2 font-mono">440.00 / 293.66 / 349.23 / 440.00 Hz</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="text-xs leading-relaxed text-slate-300">
+              <strong>Pro Intonation Tip (The A Minor Unison Check):</strong> Fret the 4th string at the 2nd fret (<code>2-0-0-0</code>, <code>A Minor</code>) and pluck the 4th string and open 1st string together. Both should produce a beatless unison at <strong>A4 = 440.00 Hz</strong>. If the fretted 4th string sounds 8 to 15 cents sharp compared to the open 1st string, your nut slot on the G string is slightly high—you can sweeten first-position chords by tuning the open G4 string down 2 to 3 cents (to ~<code>391.3 Hz</code>).
+            </p>
+          </section>
+
+          <section class="p-6 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-3" lang="de">
+            <h2 class="text-lg font-bold text-slate-100">
+              Ukulele stimmen online per Mikrofon: G-C-E-A Standardstimmung, Low G &amp; Bariton (Deutsch)
+            </h2>
+            <p class="text-xs leading-relaxed text-slate-300">
+              Möchten Sie Ihre <strong>Ukulele stimmen online</strong> direkt im Browser über das Mikrofon Ihres Smartphones, Tablets oder Laptops? Bei einer Sopran-, Konzert- oder Tenor-Ukulele lautet die hawaiianische Standardstimmung von der obersten (4.) zur untersten (1.) Saite <strong>G4 (392,00 Hz) – C4 (261,63 Hz) – E4 (329,63 Hz) – A4 (440,00 Hz)</strong> (Eselsbrücke: <em>&bdquo;Gute Clowns Essen Alles&ldquo;</em>). Beachten Sie die rückläufige (<em>re-entrant</em>) Oktavlage: Die 4. Saite (<code>G4</code>) klingt höher als die 3. Saite (<code>C4</code>) und liegt nur einen Ganzton unter der 1. Saite (<code>A4</code>).
+            </p>
+            <p class="text-xs leading-relaxed text-slate-300">
+              Spielen Sie hingegen eine größere <strong>Bariton-Ukulele</strong> (Mensur ca. 483 mm), wird diese exakt wie die vier hohen Saiten einer Gitarre auf <strong>D3 (146,83 Hz) – G3 (196,00 Hz) – H3 (international B3, 246,94 Hz) – E4 (329,63 Hz)</strong> gestimmt. Weitere Informationen zur deutschen H/B-Notation und Kammerton-Kalibrierung (440 Hz / 442 Hz) finden Sie in unserem deutschen Leitfaden <a href="/online-stimmgeraet-gitarre" class="text-emerald-400 underline font-semibold">Online Stimmgerät für Gitarre (E-A-D-G-H-e Frequenz-Rechner)</a>.
+            </p>
+          </section>`,
   },
   {
     slug: 'violin-tuner',
@@ -653,7 +901,7 @@ function buildPreRenderedBodyHtml(page) {
 
   const extraHtml = page.extraSectionsHtml || '';
 
-  return `
+  const rootHtml = `
       <div class="min-h-screen bg-[#070a0f] text-slate-100 font-sans">
         <header class="border-b border-slate-800/80 px-4 py-3 bg-slate-950/90">
           <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
@@ -675,8 +923,11 @@ function buildPreRenderedBodyHtml(page) {
             <div class="text-xs text-slate-400">${page.tuningSummary}</div>
           </div>
         </div>
+      </div>`;
 
-        <main class="max-w-7xl mx-auto px-4 py-6 space-y-8 opacity-90">
+  const guideHtml = `
+    <div id="seo-static-guide" class="lp-shell bg-[#070a0f] text-slate-100 font-sans border-t border-slate-800/80">
+        <main class="max-w-7xl mx-auto px-4 py-6 space-y-8 opacity-95">
           <section class="p-6 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-4">
             <h2 class="text-lg font-bold text-slate-100">
               Studio-Grade ${kwCap} for ${page.instrumentName}
@@ -764,7 +1015,9 @@ function buildPreRenderedBodyHtml(page) {
             </nav>
           </section>
         </main>
-      </div>`;
+    </div>`;
+
+  return { rootHtml, guideHtml, bodyHtml: rootHtml + '\n' + guideHtml };
 }
 
 function buildJsonLd(page) {
@@ -774,7 +1027,25 @@ function buildJsonLd(page) {
       '@context': 'https://schema.org',
       '@graph': [
         {
-          '@type': 'WebApplication',
+          '@type': 'Article',
+          headline: page.h1,
+          description: page.description,
+          datePublished: '2026-10-26',
+          dateModified: TODAY,
+          mainEntityOfPage: fullUrl,
+          author: {
+            '@type': 'Organization',
+            name: 'PluckBench Acoustic Engineering Desk',
+            url: SITE_ORIGIN,
+          },
+          publisher: {
+            '@type': 'Organization',
+            name: 'PluckBench',
+            url: SITE_ORIGIN,
+          },
+        },
+        {
+          '@type': ['WebApplication', 'SoftwareApplication'],
           name: page.title,
           url: fullUrl,
           description: page.description,
@@ -814,7 +1085,7 @@ function buildJsonLd(page) {
 
 function injectPageSeo(templateHtml, page) {
   const fullUrl = `${SITE_ORIGIN}${page.canonicalPath}`;
-  const bodyHtml = buildPreRenderedBodyHtml(page);
+  const { rootHtml, guideHtml, bodyHtml } = buildPreRenderedBodyHtml(page);
   const jsonLd = buildJsonLd(page);
 
   let html = templateHtml;
@@ -854,8 +1125,8 @@ function injectPageSeo(templateHtml, page) {
     `<script id="seo-json-ld" type="application/ld+json">\n${jsonLd}\n    </script>`
   );
 
-  // Inject pre-rendered semantic HTML inside <div id="root">...</div>
-  html = html.replace('<div id="root"></div>', `<div id="root">${bodyHtml}\n    </div>`);
+  // Inject pre-rendered shell inside <div id="root">...</div> and persistent SEO guide outside #root
+  html = html.replace('<div id="root"></div>', `<div id="root">${rootHtml}\n    </div>\n${guideHtml}`);
 
   return { html, bodyHtml };
 }
