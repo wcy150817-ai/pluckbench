@@ -462,7 +462,163 @@ const SEO_PAGES = [
         q: 'Are pure fifths and Pythagorean temperament supported for bowed strings?',
         a: 'Yes. Switch the temperament selector between 12-TET Equal Temperament, Just Intonation, and Pythagorean tuning to match solo or string quartet intonation requirements.',
       },
+      {
+        q: 'What is the difference between pure fifths (3:2) and equal-tempered violin tuning?',
+        a: 'Violin strings are tuned in perfect fifths. A pure fifth has a 3:2 frequency ratio (702.0 cents), while 12-TET equal temperament uses 700 cents. At A4 = 440 Hz the pure-fifth E5 is 660.00 Hz and the equal-tempered E5 is 659.26 Hz, a gap of about 2 cents. Many string players tune open fifths slightly wide to the pure ratio and adjust fingered notes by ear.',
+      },
+      {
+        q: 'Wie kann ich meine Geige online stimmen (G-D-A-E)?',
+        a: 'Geige stimmen online: Die vier Saiten werden in reinen Quinten von tief nach hoch auf G3 (196,00 Hz), D4 (293,66 Hz), A4 (440,00 Hz) und E5 (659,26 Hz) gestimmt. Stimmen Sie zuerst die A-Saite auf 440 Hz oder 442 Hz, dann D, G und E. Fuer die Feineinstellung am Feinstimmer streichen Sie die Saite mit dem Bogen.',
+      },
     ],
+    extraSectionsHtml: `
+          <section class="p-6 rounded-2xl border border-emerald-800/70 bg-slate-900/80 space-y-5">
+            <div class="text-xs text-slate-400 border-l-4 border-emerald-500 pl-3 py-1 bg-slate-950/60 rounded-r-lg">
+              <strong>Acoustic Engineering &amp; Affiliate Disclosure:</strong> Frequencies on this page come from the equal-temperament formula (<code>f = A4 &times; 2^((n-69)/12)</code>) and the pure fifth ratio 3:2. Fractional-size string lengths are nominal approximations that vary by maker, so measure your own instrument. If you buy lessons, recordings or practice material through partner links on this page, PluckBench may earn a commission at no extra cost to you.
+            </div>
+            <h2 class="text-lg font-bold text-slate-100">
+              Violin Pitch &amp; Fractional Size Calculator: 12-TET vs Pure Fifths at 440, 442 and 443 Hz
+            </h2>
+            <p class="text-xs leading-relaxed text-slate-300">
+              Use this <strong>online violin tuner</strong> companion to compute target frequencies for G3, D4, A4 and E5 in equal temperament or in pure 3:2 fifths, and to see how string tension scales when the same string is used on a shorter fractional-size violin (4/4, 3/4, 1/2 or 1/4).
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-950/90 p-4 rounded-xl border border-slate-800">
+              <div>
+                <label for="vioA4" class="block text-xs font-bold text-slate-300 mb-1.5">Concert pitch A4 (Hz)</label>
+                <select id="vioA4" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100">
+                  <option value="440" selected>440 Hz</option>
+                  <option value="442">442 Hz</option>
+                  <option value="443">443 Hz</option>
+                </select>
+              </div>
+              <div>
+                <label for="vioTemper" class="block text-xs font-bold text-slate-300 mb-1.5">Interval model</label>
+                <select id="vioTemper" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100">
+                  <option value="et" selected>12-TET equal temperament</option>
+                  <option value="pure">Pure fifths (3:2 from A4)</option>
+                </select>
+              </div>
+              <div>
+                <label for="vioSize" class="block text-xs font-bold text-slate-300 mb-1.5">Violin size (nominal string length)</label>
+                <select id="vioSize" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100">
+                  <option value="1" selected>4/4 full size (about 330 mm)</option>
+                  <option value="0.94">3/4 (about 310 mm)</option>
+                  <option value="0.85">1/2 (about 280 mm)</option>
+                  <option value="0.77">1/4 (about 255 mm)</option>
+                </select>
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <button type="button" id="vioCalcBtn" style="background:#059669 !important; color:#ffffff !important;" class="px-4 py-2.5 rounded-xl font-bold text-xs cursor-pointer">Calculate Violin String Frequencies &rarr;</button>
+              <div class="flex flex-wrap gap-2">
+                <a href="https://bbux.me/b9xCEBDSZ" target="_blank" rel="sponsored noopener" style="display:inline-block; background:#059669 !important; color:#ffffff !important; padding:9px 14px; border-radius:8px; font-weight:700; font-size:0.75rem; text-decoration:none !important;">Browse Music Learning eBooks &rarr;</a>
+                <a href="https://bbux.me/r9xBvo61g" target="_blank" rel="sponsored noopener" style="display:inline-block; background:#2563eb !important; color:#ffffff !important; padding:9px 14px; border-radius:8px; font-weight:700; font-size:0.75rem; text-decoration:none !important;">Hire Session Musicians on Fiverr &rarr;</a>
+              </div>
+            </div>
+            <div id="vioCalcResult" class="p-4 rounded-xl bg-slate-950 border border-emerald-700/60 text-xs text-slate-200 leading-relaxed font-mono">
+              12-TET at A4=440 Hz: G3 = 196.00 Hz | D4 = 293.66 Hz | A4 = 440.00 Hz | E5 = 659.26 Hz | Relative tension on a 4/4 string: 1.00x
+            </div>
+            <script>
+            (function(){
+              function initVioCalc(){
+                var a4El = document.getElementById("vioA4");
+                var tEl = document.getElementById("vioTemper");
+                var sEl = document.getElementById("vioSize");
+                var bEl = document.getElementById("vioCalcBtn");
+                var oEl = document.getElementById("vioCalcResult");
+                function calc(){
+                  if(!a4El || !tEl || !sEl || !oEl) return;
+                  var a4 = parseFloat(a4El.value) || 440;
+                  var mode = tEl.value;
+                  var scale = parseFloat(sEl.value) || 1;
+                  var f;
+                  if(mode === "pure"){
+                    f = [a4 / 2.25, a4 / 1.5, a4, a4 * 1.5];
+                  } else {
+                    f = [a4 * Math.pow(2, -14 / 12), a4 * Math.pow(2, -7 / 12), a4, a4 * Math.pow(2, 7 / 12)];
+                  }
+                  var names = ["G3", "D4", "A4", "E5"];
+                  var parts = [];
+                  for(var i = 0; i < 4; i++){ parts.push(names[i] + " = " + f[i].toFixed(2) + " Hz"); }
+                  var tension = Math.pow(scale, 2);
+                  var label = mode === "pure" ? "Pure fifths (3:2)" : "12-TET";
+                  oEl.textContent = label + " at A4=" + a4 + " Hz: " + parts.join(" | ") + " | Relative tension for the same string at this scale length: " + tension.toFixed(2) + "x of a 4/4 setup";
+                }
+                if(bEl) bEl.addEventListener("click", calc);
+                if(a4El) a4El.addEventListener("change", calc);
+                if(tEl) tEl.addEventListener("change", calc);
+                if(sEl) sEl.addEventListener("change", calc);
+              }
+              if(document.readyState === "loading"){
+                document.addEventListener("DOMContentLoaded", initVioCalc);
+              } else {
+                initVioCalc();
+              }
+            })();
+            </script>
+          </section>
+
+          <section class="p-6 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-4">
+            <h2 class="text-lg font-bold text-slate-100">
+              Pythagorean Pure Fifths vs 12-TET: Violin Open-String Frequency Table
+            </h2>
+            <p class="text-xs leading-relaxed text-slate-300">
+              A violin is tuned in four stacked perfect fifths: G3&ndash;D4, D4&ndash;A4 and A4&ndash;E5. A <strong>pure (Pythagorean) fifth</strong> has a frequency ratio of exactly 3:2, which is 701.96 cents. 12-TET equal temperament narrows every fifth to 700 cents so that all keys sound equally acceptable on fixed-pitch instruments. On a violin the difference is small, about two cents per fifth, and many players tune open strings to resonate as pure fifths while adjusting fingered notes by ear.
+            </p>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr class="border-b border-slate-700 text-slate-300">
+                    <th class="py-2 pr-3 font-semibold">String</th>
+                    <th class="py-2 pr-3 font-semibold">12-TET @ 440</th>
+                    <th class="py-2 pr-3 font-semibold">Pure 3:2 @ 440</th>
+                    <th class="py-2 pr-3 font-semibold">12-TET @ 442</th>
+                    <th class="py-2 pr-3 font-semibold">Pure 3:2 @ 442</th>
+                    <th class="py-2 pr-3 font-semibold">12-TET @ 443</th>
+                    <th class="py-2 font-semibold">Pure 3:2 @ 443</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/70 text-slate-300 font-mono">
+                  <tr><td class="py-2 pr-3 font-bold text-emerald-400">G3</td><td class="py-2 pr-3">196.00</td><td class="py-2 pr-3">195.56</td><td class="py-2 pr-3">196.89</td><td class="py-2 pr-3">196.44</td><td class="py-2 pr-3">197.33</td><td class="py-2">196.89</td></tr>
+                  <tr><td class="py-2 pr-3 font-bold text-emerald-400">D4</td><td class="py-2 pr-3">293.66</td><td class="py-2 pr-3">293.33</td><td class="py-2 pr-3">295.00</td><td class="py-2 pr-3">294.67</td><td class="py-2 pr-3">295.67</td><td class="py-2">295.33</td></tr>
+                  <tr><td class="py-2 pr-3 font-bold text-emerald-400">A4</td><td class="py-2 pr-3">440.00</td><td class="py-2 pr-3">440.00</td><td class="py-2 pr-3">442.00</td><td class="py-2 pr-3">442.00</td><td class="py-2 pr-3">443.00</td><td class="py-2">443.00</td></tr>
+                  <tr><td class="py-2 pr-3 font-bold text-emerald-400">E5</td><td class="py-2 pr-3">659.26</td><td class="py-2 pr-3">660.00</td><td class="py-2 pr-3">662.25</td><td class="py-2 pr-3">663.00</td><td class="py-2 pr-3">663.75</td><td class="py-2">664.50</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="text-xs leading-relaxed text-slate-300">
+              <strong>Which A4 should you choose?</strong> Many players use 440 Hz for solo practice and recordings; some ensembles tune higher, commonly 442 Hz or 443 Hz, so check with your teacher or conductor. For a deeper look at reference pitch choices see our <a href="/432hz-vs-440hz-vs-442hz-pitch-frequency-calculator" class="text-emerald-400 underline">432 Hz vs 440 Hz vs 442 Hz Pitch Frequency Calculator</a>, and for general string tension physics use the <a href="/guitar-string-gauge-tension-calculator" class="text-emerald-400 underline">String Gauge &amp; Tension Calculator</a>.
+            </p>
+          </section>
+
+          <section class="p-6 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-4">
+            <h2 class="text-lg font-bold text-slate-100">
+              How to Tune a Violin Online Step by Step: A, then D, G and E
+            </h2>
+            <ol class="list-decimal pl-5 space-y-2 text-xs leading-relaxed text-slate-300">
+              <li><strong>Start with A4.</strong> Pluck or bow the open A string and bring it to 440 Hz, or 442 Hz if your group uses it, using the peg until it is close and then the fine tuner.</li>
+              <li><strong>Tune D4 to A4.</strong> Bow the open A and D together and adjust D until the two strings sound a steady, beat-free fifth. The target is 293.66 Hz in equal temperament.</li>
+              <li><strong>Tune G3 to D4.</strong> Repeat the process for the open G string, aiming for 196.00 Hz at A4 = 440 Hz.</li>
+              <li><strong>Tune E5 to A4.</strong> Use the fine tuner on the E string; a peg can easily overshoot this thin string. The target is 659.26 Hz in equal temperament.</li>
+              <li><strong>Re-check A4.</strong> Adjusting other strings changes bridge and soundpost tension slightly, so verify the A string again and repeat if needed.</li>
+              <li><strong>Be gentle with new strings.</strong> New strings stretch and drift for days; tune a little at a time and check the pegs are seated firmly.</li>
+            </ol>
+            <p class="text-xs leading-relaxed text-slate-300">
+              If you play viola or cello, the same fifths pattern applies one octave or two lower; use the instrument rows in the tuning summary above. Always ask a teacher or luthier before changing strings or adjusting the soundpost.
+            </p>
+          </section>
+
+          <section class="p-6 rounded-2xl border border-slate-800 bg-slate-900/60 space-y-3" lang="de">
+            <h2 class="text-lg font-bold text-slate-100">
+              Geige stimmen online per Mikrofon: G-D-A-E in reinen Quinten (Deutsch)
+            </h2>
+            <p class="text-xs leading-relaxed text-slate-300">
+              Wer seine <strong>Geige online stimmen</strong> m&ouml;chte, beginnt mit der A-Saite: <strong>A4 = 440 Hz</strong> (in vielen Orchestern auch 442 Hz oder 443 Hz). Danach werden die &uuml;brigen Saiten in reinen Quinten (Frequenzverh&auml;ltnis 3:2) angestimmt: <strong>G3 = 196,00 Hz, D4 = 293,66 Hz, A4 = 440,00 Hz, E5 = 659,26 Hz</strong> bei gleichstufiger Stimmung. Die Reihenfolge von tief nach hoch lautet G-D-A-E.
+            </p>
+            <p class="text-xs leading-relaxed text-slate-300">
+              Tipp f&uuml;r die Praxis: Stimmen Sie zun&auml;chst mit den Wirbeln grob vor und nutzen Sie danach den Feinstimmer, besonders an der E-Saite. Streichen Sie mit dem Bogen in der Mitte, damit das Mikrofon einen gleichm&auml;&szlig;igen Ton h&ouml;rt. Weitere Hinweise zur deutschen Notation und zum Kammerton finden Sie in unserem <a href="/online-stimmgeraet-gitarre" class="text-emerald-400 underline font-semibold">Online Stimmger&auml;t f&uuml;r Gitarre</a>.
+            </p>
+          </section>`,
   },
   {
     slug: 'guzheng-tuner',
