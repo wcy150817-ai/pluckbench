@@ -274,6 +274,8 @@ export const SeoKnowledgeFooter: React.FC<{
 }> = ({ theme, lang }) => {
   const [legalModal, setLegalModal] = useState<'privacy' | 'terms' | null>(null);
   const c = FOOTER_CONTENT[lang];
+  const hasStaticGuide =
+    typeof document !== 'undefined' && Boolean(document.getElementById('seo-static-guide'));
 
   return (
     <section
@@ -283,6 +285,8 @@ export const SeoKnowledgeFooter: React.FC<{
         color: theme.textPrimary,
       }}
     >
+      {!hasStaticGuide && (
+        <>
       {/* Section 1: Acoustic Technology Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <article
@@ -608,6 +612,8 @@ export const SeoKnowledgeFooter: React.FC<{
           ))}
         </div>
       </nav>
+        </>
+      )}
 
       {/* Footer Bar */}
       <footer

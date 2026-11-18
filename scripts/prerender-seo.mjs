@@ -8,7 +8,7 @@ const distDir = path.join(rootDir, 'dist');
 const publicDir = path.join(rootDir, 'public');
 
 const SITE_ORIGIN = 'https://www.pluckbench.com';
-const TODAY = '2026-11-03';
+const TODAY = '2026-11-18';
 
 /**
  * 8 Live Interactive Calculator / Reference Guide Pages

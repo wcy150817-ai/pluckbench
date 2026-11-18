@@ -20,8 +20,6 @@ import {
   GeoRegionCode,
   ColorMode,
   UI_TEXT,
-  getInitialGeoRegion,
-  detectUserGeoRegion,
 } from './i18n/localeTheme';
 import { PitchProcessor, EnvelopePhase } from './audio/pitchDetector';
 import { ReferenceToneGenerator } from './audio/toneGenerator';
@@ -59,6 +57,30 @@ import {
 
 type ActiveToolTab = 'tuner' | 'metronome' | 'chords' | 'ear-trainer' | 'decibel';
 
+function getRouteSeoH1(pathname: string): string {
+  const p = pathname.replace(/\/+$/, '').toLowerCase() || '/';
+  switch (p) {
+    case '/guitar-tuner':
+      return 'Online Guitar Tuner — Standard E, Drop D & Open Tunings via Microphone';
+    case '/ukulele-tuner':
+      return 'Online Ukulele Tuner — Standard GCEA, Low G & Baritone Ukulele Tuning';
+    case '/violin-tuner':
+      return 'Online Violin Tuner — Precision G3 D4 A4 E5 Bowed Reference & 442Hz Calibration';
+    case '/guzheng-tuner':
+      return 'Online Guzheng Tuner — 21-String D Major, G Major & Pentatonic Bridge Calibration';
+    case '/bass-tuner':
+      return 'Online Bass Tuner — Precision 4-String (E1-G2) & 5-String (B0-G2) Sub-Bass Pitch Lock';
+    case '/online-metronome':
+      return 'Online Metronome — Zero-Drift Web Audio Tempo Clock, Tap BPM & Time Signatures';
+    case '/guitar-chords':
+      return 'Guitar Chord Library — Interactive Fretboard Diagrams, Fingerings & Acoustic Strum Preview';
+    case '/decibel-meter':
+      return 'Online Decibel Meter — Real-Time Acoustic dB SPL Monitor & Practice Room Noise Analyzer';
+    default:
+      return 'Online Instrument Tuner, Metronome & Chord Workbench — PluckBench Pro';
+  }
+}
+
 export const App: React.FC = () => {
   // Multi-Tool Navigation State (auto-detects dedicated SEO route path)
   const [activeTool, setActiveTool] = useState<ActiveToolTab>(() => {
@@ -71,16 +93,27 @@ export const App: React.FC = () => {
     return 'tuner';
   });
 
-  // IP Geolocation -> Region (CN | US | EU | JP) + Day/Night Color Mode (dark | light)
-  const [region, setRegion] = useState<GeoRegionCode>(() => getInitialGeoRegion());
+  // Default to US ('en') on canonical English URLs to prevent mixed-language hydration; honor explicit ?region=
+  const [region, setRegion] = useState<GeoRegionCode>(() => {
+    if (typeof window === 'undefined') return 'US';
+    const forced = new URLSearchParams(window.location.search).get('region')?.toUpperCase();
+    if (forced === 'CN' || forced === 'US' || forced === 'EU' || forced === 'JP') {
+      return forced;
+    }
+    return 'US';
+  });
   const [colorMode, setColorMode] = useState<ColorMode>('dark');
   const [showRegionMenu, setShowRegionMenu] = useState<boolean>(false);
 
   const lang = REGION_TO_LANG[region];
   const theme = REGIONAL_THEMES[region][colorMode];
   const t = UI_TEXT[lang];
+  const routeSeoH1 = useMemo(
+    () => (typeof window === 'undefined' ? getRouteSeoH1('/') : getRouteSeoH1(window.location.pathname)),
+    []
+  );
 
-  // Auto-detect IP Country -> Region & Language on mount (also supports ?region=CN|US|EU|JP & ?mode=dark|light for testing)
+  // Honor explicit ?region=CN|US|EU|JP & ?mode=dark|light query overrides without GeoIP auto-flipping
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const forcedRegion = params.get('region')?.toUpperCase();
@@ -97,12 +130,7 @@ export const App: React.FC = () => {
       forcedRegion === 'JP'
     ) {
       setRegion(forcedRegion);
-      return;
     }
-
-    detectUserGeoRegion().then((info) => {
-      setRegion(info.region);
-    });
   }, []);
 
   // Update document lang attribute dynamically for strict language purity
@@ -166,24 +194,11 @@ export const App: React.FC = () => {
   const [holdProgress, setHoldProgress] = useState<number>(0);
   const [tunedStrings, setTunedStrings] = useState<Set<number>>(new Set());
 
-  // Microphone & Simulation State
+  // Microphone & Simulation State (never auto-open fullscreen modal on page load — avoids Google intrusive interstitial penalty)
   const [isMicListening, setIsMicListening] = useState<boolean>(false);
   const [micError, setMicError] = useState<string | null>(null);
   const [isSimulating, setIsSimulating] = useState<boolean>(false);
-  const [isMicModalOpen, setIsMicModalOpen] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    const p = window.location.pathname.toLowerCase();
-    if (
-      p.includes('metronome') ||
-      p.includes('chord') ||
-      p.includes('ear-trainer') ||
-      p.includes('decibel')
-    ) {
-      return false;
-    }
-    return true;
-  });
-  const hasPromptedMicRef = useRef<boolean>(isMicModalOpen);
+  const [isMicModalOpen, setIsMicModalOpen] = useState<boolean>(false);
 
   // Audio & DSP Filter Chain Refs
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -579,11 +594,8 @@ export const App: React.FC = () => {
       if (isMicListening) stopMicrophone();
       setIsSimulating(false);
       toneGenRef.current.stopContinuous();
-    } else if (!hasPromptedMicRef.current && !isMicListening && !isSimulating) {
-      hasPromptedMicRef.current = true;
-      setIsMicModalOpen(true);
     }
-  }, [activeTool, isMicListening, isSimulating, stopMicrophone]);
+  }, [activeTool, isMicListening, stopMicrophone]);
 
   // Interactive Simulation Mode
   useEffect(() => {
@@ -793,7 +805,10 @@ export const App: React.FC = () => {
               </div>
               <div>
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <h1 className="text-xs sm:text-base font-extrabold tracking-tight">
+                  <a
+                    href="/"
+                    className="text-xs sm:text-base font-extrabold tracking-tight hover:opacity-90"
+                  >
                     {t.brandName}{' '}
                     <span
                       className="font-mono"
@@ -801,8 +816,7 @@ export const App: React.FC = () => {
                     >
                       {t.brandTag}
                     </span>
-                    <span className="sr-only"> — {t.seoH1}</span>
-                  </h1>
+                  </a>
 
                   {/* Geo Region Selector Pill */}
                   <div className="relative">
@@ -911,12 +925,12 @@ export const App: React.FC = () => {
                     )}
                   </button>
                 </div>
-                <p
-                  className="text-[10px] hidden md:block"
+                <h1
+                  className="text-[11px] sm:text-xs font-bold leading-snug mt-0.5"
                   style={{ color: theme.textSecondary }}
                 >
-                  {t.subtitle}
-                </p>
+                  {lang === 'en' ? routeSeoH1 : t.seoH1}
+                </h1>
               </div>
             </div>
 
